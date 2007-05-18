@@ -1,0 +1,4 @@
+usr/lib/libpixman.so
+usr/lib/libpixman.a
+usr/lib/pkgconfig
+usr/include/pixman
