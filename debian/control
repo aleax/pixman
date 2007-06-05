@@ -22,7 +22,7 @@ Priority: extra
 Architecture: any
 Depends: libpixman0 (= ${binary:Version})
 Description: pixel-manipulation library for X and cairo (debugging symbols)
- Debugging symbols for the Cairo pixel manipulation library.  This is
+ Debugging symbols for the Cairo/X pixel manipulation library.  This is
  needed to debug programs linked against libpixman0.
 
 Package: libpixman-dev
@@ -32,4 +32,4 @@ Depends: libpixman0 (= ${binary:Version})
 Conflicts: libpixman1-dev
 Description: pixel-manipulation library for X and cairo (development files)
  Development libraries, header files and documentation needed by
- programs that want to compile with the Cairo pixman library.
+ programs that want to compile with the Cairo/X pixman library.
