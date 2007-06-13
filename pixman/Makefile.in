@@ -69,7 +69,7 @@ libpixman_mmx_la_OBJECTS = $(am_libpixman_mmx_la_OBJECTS)
 libpixman_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
 am_libpixman_la_OBJECTS = pixman-region.lo pixman-image.lo \
 	pixman-compose.lo pixman-pict.lo pixman-utils.lo \
-	pixman-edge.lo pixman-trap.lo
+	pixman-edge.lo pixman-trap.lo pixman-compute-region.lo
 libpixman_la_OBJECTS = $(am_libpixman_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -213,7 +213,8 @@ libpixman_la_SOURCES = \
 	pixman-utils.c		\
 	pixman-edge.c		\
 	pixman-edge-imp.h	\
-	pixman-trap.c
+	pixman-trap.c		\
+	pixman-compute-region.c
 
 @USE_MMX_TRUE@noinst_LTLIBRARIES = libpixman-mmx.la
 @USE_MMX_TRUE@libpixman_mmx_la_SOURCES = \
@@ -306,6 +307,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpixman_mmx_la-pixman-mmx.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pixman-compose.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pixman-compute-region.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pixman-edge.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pixman-image.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pixman-pict.Plo@am__quote@
