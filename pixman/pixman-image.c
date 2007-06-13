@@ -85,6 +85,7 @@ allocate_image (void)
 	image_common_t *common = &image->common;
 	
 	pixman_region_init (&common->clip_region);
+	common->has_client_clip = FALSE;
 	common->transform = NULL;
 	common->repeat = PIXMAN_REPEAT_NONE;
 	common->filter = PIXMAN_FILTER_NEAREST;
@@ -262,19 +263,47 @@ pixman_image_create_conical_gradient (pixman_point_fixed_t *center,
     return image;
 }
 
+static uint32_t *
+create_bits (pixman_format_code_t format,
+	     int		  width,
+	     int		  height,
+	     int		 *rowstride_bytes)
+{
+    int stride;
+    int buf_size;
+    int bpp;
+    
+    bpp = PIXMAN_FORMAT_BPP (format);
+    stride = ((width * bpp + FB_MASK) >> FB_SHIFT) * sizeof (uint32_t);
+    buf_size = height * stride;
+
+    if (rowstride_bytes)
+	*rowstride_bytes = stride;
+
+    return calloc (buf_size, 1);
+}
+
 pixman_image_t *
 pixman_image_create_bits (pixman_format_code_t  format,
 			  int                   width,
 			  int                   height,
 			  uint32_t	       *bits,
-			  int			rowstride)
+			  int			rowstride_bytes)
 {
     pixman_image_t *image;
 
-    return_val_if_fail ((rowstride & 0x3) == 0, NULL); /* must be a
-							* multiple of 4
-							*/
+    /* must be a whole number of uint32_t's 
+     */
+    return_val_if_fail (bits == NULL ||
+			(rowstride_bytes % sizeof (uint32_t)) == 0, NULL); 
 
+    if (!bits)
+    {
+	bits = create_bits (format, width, height, &rowstride_bytes);
+	if (!bits)
+	    return NULL;
+    }
+    
     image = allocate_image();
 
     if (!image)
@@ -285,15 +314,18 @@ pixman_image_create_bits (pixman_format_code_t  format,
     image->bits.width = width;
     image->bits.height = height;
     image->bits.bits = bits;
-    image->bits.rowstride = rowstride / 4; /* we store it in number
-					    * of uint32_t's
-					    */
+    image->bits.rowstride = rowstride_bytes / sizeof (uint32_t); /* we store it in number
+								  * of uint32_t's
+								  */
     image->bits.indexed = NULL;
+
+    pixman_region_fini (&image->common.clip_region);
+    pixman_region_init_rect (&image->common.clip_region, 0, 0, width, height);
 
     return image;
 }
 
-void
+pixman_bool_t
 pixman_image_set_clip_region (pixman_image_t    *image,
 			      pixman_region16_t *region)
 {
@@ -301,23 +333,34 @@ pixman_image_set_clip_region (pixman_image_t    *image,
 
     if (region)
     {
-	pixman_region_copy (&common->clip_region, region);
+	return pixman_region_copy (&common->clip_region, region);
     }
     else
     {
 	pixman_region_fini (&common->clip_region);
 	pixman_region_init (&common->clip_region);
+
+	return TRUE;
     }
 }
 
+/* Sets whether the clip region includes a clip region set by the client
+ */
 void
+pixman_image_set_has_client_clip (pixman_image_t *image,
+				  pixman_bool_t	  client_clip)
+{
+    image->common.has_client_clip = client_clip;
+}
+
+pixman_bool_t
 pixman_image_set_transform (pixman_image_t           *image,
 			    const pixman_transform_t *transform)
 {
     image_common_t *common = (image_common_t *)image;
 
     if (common->transform == transform)
-	return;
+	return TRUE;
 
     if (common->transform)
 	free (common->transform);
@@ -326,7 +369,7 @@ pixman_image_set_transform (pixman_image_t           *image,
     {
 	common->transform = malloc (sizeof (pixman_transform_t));
 	if (!common->transform)
-	    return;
+	    return FALSE;
 
 	*common->transform = *transform;
     }
@@ -334,6 +377,8 @@ pixman_image_set_transform (pixman_image_t           *image,
     {
 	common->transform = NULL;
     }
+
+    return TRUE;
 }
 
 void
@@ -343,34 +388,37 @@ pixman_image_set_repeat (pixman_image_t  *image,
     image->common.repeat = repeat;
 }
 
-void
+pixman_bool_t 
 pixman_image_set_filter (pixman_image_t       *image,
 			 pixman_filter_t       filter,
 			 const pixman_fixed_t *params,
 			 int		       n_params)
 {
     image_common_t *common = (image_common_t *)image;
-    
-    if (params != common->filter_params || filter != common->filter)
-    {
-	common->filter = filter;
-	
-	if (common->filter_params)
-	    free (common->filter_params);
+    pixman_fixed_t *new_params;
 
-	if (params)
-	{
-	    common->filter_params = malloc (n_params * sizeof (pixman_fixed_t));
-	    memcpy (common->filter_params, params, n_params * sizeof (pixman_fixed_t));
-	}
-	else
-	{
-	    common->filter_params = NULL;
-	    n_params = 0;
-	}
+    if (params == common->filter_params && filter == common->filter)
+	return TRUE;
+
+    new_params = NULL;
+    if (params)
+    {
+	new_params = malloc (n_params * sizeof (pixman_fixed_t));
+	if (!new_params)
+	    return FALSE;
+
+	memcpy (new_params,
+		params, n_params * sizeof (pixman_fixed_t));
     }
-    
+
+    common->filter = filter;
+	
+    if (common->filter_params)
+	free (common->filter_params);
+
+    common->filter_params = new_params;
     common->n_filter_params = n_params;
+    return TRUE;
 }
 
 /* Unlike all the other property setters, this function does not
@@ -419,8 +467,6 @@ pixman_image_set_component_alpha   (pixman_image_t       *image,
 }
 
 
-#define SCANLINE_BUFFER_LENGTH 2048
-
 void
 pixman_image_set_accessors (pixman_image_t             *image,
 			    pixman_read_memory_func_t	read_func,
@@ -432,50 +478,75 @@ pixman_image_set_accessors (pixman_image_t             *image,
     image->common.write_func = write_func;
 }
 
-void
-pixman_image_composite_rect  (pixman_op_t                   op,
-			      pixman_image_t               *src,
-			      pixman_image_t               *mask,
-			      pixman_image_t               *dest,
-			      int16_t                       src_x,
-			      int16_t                       src_y,
-			      int16_t                       mask_x,
-			      int16_t                       mask_y,
-			      int16_t                       dest_x,
-			      int16_t                       dest_y,
-			      uint16_t                      width,
-			      uint16_t                      height)
+uint32_t *
+pixman_image_get_data (pixman_image_t *image)
 {
-    FbComposeData compose_data;
-    uint32_t _scanline_buffer[SCANLINE_BUFFER_LENGTH * 3];
-    uint32_t *scanline_buffer = _scanline_buffer;
+    if (image->type == BITS)
+	return image->bits.bits;
 
-    return_if_fail (src != NULL);
-    return_if_fail (dest != NULL);
-    
-    if (width > SCANLINE_BUFFER_LENGTH)
+    return NULL;
+}
+
+int
+pixman_image_get_width (pixman_image_t *image)
+{
+    if (image->type == BITS)
+	return image->bits.width;
+
+    return 0;
+}
+
+int
+pixman_image_get_height (pixman_image_t *image)
+{
+    if (image->type == BITS)
+	return image->bits.height;
+
+    return 0;
+}
+
+int
+pixman_image_get_stride (pixman_image_t *image)
+{
+    if (image->type == BITS)
+	return image->bits.rowstride * sizeof (uint32_t);
+
+    return 0;
+}
+
+int
+pixman_image_get_depth (pixman_image_t *image)
+{
+    if (image->type == BITS)
+	return PIXMAN_FORMAT_DEPTH (image->bits.format);
+
+    return 0;
+}
+
+pixman_bool_t
+pixman_image_fill_rectangles (pixman_op_t		    op,
+			      pixman_image_t		   *dest,
+			      pixman_color_t		   *color,
+			      int			    n_rects,
+			      const pixman_rectangle16_t   *rects)
+{
+    pixman_image_t *solid = pixman_image_create_solid_fill (color);
+    int i;
+
+    if (!solid)
+	return FALSE;
+
+    for (i = 0; i < n_rects; ++i)
     {
-	scanline_buffer = (uint32_t *)malloc (width * 3 * sizeof (uint32_t));
-
-	if (!scanline_buffer)
-	    return;
+	const pixman_rectangle16_t *rect = &(rects[i]);
+	
+	pixman_image_composite (op, solid, NULL, dest,
+				0, 0, 0, 0,
+				rect->x, rect->y,
+				rect->width, rect->height);
     }
-    
-    compose_data.op = op;
-    compose_data.src = src;
-    compose_data.mask = mask;
-    compose_data.dest = dest;
-    compose_data.xSrc = src_x;
-    compose_data.ySrc = src_y;
-    compose_data.xMask = mask_x;
-    compose_data.yMask = mask_y;
-    compose_data.xDest = dest_x;
-    compose_data.yDest = dest_y;
-    compose_data.width = width;
-    compose_data.height = height;
 
-    pixmanCompositeRect (&compose_data, scanline_buffer);
+    pixman_image_unref (solid);
 
-    if (scanline_buffer != _scanline_buffer)
-	free (scanline_buffer);
+    return TRUE;
 }

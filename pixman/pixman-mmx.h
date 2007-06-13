@@ -35,16 +35,36 @@
 #ifdef USE_MMX
 
 #if !defined(__amd64__) && !defined(__x86_64__)
-pixman_bool_t fbHaveMMX(void);
+pixman_bool_t pixman_have_mmx(void);
 #else
-#define fbHaveMMX() TRUE
+#define pixman_have_mmx() TRUE
 #endif
 
 #else
-#define fbHaveMMX() FALSE
+#define pixman_have_mmx() FALSE
 #endif
 
 #ifdef USE_MMX
+
+pixman_bool_t 
+pixman_blt_mmx (uint32_t *src_bits,
+		uint32_t *dst_bits,
+		int src_stride,
+		int dst_stride,
+		int src_bpp,
+		int dst_bpp,
+		int src_x, int src_y,
+		int dst_x, int dst_y,
+		int width, int height);
+pixman_bool_t
+pixman_fill_mmx (uint32_t *bits,
+		 int stride,
+		 int bpp,
+		 int x,
+		 int y,
+		 int width,
+		 int height,
+		 uint32_t xor);
 
 void fbComposeSetupMMX(void);
 
@@ -266,17 +286,6 @@ void fbCompositeSrc_8888x8x8888mmx (pixman_op_t	op,
 				    int16_t       yDst,
 				    uint16_t      width,
 				    uint16_t      height);
-#if 0
-/* FIXME */
-pixman_bool_t fbCopyAreammx (DrawablePtr	pSrc,
-			     DrawablePtr	pDst,
-			     int		src_x,
-			     int		src_y,
-			     int		dst_x,
-			     int		dst_y,
-			     int		width,
-			     int		height);
-#endif
 void fbCompositeCopyAreammx (pixman_op_t	op,
 			     pixman_image_t *	pSrc,
 			     pixman_image_t *	pMask,
@@ -289,14 +298,5 @@ void fbCompositeCopyAreammx (pixman_op_t	op,
 			     int16_t      yDst,
 			     uint16_t     width,
 			     uint16_t     height);
-#if 0
-/* FIXME */
-pixman_bool_t fbSolidFillmmx (DrawablePtr	pDraw,
-			      int		x,
-			      int		y,
-			      int		width,
-			      int		height,
-			      FbBits		xor);
-#endif
 
 #endif /* USE_MMX */

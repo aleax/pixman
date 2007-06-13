@@ -878,7 +878,7 @@ extern FbComposeFunctions pixman_composeFunctions;
 void fbComposeSetupMMX(void)
 {
     /* check if we have MMX support and initialize accordingly */
-    if (fbHaveMMX()) {
+    if (pixman_have_mmx()) {
         pixman_composeFunctions.combineU[PIXMAN_OP_OVER] = mmxCombineOverU;
         pixman_composeFunctions.combineU[PIXMAN_OP_OVER_REVERSE] = mmxCombineOverReverseU;
         pixman_composeFunctions.combineU[PIXMAN_OP_IN] = mmxCombineInU;
@@ -1640,33 +1640,23 @@ fbCompositeSolidMask_nx8x8888mmx (pixman_op_t op,
     _mm_empty();
 }
 
-
-#if 0
-/* FIXME */
-
-Bool
-fbSolidFillmmx (DrawablePtr	pDraw,
-		int		x,
-		int		y,
-		int		width,
-		int		height,
-		uint32_t		xor)
-{ 
-    int	stride;
-    int		bpp;
+pixman_bool_t
+pixman_fill_mmx (uint32_t *bits,
+		 int stride,
+		 int bpp,
+		 int x,
+		 int y,
+		 int width,
+		 int height,
+		 uint32_t xor)
+{
     ullong	fill;
     __m64	vfill;
     uint32_t	byte_width;
     uint8_t	*byte_line;
-    uint32_t      *bits;
-    int		xoff, yoff;
 #ifdef __GNUC__
     __m64	v1, v2, v3, v4, v5, v6, v7;
 #endif
-    
-    CHECKPOINT();
-    
-    fbGetDrawable(pDraw, bits, stride, bpp, xoff, yoff);
     
     if (bpp == 16 && (xor >> 16 != (xor & 0xffff)))
 	return FALSE;
@@ -1677,14 +1667,14 @@ fbSolidFillmmx (DrawablePtr	pDraw,
     if (bpp == 16)
     {
 	stride = stride * sizeof (uint32_t) / 2;
-	byte_line = (uint8_t *)(((uint16_t *)bits) + stride * (y + yoff) + (x + xoff));
+	byte_line = (uint8_t *)(((uint16_t *)bits) + stride * y + x);
 	byte_width = 2 * width;
 	stride *= 2;
     }
     else
     {
 	stride = stride * sizeof (uint32_t) / 4;
-	byte_line = (uint8_t *)(((uint32_t *)bits) + stride * (y + yoff) + (x + xoff));
+	byte_line = (uint8_t *)(((uint32_t *)bits) + stride * y + x);
 	byte_width = 4 * width;
 	stride *= 4;
     }
@@ -1777,7 +1767,6 @@ fbSolidFillmmx (DrawablePtr	pDraw,
     _mm_empty();
     return TRUE;
 }
-#endif
 
 void
 fbCompositeSolidMaskSrc_nx8x8888mmx (pixman_op_t op,
@@ -1806,14 +1795,12 @@ fbCompositeSolidMaskSrc_nx8x8888mmx (pixman_op_t op,
     fbComposeGetSolid(pSrc, src, pDst->bits.format);
 
     srca = src >> 24;
-#if 0
-    /* FIXME */
     if (srca == 0)
     {
-	fbSolidFillmmx (pDst->pDrawable, xDst, yDst, width, height, 0);
+	pixman_fill_mmx (pDst->bits.bits, pDst->bits.rowstride, PIXMAN_FORMAT_BPP (pDst->bits.format),
+			 xDst, yDst, width, height, 0);
 	return;
     }
-#endif
 
     srcsrc = (ullong)src << 32 | src;
 
@@ -2726,38 +2713,21 @@ fbCompositeSrcAdd_8888x8888mmx (pixman_op_t 	op,
     _mm_empty();
 }
 
-#if 0
-/* FIXME */
-
-Bool
-fbCopyAreammx (DrawablePtr	pSrc,
-	       DrawablePtr	pDst,
-	       int		src_x,
-	       int		src_y,
-	       int		dst_x,
-	       int		dst_y,
-	       int		width,
-	       int		height)
+pixman_bool_t 
+pixman_blt_mmx (uint32_t *src_bits,
+		uint32_t *dst_bits,
+		int src_stride,
+		int dst_stride,
+		int src_bpp,
+		int dst_bpp,
+		int src_x, int src_y,
+		int dst_x, int dst_y,
+		int width, int height)
 {
-    uint32_t *	src_bits;
-    int	src_stride;
-    int		src_bpp;
-    int		src_xoff;
-    int		src_yoff;
-
-    uint32_t *	dst_bits;
-    int	dst_stride;
-    int		dst_bpp;
-    int		dst_xoff;
-    int		dst_yoff;
-
     uint8_t *	src_bytes;
     uint8_t *	dst_bytes;
     int		byte_width;
     
-    fbGetDrawable(pSrc, src_bits, src_stride, src_bpp, src_xoff, src_yoff);
-    fbGetDrawable(pDst, dst_bits, dst_stride, dst_bpp, dst_xoff, dst_yoff);
-
     if (src_bpp != dst_bpp)
 	return FALSE;
     
@@ -2765,16 +2735,16 @@ fbCopyAreammx (DrawablePtr	pSrc,
     {
 	src_stride = src_stride * sizeof (uint32_t) / 2;
 	dst_stride = dst_stride * sizeof (uint32_t) / 2;
-	src_bytes = (uint8_t *)(((uint16_t *)src_bits) + src_stride * (src_y + src_yoff) + (src_x + src_xoff));
-	dst_bytes = (uint8_t *)(((uint16_t *)dst_bits) + dst_stride * (dst_y + dst_yoff) + (dst_x + dst_xoff));
+	src_bytes = (uint8_t *)(((uint16_t *)src_bits) + src_stride * (src_y) + (src_x));
+	dst_bytes = (uint8_t *)(((uint16_t *)dst_bits) + dst_stride * (dst_y) + (dst_x));
 	byte_width = 2 * width;
 	src_stride *= 2;
 	dst_stride *= 2;
     } else if (src_bpp == 32) {
 	src_stride = src_stride * sizeof (uint32_t) / 4;
 	dst_stride = dst_stride * sizeof (uint32_t) / 4;
-	src_bytes = (uint8_t *)(((uint32_t *)src_bits) + src_stride * (src_y + src_yoff) + (src_x + src_xoff));
-	dst_bytes = (uint8_t *)(((uint32_t *)dst_bits) + dst_stride * (dst_y + dst_yoff) + (dst_x + dst_xoff));
+	src_bytes = (uint8_t *)(((uint32_t *)src_bits) + src_stride * (src_y) + (src_x));
+	dst_bytes = (uint8_t *)(((uint32_t *)dst_bits) + dst_stride * (dst_y) + (dst_x));
 	byte_width = 4 * width;
 	src_stride *= 4;
 	dst_stride *= 4;
@@ -2875,14 +2845,12 @@ fbCopyAreammx (DrawablePtr	pSrc,
     }
     
     _mm_empty();
+
     return TRUE;
 }
-#endif
 
-#if 0
-/* FIXME */
 void
-fbCompositeCopyAreammx (uint8_t		op,
+fbCompositeCopyAreammx (pixman_op_t       op,
 			pixman_image_t *	pSrc,
 			pixman_image_t *	pMask,
 			pixman_image_t *	pDst,
@@ -2895,15 +2863,13 @@ fbCompositeCopyAreammx (uint8_t		op,
 			uint16_t		width,
 			uint16_t		height)
 {
-    fbCopyAreammx (pSrc->pDrawable,
-		   pDst->pDrawable,
-		   xSrc, ySrc,
-		   xDst, yDst,
-		   width, height);
+    pixman_blt_mmx (pSrc->bits.bits,
+		    pDst->bits.bits,
+		    pSrc->bits.rowstride,
+		    pDst->bits.rowstride,
+		    PIXMAN_FORMAT_BPP (pSrc->bits.format),
+		    PIXMAN_FORMAT_BPP (pDst->bits.format),
+		    xSrc, ySrc, xDst, yDst, width, height);
 }
-#endif
-
-
-
 
 #endif /* USE_MMX */
