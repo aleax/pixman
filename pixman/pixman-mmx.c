@@ -431,13 +431,19 @@ mmxCombineMaskU (uint32_t *src, const uint32_t *mask, int width)
 {
     const uint32_t *end = mask + width;
     while (mask < end) {
-        __m64 a = load8888(*mask);
-        __m64 s = load8888(*src);
-        a = expand_alpha(a);
-        s = pix_multiply(s, a);
-        *src = store8888(s);
-        ++src;
-        ++mask;
+        uint32_t mmask = *mask;
+	uint32_t maska = mmask >> 24;
+	if (maska == 0) {
+	    *src = 0;
+	} else if (maska != 0xff) {
+	    __m64 a = load8888(mmask);
+	    __m64 s = load8888(*src);
+	    a = expand_alpha(a);
+	    s = pix_multiply(s, a);
+	    *src = store8888(s);
+	}
+	++src;
+	++mask;
     }
     _mm_empty();
 }
@@ -447,14 +453,20 @@ static FASTCALL void
 mmxCombineOverU (uint32_t *dest, const uint32_t *src, int width)
 {
     const uint32_t *end = dest + width;
-
+    
     while (dest < end) {
-        __m64 s, sa;
-	s = load8888(*src);
-	sa = expand_alpha(s);
-	*dest = store8888(over(s, sa, load8888(*dest)));
-        ++dest;
-        ++src;
+	uint32_t ssrc = *src;
+	uint32_t a = ssrc >> 24;
+	if (a == 0xff) {
+	    *dest = ssrc;
+	} else if (a) {
+	    __m64 s, sa;
+	    s = load8888(ssrc);
+	    sa = expand_alpha(s);
+	    *dest = store8888(over(s, sa, load8888(*dest)));
+	}
+	++dest;
+	++src;
     }
     _mm_empty();
 }
@@ -872,13 +884,11 @@ mmxCombineAddC (uint32_t *dest, uint32_t *src, uint32_t *mask, int width)
     _mm_empty();
 }
 
-/* FIXME: this should be reinstated after adding fbmmx to pixman */
-extern FbComposeFunctions pixman_composeFunctions;
-
 void fbComposeSetupMMX(void)
 {
     /* check if we have MMX support and initialize accordingly */
-    if (pixman_have_mmx()) {
+    if (pixman_have_mmx())
+    {
         pixman_composeFunctions.combineU[PIXMAN_OP_OVER] = mmxCombineOverU;
         pixman_composeFunctions.combineU[PIXMAN_OP_OVER_REVERSE] = mmxCombineOverReverseU;
         pixman_composeFunctions.combineU[PIXMAN_OP_IN] = mmxCombineInU;
@@ -1312,23 +1322,72 @@ fbCompositeSrc_x888x8x8888mmx (pixman_op_t op,
 	    src++;
 	}
 
-	while (w >= 2)
+	while (w >= 16)
 	{
+	    __m64 vd0 = *(__m64 *)(dst + 0);
+	    __m64 vd1 = *(__m64 *)(dst + 2);
+	    __m64 vd2 = *(__m64 *)(dst + 4);
+	    __m64 vd3 = *(__m64 *)(dst + 6);
+	    __m64 vd4 = *(__m64 *)(dst + 8);
+	    __m64 vd5 = *(__m64 *)(dst + 10);
+	    __m64 vd6 = *(__m64 *)(dst + 12);
+	    __m64 vd7 = *(__m64 *)(dst + 14);
 	    
-	    __m64 vd0 = *(__m64 *)(dst);
-	    __m64 vs0 = *(__m64 *)(src);
-
+	    __m64 vs0 = *(__m64 *)(src + 0);
+	    __m64 vs1 = *(__m64 *)(src + 2);
+	    __m64 vs2 = *(__m64 *)(src + 4);
+	    __m64 vs3 = *(__m64 *)(src + 6);
+	    __m64 vs4 = *(__m64 *)(src + 8);
+	    __m64 vs5 = *(__m64 *)(src + 10);
+	    __m64 vs6 = *(__m64 *)(src + 12);
+	    __m64 vs7 = *(__m64 *)(src + 14);
+	    
 	    vd0 = pack8888 (
-		in_over_full_src_alpha (expand8888 (vs0, 0), vmask, expand8888 (vd0, 0)),
-		in_over_full_src_alpha (expand8888 (vs0, 1), vmask, expand8888 (vd0, 1)));
+		in_over (expand8888 (vs0, 0), srca, vmask, expand8888 (vd0, 0)),
+		in_over (expand8888 (vs0, 1), srca, vmask, expand8888 (vd0, 1)));
+	    
+	    vd1 = pack8888 (
+		in_over (expand8888 (vs1, 0), srca, vmask, expand8888 (vd1, 0)),
+		in_over (expand8888 (vs1, 1), srca, vmask, expand8888 (vd1, 1)));
+	    
+	    vd2 = pack8888 (
+		in_over (expand8888 (vs2, 0), srca, vmask, expand8888 (vd2, 0)),
+		in_over (expand8888 (vs2, 1), srca, vmask, expand8888 (vd2, 1)));
+	    
+	    vd3 = pack8888 (
+		in_over (expand8888 (vs3, 0), srca, vmask, expand8888 (vd3, 0)),
+		in_over (expand8888 (vs3, 1), srca, vmask, expand8888 (vd3, 1)));
+	    
+	    vd4 = pack8888 (
+		in_over (expand8888 (vs4, 0), srca, vmask, expand8888 (vd4, 0)),
+		in_over (expand8888 (vs4, 1), srca, vmask, expand8888 (vd4, 1)));
+	    
+	    vd5 = pack8888 (
+		in_over (expand8888 (vs5, 0), srca, vmask, expand8888 (vd5, 0)),
+		in_over (expand8888 (vs5, 1), srca, vmask, expand8888 (vd5, 1)));
 
-	    *(__m64 *)(dst) = vd0;
+            vd6 = pack8888 (
+		in_over (expand8888 (vs6, 0), srca, vmask, expand8888 (vd6, 0)),
+		in_over (expand8888 (vs6, 1), srca, vmask, expand8888 (vd6, 1)));
 
-	    w -= 2;
-	    dst += 2;
-	    src += 2;
+	    vd7 = pack8888 (
+		in_over (expand8888 (vs7, 0), srca, vmask, expand8888 (vd7, 0)),
+		in_over (expand8888 (vs7, 1), srca, vmask, expand8888 (vd7, 1)));
+
+	    *(__m64 *)(dst + 0) = vd0;
+	    *(__m64 *)(dst + 2) = vd1;
+	    *(__m64 *)(dst + 4) = vd2;
+	    *(__m64 *)(dst + 6) = vd3;
+	    *(__m64 *)(dst + 8) = vd4;
+	    *(__m64 *)(dst + 10) = vd5;
+	    *(__m64 *)(dst + 12) = vd6;
+	    *(__m64 *)(dst + 14) = vd7;
+
+	    w -= 16;
+	    dst += 16;
+	    src += 16;
 	}
-
+	
 	while (w)
 	{
 	    __m64 s = load8888 (*src | 0xff000000);
@@ -1361,17 +1420,16 @@ fbCompositeSrc_8888x8888mmx (pixman_op_t op,
 {
     uint32_t	*dstLine, *dst;
     uint32_t	*srcLine, *src;
+    uint32_t    s;
     int	dstStride, srcStride;
+    uint8_t     a;
     uint16_t	w;
-    __m64  srca;
     
     CHECKPOINT();
     
     fbComposeGetStart (pDst, xDst, yDst, uint32_t, dstStride, dstLine, 1);
     fbComposeGetStart (pSrc, xSrc, ySrc, uint32_t, srcStride, srcLine, 1);
 
-    srca = MC (4x00ff);
-    
     while (height--)
     {
 	dst = dstLine;
@@ -1380,47 +1438,21 @@ fbCompositeSrc_8888x8888mmx (pixman_op_t op,
 	srcLine += srcStride;
 	w = width;
 
-	while (w && (unsigned long)dst & 7)
+	while (w--)
 	{
-	    __m64 s = load8888 (*src);
-	    __m64 d = load8888 (*dst);
-	    
-	    *dst = store8888 (over (s, expand_alpha (s), d));
-	    
-	    w--;
+	    s = *src++;
+	    a = s >> 24;
+	    if (a == 0xff)
+		*dst = s;
+	    else if (a) {
+		__m64 ms, sa;
+		ms = load8888(s);
+		sa = expand_alpha(ms);
+		*dst = store8888(over(ms, sa, load8888(*dst)));
+	    }
 	    dst++;
-	    src++;
-	}
-
-	while (w >= 2)
-	{
-	    __m64 vd = *(__m64 *)(dst + 0);
-	    __m64 vs = *(__m64 *)(src + 0);
-	    __m64 vs0 = expand8888 (vs, 0);
-	    __m64 vs1 = expand8888 (vs, 1);
-
-	    *(__m64 *)dst = (__m64)pack8888 (
-		over (vs0, expand_alpha (vs0), expand8888 (vd, 0)),
-		over (vs1, expand_alpha (vs1), expand8888 (vd, 1)));
-	    
-	    w -= 2;
-	    dst += 2;
-	    src += 2;
-	}
-	
-	while (w)
-	{
-	    __m64 s = load8888 (*src);
-	    __m64 d = load8888 (*dst);
-	    
-	    *dst = store8888 (over (s, expand_alpha (s), d));
-	    
-	    w--;
-	    dst++;
-	    src++;
 	}
     }
-
     _mm_empty(); 
 }
 
@@ -2847,6 +2879,31 @@ pixman_blt_mmx (uint32_t *src_bits,
     _mm_empty();
 
     return TRUE;
+}
+
+void
+fbCompositeSolidFillmmx (pixman_op_t op,
+			 pixman_image_t * pSrc,
+			 pixman_image_t * pMask,
+			 pixman_image_t * pDst,
+			 int16_t      xSrc,
+			 int16_t      ySrc,
+			 int16_t      xMask,
+			 int16_t      yMask,
+			 int16_t      xDst,
+			 int16_t      yDst,
+			 uint16_t     width,
+			 uint16_t     height)
+{
+    uint32_t	src;
+    
+    fbComposeGetSolid(pSrc, src, pDst->bits.format);
+
+    pixman_fill_mmx (pDst->bits.bits, pDst->bits.rowstride,
+		     PIXMAN_FORMAT_BPP (pDst->bits.format),
+		     xDst, yDst,
+		     width, height,
+		     src);
 }
 
 void

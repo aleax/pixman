@@ -29,12 +29,6 @@
 #include "pixman.h"
 #include "pixman-private.h"
 
-enum
-{
-    PIXMAN_BAD_VALUE,
-    PIXMAN_BAD_ALLOC
-};
-
 static void
 init_source_image (source_image_t *image)
 {
@@ -83,8 +77,10 @@ allocate_image (void)
     if (image)
     {
 	image_common_t *common = &image->common;
-	
+
+	pixman_region_init (&common->full_region);
 	pixman_region_init (&common->clip_region);
+	common->src_clip = &common->full_region;
 	common->has_client_clip = FALSE;
 	common->transform = NULL;
 	common->repeat = PIXMAN_REPEAT_NONE;
@@ -120,6 +116,7 @@ pixman_image_unref (pixman_image_t *image)
     if (common->ref_count == 0)
     {
 	pixman_region_fini (&common->clip_region);
+	pixman_region_fini (&common->full_region);
 
 	if (common->transform)
 	    free (common->transform);
@@ -138,6 +135,15 @@ pixman_image_unref (pixman_image_t *image)
 #if 0
 	memset (image, 0xaa, sizeof (pixman_image_t));
 #endif
+	if (image->type == LINEAR || image->type == RADIAL || image->type == CONICAL)
+	{
+	    if (image->gradient.stops)
+		free (image->gradient.stops);
+	}
+
+	
+	if (image->type == BITS && image->bits.free_me)
+	    free (image->bits.free_me);
 	
 	free (image);
     }
@@ -291,8 +297,7 @@ reset_clip_region (pixman_image_t *image)
     if (image->type == BITS)
     {
 	pixman_region_init_rect (&image->common.clip_region, 0, 0,
-				 image->bits.width, image->bits.height);
-	
+				 image->bits.width, image->bits.height);	
     }
     else
     {
@@ -308,6 +313,7 @@ pixman_image_create_bits (pixman_format_code_t  format,
 			  int			rowstride_bytes)
 {
     pixman_image_t *image;
+    uint32_t *free_me = NULL;
 
     /* must be a whole number of uint32_t's 
      */
@@ -316,7 +322,7 @@ pixman_image_create_bits (pixman_format_code_t  format,
 
     if (!bits)
     {
-	bits = create_bits (format, width, height, &rowstride_bytes);
+	free_me = bits = create_bits (format, width, height, &rowstride_bytes);
 	if (!bits)
 	    return NULL;
     }
@@ -331,13 +337,18 @@ pixman_image_create_bits (pixman_format_code_t  format,
     image->bits.width = width;
     image->bits.height = height;
     image->bits.bits = bits;
+    image->bits.free_me = free_me;
+    
     image->bits.rowstride = rowstride_bytes / sizeof (uint32_t); /* we store it in number
 								  * of uint32_t's
 								  */
     image->bits.indexed = NULL;
 
-    reset_clip_region (image);
+    pixman_region_fini (&image->common.full_region);
+    pixman_region_init_rect (&image->common.full_region, 0, 0,
+			     image->bits.width, image->bits.height);
 
+    reset_clip_region (image);
     return image;
 }
 
@@ -372,11 +383,25 @@ pixman_bool_t
 pixman_image_set_transform (pixman_image_t           *image,
 			    const pixman_transform_t *transform)
 {
+    static const pixman_transform_t id =
+    {
+	{ { pixman_fixed_1, 0, 0 },
+	  { 0, pixman_fixed_1, 0 },
+	  { 0, 0, pixman_fixed_1 }
+	}
+    };
+    
     image_common_t *common = (image_common_t *)image;
 
     if (common->transform == transform)
 	return TRUE;
 
+    if (memcmp (&id, transform, sizeof (pixman_transform_t)) == 0)
+    {
+	transform = NULL;
+	return TRUE;
+    }
+    
     if (common->transform)
 	free (common->transform);
 
@@ -545,9 +570,29 @@ pixman_image_fill_rectangles (pixman_op_t		    op,
 			      int			    n_rects,
 			      const pixman_rectangle16_t   *rects)
 {
-    pixman_image_t *solid = pixman_image_create_solid_fill (color);
+    pixman_image_t *solid;
+    pixman_color_t c;
     int i;
+    
+    if (color->alpha == 0xffff)
+    {
+	if (op == PIXMAN_OP_OVER)
+	    op = PIXMAN_OP_SRC;
+    }
 
+    if (op == PIXMAN_OP_CLEAR)
+    {
+	c.red = 0;
+	c.green = 0;
+	c.blue = 0;
+	c.alpha = 0;
+
+	color = &c;
+	
+	op = PIXMAN_OP_SRC;
+    }
+
+    solid = pixman_image_create_solid_fill (color);
     if (!solid)
 	return FALSE;
 
@@ -560,7 +605,7 @@ pixman_image_fill_rectangles (pixman_op_t		    op,
 				rect->x, rect->y,
 				rect->width, rect->height);
     }
-
+    
     pixman_image_unref (solid);
 
     return TRUE;

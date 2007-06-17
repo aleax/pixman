@@ -26,6 +26,12 @@
 #include "pixman.h"
 #include "pixman-private.h"
 
+#ifdef PIXMAN_FB_ACCESSORS
+#define PIXMAN_RASTERIZE_EDGES pixman_rasterize_edges_accessors
+#else
+#define PIXMAN_RASTERIZE_EDGES pixman_rasterize_edges_no_accessors
+#endif
+
 /*
  * 4 bit alpha
  */
@@ -42,17 +48,17 @@
 #define Get4(x,o)	(((x) >> Shift4(o)) & 0xf)
 #define Put4(x,o,v)	(((x) & ~(0xf << Shift4(o))) | (((v) & 0xf) << Shift4(o)))
 
-#define DefineAlpha(line,x) \
+#define DefineAlpha(line,x)			     \
     uint8_t   *__ap = (uint8_t *) line + ((x) >> 1); \
     int	    __ao = (x) & 1
 
 #define StepAlpha	((__ap += __ao), (__ao ^= 1))
 
 #define AddAlpha(a) {						\
-    uint8_t   __o = READ(__ap);					\
-    uint8_t   __a = (a) + Get4(__o, __ao);			\
-    WRITE(__ap, Put4 (__o, __ao, __a | (0 - ((__a) >> 4))));	\
-}
+	uint8_t   __o = READ(__ap);				\
+	uint8_t   __a = (a) + Get4(__o, __ao);			\
+	WRITE(__ap, Put4 (__o, __ao, __a | (0 - ((__a) >> 4))));	\
+    }
 
 #include "pixman-edge-imp.h"
 
@@ -124,9 +130,9 @@ fbRasterizeEdges8 (pixman_image_t       *image,
     uint32_t *buf = (image)->bits.bits;		
     uint32_t stride = (image)->bits.rowstride;	
     uint32_t width = (image)->bits.width;
-
+    
     line = buf + pixman_fixed_to_int (y) * stride;
-
+    
     for (;;)
     {
         uint8_t *ap = (uint8_t *) line;
@@ -145,114 +151,112 @@ fbRasterizeEdges8 (pixman_image_t       *image,
 	if (rx > lx)
 	{
             int lxs, rxs;
-
+	    
 	    /* Find pixel bounds for span. */
 	    lxi = pixman_fixed_to_int (lx);
 	    rxi = pixman_fixed_to_int (rx);
-
+	    
             /* Sample coverage for edge pixels */
             lxs = RenderSamplesX (lx, 8);
             rxs = RenderSamplesX (rx, 8);
-
+	    
             /* Add coverage across row */
-            ACCESS_MEM (
-		if (lxi == rxi)
+	    if (lxi == rxi)
+	    {
+		WRITE(ap +lxi, clip255 (READ(ap + lxi) + rxs - lxs));
+	    }
+	    else
+	    {
+		WRITE(ap + lxi, clip255 (READ(ap + lxi) + N_X_FRAC(8) - lxs));
+		
+		/* Move forward so that lxi/rxi is the pixel span */
+		lxi++;
+		
+		/* Don't bother trying to optimize the fill unless
+		 * the span is longer than 4 pixels. */
+		if (rxi - lxi > 4)
 		{
-		    WRITE(ap +lxi, clip255 (READ(ap + lxi) + rxs - lxs));
-		}
-		else
-		{
-		    WRITE(ap + lxi, clip255 (READ(ap + lxi) + N_X_FRAC(8) - lxs));
-		    
-		    /* Move forward so that lxi/rxi is the pixel span */
-		    lxi++;
-		    
-		    /* Don't bother trying to optimize the fill unless
-		     * the span is longer than 4 pixels. */
-		    if (rxi - lxi > 4)
+		    if (fill_start < 0)
 		    {
-			if (fill_start < 0)
+			fill_start = lxi;
+			fill_end = rxi;
+			fill_size++;
+		    }
+		    else
+		    {
+			if (lxi >= fill_end || rxi < fill_start)
 			{
+			    /* We're beyond what we saved, just fill it */
+			    add_saturate_8 (ap + fill_start,
+					    fill_size * N_X_FRAC(8),
+					    fill_end - fill_start);
 			    fill_start = lxi;
 			    fill_end = rxi;
-			    fill_size++;
+			    fill_size = 1;
 			}
 			else
 			{
-			    if (lxi >= fill_end || rxi < fill_start)
+			    /* Update fill_start */
+			    if (lxi > fill_start)
 			    {
-				/* We're beyond what we saved, just fill it */
 				add_saturate_8 (ap + fill_start,
 						fill_size * N_X_FRAC(8),
-						fill_end - fill_start);
+						lxi - fill_start);
 				fill_start = lxi;
-				fill_end = rxi;
-				fill_size = 1;
 			    }
-			    else
+			    else if (lxi < fill_start)
 			    {
-				/* Update fill_start */
-				if (lxi > fill_start)
-				{
-				    add_saturate_8 (ap + fill_start,
-						    fill_size * N_X_FRAC(8),
-						    lxi - fill_start);
-				    fill_start = lxi;
-				}
-				else if (lxi < fill_start)
-				{
-				    add_saturate_8 (ap + lxi, N_X_FRAC(8),
-						    fill_start - lxi);
-				}
-				
-				/* Update fill_end */
-				if (rxi < fill_end)
-				{
-				    add_saturate_8 (ap + rxi,
-						    fill_size * N_X_FRAC(8),
-						    fill_end - rxi);
-				    fill_end = rxi;
-				}
-				else if (fill_end < rxi)
-				{
-				    add_saturate_8 (ap + fill_end,
-						    N_X_FRAC(8),
-						    rxi - fill_end);
-				}
-				fill_size++;
+				add_saturate_8 (ap + lxi, N_X_FRAC(8),
+						fill_start - lxi);
 			    }
+			    
+			    /* Update fill_end */
+			    if (rxi < fill_end)
+			    {
+				add_saturate_8 (ap + rxi,
+						fill_size * N_X_FRAC(8),
+						fill_end - rxi);
+				fill_end = rxi;
+			    }
+			    else if (fill_end < rxi)
+			    {
+				add_saturate_8 (ap + fill_end,
+						N_X_FRAC(8),
+						rxi - fill_end);
+			    }
+			    fill_size++;
 			}
 		    }
-		    else
-		    {
-			add_saturate_8 (ap + lxi, N_X_FRAC(8), rxi - lxi);
-		    }
-		    
-		    /* Do not add in a 0 alpha here. This check is
-		     * necessary to avoid a buffer overrun, (when rx
-		     * is exactly on a pixel boundary). */
-		    if (rxs)
-			WRITE(ap + rxi, clip255 (READ(ap + rxi) + rxs));
-		});
+		}
+		else
+		{
+		    add_saturate_8 (ap + lxi, N_X_FRAC(8), rxi - lxi);
+		}
+		
+		/* Do not add in a 0 alpha here. This check is
+		 * necessary to avoid a buffer overrun, (when rx
+		 * is exactly on a pixel boundary). */
+		if (rxs)
+		    WRITE(ap + rxi, clip255 (READ(ap + rxi) + rxs));
+	    }
 	}
-
+	
 	if (y == b) {
             /* We're done, make sure we clean up any remaining fill. */
             if (fill_start != fill_end) {
-                ACCESS_MEM(
-		    if (fill_size == N_Y_FRAC(8))
-		    {
-			MEMSET_WRAPPED (ap + fill_start, 0xff, fill_end - fill_start);
-		    }
-		    else
-		    {
-			add_saturate_8 (ap + fill_start, fill_size * N_X_FRAC(8),
-					fill_end - fill_start);
-		    });
+		if (fill_size == N_Y_FRAC(8))
+		{
+		    MEMSET_WRAPPED (ap + fill_start, 0xff, fill_end - fill_start);
+		}
+		else
+		{
+		    add_saturate_8 (ap + fill_start, fill_size * N_X_FRAC(8),
+				    fill_end - fill_start);
+		}
             }
 	    break;
         }
-
+	
 	if (pixman_fixed_frac (y) != Y_FRAC_LAST(8))
 	{
 	    RenderEdgeStepSmall (l);
@@ -266,16 +270,15 @@ fbRasterizeEdges8 (pixman_image_t       *image,
 	    y += STEP_Y_BIG(8);
             if (fill_start != fill_end)
             {
-                ACCESS_MEM(
-		    if (fill_size == N_Y_FRAC(8))
-		    {
-			MEMSET_WRAPPED (ap + fill_start, 0xff, fill_end - fill_start);
-		    }
-		    else
-		    {
-			add_saturate_8 (ap + fill_start, fill_size * N_X_FRAC(8),
-					fill_end - fill_start);
-		    });
+		if (fill_size == N_Y_FRAC(8))
+		{
+		    MEMSET_WRAPPED (ap + fill_start, 0xff, fill_end - fill_start);
+		}
+		else
+		{
+		    add_saturate_8 (ap + fill_start, fill_size * N_X_FRAC(8),
+				    fill_end - fill_start);
+		}
                 fill_start = fill_end = -1;
                 fill_size = 0;
             }
@@ -284,8 +287,11 @@ fbRasterizeEdges8 (pixman_image_t       *image,
     }
 }
 
+#ifndef PIXMAN_FB_ACCESSORS
+static
+#endif
 void
-pixman_rasterize_edges (pixman_image_t *image,
+PIXMAN_RASTERIZE_EDGES (pixman_image_t *image,
 			pixman_edge_t	*l,
 			pixman_edge_t	*r,
 			pixman_fixed_t	t,
@@ -305,175 +311,23 @@ pixman_rasterize_edges (pixman_image_t *image,
     }
 }
 
-/*
- * Compute the smallest value no less than y which is on a
- * grid row
- */
+#ifndef PIXMAN_FB_ACCESSORS
 
-pixman_fixed_t
-pixman_sample_ceil_y (pixman_fixed_t y, int n)
-{
-    pixman_fixed_t   f = pixman_fixed_frac(y);
-    pixman_fixed_t   i = pixman_fixed_floor(y);
-    
-    f = ((f + Y_FRAC_FIRST(n)) / STEP_Y_SMALL(n)) * STEP_Y_SMALL(n) + Y_FRAC_FIRST(n);
-    if (f > Y_FRAC_LAST(n))
-    {
-	f = Y_FRAC_FIRST(n);
-	i += pixman_fixed_1;
-    }
-    return (i | f);
-}
-
-#define _div(a,b)    ((a) >= 0 ? (a) / (b) : -((-(a) + (b) - 1) / (b)))
-
-/*
- * Compute the largest value no greater than y which is on a
- * grid row
- */
-pixman_fixed_t
-pixman_sample_floor_y (pixman_fixed_t y, int n)
-{
-    pixman_fixed_t   f = pixman_fixed_frac(y);
-    pixman_fixed_t   i = pixman_fixed_floor (y);
-    
-    f = _div(f - Y_FRAC_FIRST(n), STEP_Y_SMALL(n)) * STEP_Y_SMALL(n) + Y_FRAC_FIRST(n);
-    if (f < Y_FRAC_FIRST(n))
-    {
-	f = Y_FRAC_LAST(n);
-	i -= pixman_fixed_1;
-    }
-    return (i | f);
-}
-
-/*
- * Step an edge by any amount (including negative values)
- */
 void
-pixman_edge_step (pixman_edge_t *e, int n)
+pixman_rasterize_edges (pixman_image_t *image,
+			pixman_edge_t	*l,
+			pixman_edge_t	*r,
+			pixman_fixed_t	t,
+			pixman_fixed_t	b)
 {
-    pixman_fixed_48_16_t	ne;
-
-    e->x += n * e->stepx;
-    
-    ne = e->e + n * (pixman_fixed_48_16_t) e->dx;
-    
-    if (n >= 0)
+    if (image->common.read_func	|| image->common.write_func)
     {
-	if (ne > 0)
-	{
-	    int nx = (ne + e->dy - 1) / e->dy;
-	    e->e = ne - nx * (pixman_fixed_48_16_t) e->dy;
-	    e->x += nx * e->signdx;
-	}
+	return pixman_rasterize_edges_accessors (image, l, r, t, b);
     }
     else
     {
-	if (ne <= -e->dy)
-	{
-	    int nx = (-ne) / e->dy;
-	    e->e = ne + nx * (pixman_fixed_48_16_t) e->dy;
-	    e->x -= nx * e->signdx;
-	}
+	return pixman_rasterize_edges_no_accessors (image, l, r, t, b);
     }
 }
 
-/*
- * A private routine to initialize the multi-step
- * elements of an edge structure
- */
-static void
-_pixman_edge_tMultiInit (pixman_edge_t *e, int n, pixman_fixed_t *stepx_p, pixman_fixed_t *dx_p)
-{
-    pixman_fixed_t	stepx;
-    pixman_fixed_48_16_t	ne;
-    
-    ne = n * (pixman_fixed_48_16_t) e->dx;
-    stepx = n * e->stepx;
-    if (ne > 0)
-    {
-	int nx = ne / e->dy;
-	ne -= nx * e->dy;
-	stepx += nx * e->signdx;
-    }
-    *dx_p = ne;
-    *stepx_p = stepx;
-}
-
-/*
- * Initialize one edge structure given the line endpoints and a
- * starting y value
- */
-void
-pixman_edge_init (pixman_edge_t	*e,
-		  int		n,
-		  pixman_fixed_t		y_start,
-		  pixman_fixed_t		x_top,
-		  pixman_fixed_t		y_top,
-		  pixman_fixed_t		x_bot,
-		  pixman_fixed_t		y_bot)
-{
-    pixman_fixed_t	dx, dy;
-
-    e->x = x_top;
-    e->e = 0;
-    dx = x_bot - x_top;
-    dy = y_bot - y_top;
-    e->dy = dy;
-    e->dx = 0;
-    if (dy)
-    {
-	if (dx >= 0)
-	{
-	    e->signdx = 1;
-	    e->stepx = dx / dy;
-	    e->dx = dx % dy;
-	    e->e = -dy;
-	}
-	else
-	{
-	    e->signdx = -1;
-	    e->stepx = -(-dx / dy);
-	    e->dx = -dx % dy;
-	    e->e = 0;
-	}
-    
-	_pixman_edge_tMultiInit (e, STEP_Y_SMALL(n), &e->stepx_small, &e->dx_small);
-	_pixman_edge_tMultiInit (e, STEP_Y_BIG(n), &e->stepx_big, &e->dx_big);
-    }
-    pixman_edge_step (e, y_start - y_top);
-}
-
-/*
- * Initialize one edge structure given a line, starting y value
- * and a pixel offset for the line
- */
-void
-pixman_line_fixed_edge_init (pixman_edge_t *e,
-			     int	    n,
-			     pixman_fixed_t	    y,
-			     const pixman_line_fixed_t *line,
-			     int	    x_off,
-			     int	    y_off)
-{
-    pixman_fixed_t	x_off_fixed = pixman_int_to_fixed(x_off);
-    pixman_fixed_t	y_off_fixed = pixman_int_to_fixed(y_off);
-    const pixman_point_fixed_t *top, *bot;
-
-    if (line->p1.y <= line->p2.y)
-    {
-	top = &line->p1;
-	bot = &line->p2;
-    }
-    else
-    {
-	top = &line->p2;
-	bot = &line->p1;
-    }
-    pixman_edge_init (e, n, y,
-		    top->x + x_off_fixed,
-		    top->y + y_off_fixed,
-		    bot->x + x_off_fixed,
-		    bot->y + y_off_fixed);
-}
-
+#endif

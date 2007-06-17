@@ -26,7 +26,7 @@
 #  define BITMAP_BIT_ORDER LSBFirst
 #endif
 
-#define DEBUG 1
+#define DEBUG 0
 
 #if defined (__GNUC__)
 #  define FUNC     ((const char*) (__PRETTY_FUNCTION__))
@@ -47,31 +47,44 @@
 #if DEBUG
 
 #define return_if_fail(expr)						\
-	do								\
+    do									\
+    {									\
+	if (!(expr))							\
 	{								\
-	    if (!(expr))						\
-	    {								\
-		fprintf(stderr, "In %s: %s failed\n", FUNC, #expr);	\
-		return;							\
-	    }								\
+	    fprintf(stderr, "In %s: %s failed\n", FUNC, #expr);		\
+	    return;							\
 	}								\
-	while (0)
+    }									\
+    while (0)
 
 #define return_val_if_fail(expr, retval) 				\
-	do								\
+    do									\
+    {									\
+	if (!(expr))							\
 	{								\
-	    if (!(expr))						\
-	    {								\
-		fprintf(stderr, "In %s: %s failed\n", FUNC, #expr);	\
-		return (retval);					\
-	    }								\
+	    fprintf(stderr, "In %s: %s failed\n", FUNC, #expr);		\
+	    return (retval);						\
 	}								\
-	while (0)
+    }									\
+    while (0)
 
 #else
 
-#define return_if_fail(expr)
-#define return_val_if_fail(expr, retval)
+#define return_if_fail(expr)						\
+    do									\
+    {									\
+	if (!(expr))							\
+	    return;							\
+    }									\
+    while (0)
+
+#define return_val_if_fail(expr, retval)				\
+    do									\
+    {									\
+	if (!(expr))							\
+	    return (retval);						\
+    }									\
+    while (0)
 
 #endif
 
@@ -96,12 +109,6 @@ typedef FASTCALL void (*CombineMaskU) (uint32_t *src, const uint32_t *mask, int 
 typedef FASTCALL void (*CombineFuncU) (uint32_t *dest, const uint32_t *src, int width);
 typedef FASTCALL void (*CombineFuncC) (uint32_t *dest, uint32_t *src, uint32_t *mask, int width);
 
-typedef struct _FbComposeFunctions {
-    CombineFuncU *combineU;
-    CombineFuncC *combineC;
-    CombineMaskU combineMaskU;
-} FbComposeFunctions;
-
 typedef struct _FbComposeData {
     uint8_t	 op;
     pixman_image_t	*src;
@@ -117,6 +124,18 @@ typedef struct _FbComposeData {
     uint16_t	 height;
 } FbComposeData;
 
+typedef struct _FbComposeFunctions {
+    CombineFuncU *combineU;
+    CombineFuncC *combineC;
+    CombineMaskU combineMaskU;
+} FbComposeFunctions;
+
+extern FbComposeFunctions pixman_composeFunctions;
+
+void pixman_composite_rect_general_accessors (const FbComposeData *data,
+					      uint32_t *scanline_buffer);
+void pixman_composite_rect_general (const FbComposeData *data,
+				    uint32_t *scanline_buffer);
 
 /* end */
 
@@ -147,7 +166,9 @@ struct image_common
 {
     image_type_t		type;
     int32_t			ref_count;
+    pixman_region16_t		full_region;
     pixman_region16_t		clip_region;
+    pixman_region16_t	       *src_clip;
     pixman_bool_t               has_client_clip;
     pixman_transform_t	       *transform;
     pixman_repeat_t		repeat;
@@ -164,7 +185,7 @@ struct image_common
 struct source_image
 {
     image_common_t	common;
-    unsigned int	class;		/* FIXME: should be an enum */
+    source_pict_class_t class;
 };
 
 struct solid_fill
@@ -224,6 +245,7 @@ struct bits_image
     int				width;
     int				height;
     uint32_t *			bits;
+    uint32_t *			free_me;
     int				rowstride; /* in number of uint32_t's */
 };
 
@@ -232,14 +254,12 @@ union pixman_image
     image_type_t		type;
     image_common_t		common;
     bits_image_t		bits;
+    gradient_t			gradient;
     linear_gradient_t		linear;
     conical_gradient_t		conical;
     radial_gradient_t		radial;
     solid_fill_t		solid;
 };
-
-void pixmanCompositeRect (const FbComposeData *data,
-			  uint32_t *scanline_buffer);
 
 #define LOG2_BITMAP_PAD 5
 #define FB_STIP_SHIFT	LOG2_BITMAP_PAD
@@ -552,6 +572,7 @@ void pixmanCompositeRect (const FbComposeData *data,
  * where Fetch4 doesn't have a READ
  */
 
+#if 0
 /* Framebuffer access support macros */
 #define ACCESS_MEM(code)						\
     do {								\
@@ -583,75 +604,89 @@ void pixmanCompositeRect (const FbComposeData *data,
 	    {code}							\
 	}								\
     } while (0)
+#endif
+
+#ifdef PIXMAN_FB_ACCESSORS
 
 #define READ(ptr)							\
-    (do_access__? read_func__ ((ptr), sizeof(*(ptr))) : (*(ptr)))
-
-#define WRITE(ptr, val)							\
-    (do_access__?							\
-     write_func__ ((ptr), (val), sizeof(*(ptr)))			\
-     : ((void)(*(ptr) = (val))))
+    (image->common.read_func ((ptr), sizeof(*(ptr))))
+#define WRITE(ptr,val)							\
+    (image->common.write_func ((ptr), (val), sizeof (*(ptr))))
 
 #define MEMCPY_WRAPPED(dst, src, size)					\
-    do	{								\
-	if (do_access__)						\
-	{								\
-	    size_t _i;							\
-	    uint8_t *_dst = (uint8_t*)(dst), *_src = (uint8_t*)(src);	\
-	    for(_i = 0; _i < size; _i++) {				\
-		WRITE(_dst +_i, READ(_src + _i));			\
-	    }								\
-	}								\
-	else								\
-	{								\
-	    memcpy((dst), (src), (size));				\
+    do {								\
+	size_t _i;							\
+	uint8_t *_dst = (uint8_t*)(dst), *_src = (uint8_t*)(src);	\
+	for(_i = 0; _i < size; _i++) {					\
+	    WRITE(_dst +_i, READ(_src + _i));				\
 	}								\
     } while (0)
 	
 #define MEMSET_WRAPPED(dst, val, size)					\
     do {								\
-	if (do_access__)						\
-	{								\
-	    size_t _i;							\
-	    uint8_t *_dst = (uint8_t*)(dst);				\
-	    for(_i = 0; _i < size; _i++) {				\
-		WRITE(_dst +_i, (val));					\
-	    }								\
-	}								\
-	else								\
-	{								\
-	    memset ((dst), (val), (size));				\
+	size_t _i;							\
+	uint8_t *_dst = (uint8_t*)(dst);				\
+	for(_i = 0; _i < size; _i++) {					\
+	    WRITE(_dst +_i, (val));					\
 	}								\
     } while (0)
 
-#define fbFinishAccess(x) 
+/* FIXME */
+#define fbPrepareAccess(x)
+#define fbFinishAccess(x)
 
-#define fbComposeGetSolid(img, res, fmt) do {				\
-	uint32_t	       *bits__   = (img)->bits.bits;		\
-	pixman_format_code_t	format__ = (img)->bits.format;		\
-									\
-	switch (PIXMAN_FORMAT_BPP((img)->bits.format))			\
+#else
+
+#define READ(ptr)		(*(ptr))
+#define WRITE(ptr, val)		(*(ptr) = (val))
+#define MEMCPY_WRAPPED(dst, src, size)					\
+    memcpy(dst, src, size)
+#define MEMSET_WRAPPED(dst, val, size)					\
+    memset(dst, val, size)
+#define fbPrepareAccess(x)
+#define fbFinishAccess(x)
+#endif
+
+#define fbComposeGetSolid(img, res, fmt)				\
+    do									\
+    {									\
+	pixman_format_code_t format__;					\
+	if (img->type == SOLID)						\
 	{								\
-	case 32:							\
-	    (res) = READ((uint32_t *)bits__);				\
-	    break;							\
-	case 24:							\
-	    (res) = Fetch24 ((uint8_t *) bits__);			\
-	    break;							\
-	case 16:							\
-	    (res) = READ((uint16_t *) bits__);				\
-	    (res) = cvt0565to0888(res);					\
-	    break;							\
-	case 8:								\
-	    (res) = READ((uint8_t *) bits__);				\
-	    (res) = (res) << 24;					\
-	    break;							\
-	case 1:								\
-	    (res) = READ((uint32_t *) bits__);				\
-	    (res) = FbLeftStipBits((res),1) ? 0xff000000 : 0x00000000;	\
-	    break;							\
-	default:							\
-	    return;							\
+	    format__ = PIXMAN_a8r8g8b8;					\
+	    (res) = img->solid.color;					\
+	}								\
+	else								\
+	{								\
+	    uint32_t	       *bits__   = (img)->bits.bits;		\
+	    format__ = (img)->bits.format;				\
+		  							\
+	    switch (PIXMAN_FORMAT_BPP((img)->bits.format))		\
+	    {								\
+	    case 32:							\
+		(res) = READ((uint32_t *)bits__);			\
+		break;							\
+	    case 24:							\
+		(res) = Fetch24 ((uint8_t *) bits__);			\
+		break;							\
+	    case 16:							\
+		(res) = READ((uint16_t *) bits__);			\
+		(res) = cvt0565to0888(res);				\
+		break;							\
+	    case 8:							\
+		(res) = READ((uint8_t *) bits__);			\
+		(res) = (res) << 24;					\
+		break;							\
+	    case 1:							\
+		(res) = READ((uint32_t *) bits__);			\
+		(res) = FbLeftStipBits((res),1) ? 0xff000000 : 0x00000000; \
+		break;							\
+	    default:							\
+		return;							\
+	    }								\
+	    /* manage missing src alpha */				\
+	    if (!PIXMAN_FORMAT_A((img)->bits.format))			\
+		(res) |= 0xff000000;					\
 	}								\
 	/* If necessary, convert RGB <--> BGR. */			\
 	if (PIXMAN_FORMAT_TYPE (format__) != PIXMAN_FORMAT_TYPE(fmt))	\
@@ -661,11 +696,8 @@ void pixmanCompositeRect (const FbComposeData *data,
 		     (((res) & 0x0000ff00) >>  0) |			\
 		     (((res) & 0x000000ff) << 16));			\
 	}								\
-	/* manage missing src alpha */					\
-	if (!PIXMAN_FORMAT_A((img)->bits.format))			\
-	    (res) |= 0xff000000;					\
-    } while (0)
-
+    }									\
+    while (0)
 
 #define fbComposeGetStart(pict,x,y,type,out_stride,line,mul) do {	\
 	uint32_t	*__bits__;					\
@@ -728,5 +760,12 @@ void pixmanCompositeRect (const FbComposeData *data,
 	edge->x += edge->signdx;    \
     }				    \
 }
+
+void
+pixman_rasterize_edges_accessors (pixman_image_t *image,
+				  pixman_edge_t	*l,
+				  pixman_edge_t	*r,
+				  pixman_fixed_t	t,
+				  pixman_fixed_t	b);
 
 #endif /* PIXMAN_PRIVATE_H */
