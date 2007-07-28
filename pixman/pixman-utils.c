@@ -22,6 +22,7 @@
  */
 
 #include <config.h>
+#include <stdlib.h>
 #include "pixman.h"
 #include "pixman-private.h"
 #include "pixman-mmx.h"
@@ -80,6 +81,78 @@ pixman_blt (uint32_t *src_bits,
 	return FALSE;
 }
 
+static void
+pixman_fill8 (uint32_t  *bits,
+	      int	stride,
+	      int	x,
+	      int	y,
+	      int	width,
+	      int	height,
+	      uint32_t  xor)
+{
+    int byte_stride = stride * sizeof (uint32_t);
+    uint8_t *dst = (uint8_t *) bits;
+    uint8_t v = xor & 0xff;
+    int i;
+
+    dst = dst + y * byte_stride + x;
+
+    while (height--)
+    {
+	for (i = 0; i < width; ++i)
+	    dst[i] = v;
+
+	dst += byte_stride;
+    }
+}
+
+static void
+pixman_fill16 (uint32_t *bits,
+	       int       stride,
+	       int       x,
+	       int       y,
+	       int       width,
+	       int       height,
+	       uint32_t  xor)
+{
+    int short_stride = (stride * sizeof (uint32_t)) / sizeof (uint16_t);
+    uint16_t *dst = (uint16_t *)bits;
+    uint16_t v = xor & 0xffff;
+    int i;
+
+    dst = dst + y * short_stride + x;
+
+    while (height--)
+    {
+	for (i = 0; i < width; ++i)
+	    dst[i] = v;
+
+	dst += short_stride;
+    }
+}
+
+static void
+pixman_fill32 (uint32_t *bits,
+	       int       stride,
+	       int       x,
+	       int       y,
+	       int       width,
+	       int       height,
+	       uint32_t  xor)
+{
+    int i;
+    
+    bits = bits + y * stride + x;
+    
+    while (height--)
+    {
+	for (i = 0; i < width; ++i)
+	    bits[i] = xor;
+
+	bits += stride;
+    }
+}
+
 pixman_bool_t
 pixman_fill (uint32_t *bits,
 	     int stride,
@@ -90,14 +163,36 @@ pixman_fill (uint32_t *bits,
 	     int height,
 	     uint32_t xor)
 {
-#ifdef USE_MMX
-    if (pixman_have_mmx())
-    {
-	return pixman_fill_mmx (bits, stride, bpp, x, y, width, height, xor);
-    }
-    else
+#if 0
+    printf ("filling: %d %d %d %d (stride: %d, bpp: %d)   pixel: %x\n",
+	    x, y, width, height, stride, bpp, xor);
 #endif
-	return FALSE;
+    
+#ifdef USE_MMX
+    if (!pixman_have_mmx() || !pixman_fill_mmx (bits, stride, bpp, x, y, width, height, xor))
+#endif
+    {
+	switch (bpp)
+	{
+	case 8:
+	    pixman_fill8 (bits, stride, x, y, width, height, xor);
+	    break;
+	    
+	case 16:
+	    pixman_fill16 (bits, stride, x, y, width, height, xor);
+	    break;
+	    
+	case 32:
+	    pixman_fill32 (bits, stride, x, y, width, height, xor);
+	    break;
+
+	default:
+	    return FALSE;
+	    break;
+	}
+    }
+	
+    return TRUE;
 }
 	    
 
@@ -271,4 +366,27 @@ pixman_line_fixed_edge_init (pixman_edge_t *e,
 		    top->y + y_off_fixed,
 		    bot->x + x_off_fixed,
 		    bot->y + y_off_fixed);
+}
+
+void *
+pixman_malloc_ab(unsigned int a,
+		 unsigned int b)
+{
+    if (a >= INT32_MAX / b)
+	return NULL;
+
+    return malloc (a * b);
+}
+
+void *
+pixman_malloc_abc (unsigned int a,
+		   unsigned int b,
+		   unsigned int c)
+{
+    if (a >= INT32_MAX / b)
+	return NULL;
+    else if (a * b >= INT32_MAX / c)
+	return NULL;
+    else
+	return malloc (a * b * c);
 }

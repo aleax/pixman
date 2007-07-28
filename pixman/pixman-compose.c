@@ -1404,7 +1404,8 @@ fbStore_r3g3b2 (pixman_image_t *image,
     uint8_t   *pixel = ((uint8_t *) bits) + x;
     for (i = 0; i < width; ++i) {
 	Split(READ(values + i));
-	WRITE(pixel++, ((r     ) & 0xe0) |
+	WRITE(pixel++,
+	      ((r     ) & 0xe0) |
 	      ((g >> 3) & 0x1c) |
 	      ((b >> 6)       ));
     }
@@ -1418,9 +1419,10 @@ fbStore_b2g3r3 (pixman_image_t *image,
     uint8_t   *pixel = ((uint8_t *) bits) + x;
     for (i = 0; i < width; ++i) {
 	Split(READ(values + i));
-	WRITE(pixel++, ((b     ) & 0xe0) |
-	      ((g >> 3) & 0x1c) |
-	      ((r >> 6)       ));
+	WRITE(pixel++,
+	      ((b     ) & 0xc0) |
+	      ((g >> 2) & 0x1c) |
+	      ((r >> 5)       ));
     }
 }
 
@@ -4072,7 +4074,7 @@ static void fbFetchExternalAlpha(bits_image_t * pict, int x, int y, int width, u
 	return;
     }
     if (width > SCANLINE_BUFFER_LENGTH)
-        alpha_buffer = (uint32_t *) malloc(width*sizeof(uint32_t));
+        alpha_buffer = (uint32_t *) pixman_malloc_ab (width, sizeof(uint32_t));
     
     fbFetchTransformed(pict, x, y, width, buffer, mask, maskBits);
     fbFetchTransformed((bits_image_t *)pict->common.alpha_map, x - pict->common.alpha_origin.x,
@@ -4457,11 +4459,11 @@ pixman_composite_rect_general (const FbComposeData *data,
 	data->dest->common.read_func			||
 	data->dest->common.write_func)
     {
-	return pixman_composite_rect_general_accessors (data, scanline_buffer);
+	pixman_composite_rect_general_accessors (data, scanline_buffer);
     }
     else
     {
-	return pixman_composite_rect_general_no_accessors (data, scanline_buffer);
+	pixman_composite_rect_general_no_accessors (data, scanline_buffer);
     }
 }
 
