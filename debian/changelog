@@ -1,5 +1,5 @@
-pixman (0.9.3~git20070729-1) UNRELEASED; urgency=low
+pixman (0.9.3~git20070729-1) experimental; urgency=low
 
-  * First upload.
+  * First upload (closes: 428774).
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 01 Aug 2007 12:53:39 +0200
+ -- Julien Cristau <jcristau@debian.org>  Wed, 01 Aug 2007 13:24:36 +0200
