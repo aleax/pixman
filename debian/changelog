@@ -1,5 +1,5 @@
-pixman (0.9.3~git20070617-1) UNRELEASED; urgency=low
+pixman (0.9.3~git20070729-1) UNRELEASED; urgency=low
 
   * First upload.
 
- -- David Nusinow <dnusinow@debian.org>  Thu, 14 Jun 2007 21:37:56 -0400
+ -- Julien Cristau <jcristau@debian.org>  Wed, 01 Aug 2007 12:53:39 +0200
