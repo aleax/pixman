@@ -1,3 +1,9 @@
+pixman (0.9.4~git20070809-1) UNRELEASED; urgency=low
+
+  * New upstream version
+
+ -- David Nusinow <dnusinow@debian.org>  Thu, 09 Aug 2007 21:14:55 -0400
+
 pixman (0.9.3~git20070729-1) experimental; urgency=low
 
   * First upload (closes: 428774).
