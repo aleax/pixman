@@ -74,6 +74,7 @@ SOFTWARE.
  */
 #if defined (__SVR4) && defined (__sun)
 #  include <sys/int_types.h>
+#  include <stdint.h>
 #elif defined (__OpenBSD__)
 #  include <inttypes.h>
 #elif defined (_MSC_VER)
@@ -450,7 +451,7 @@ pixman_image_t *pixman_image_create_bits             (pixman_format_code_t      
 
 /* Destructor */
 pixman_image_t *pixman_image_ref                     (pixman_image_t               *image);
-void            pixman_image_unref                   (pixman_image_t               *image);
+pixman_bool_t   pixman_image_unref                   (pixman_image_t               *image);
 
 
 /* Set properties */
