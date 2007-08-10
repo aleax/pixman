@@ -6,7 +6,7 @@ Uploaders: Julien Cristau <jcristau@debian.org>
 Build-Depends: quilt, debhelper
 Standards-Version: 3.7.2
 
-Package: libpixman0
+Package: libpixman1
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}
@@ -16,11 +16,11 @@ Description: pixel-manipulation library for X and cairo
  and implicit mask generation for geometric primitives including
  trapezoids, triangles, and rectangles.
 
-Package: libpixman0-dbg
+Package: libpixman1-dbg
 Section: libdevel
 Priority: extra
 Architecture: any
-Depends: libpixman0 (= ${binary:Version})
+Depends: libpixman1 (= ${binary:Version})
 Description: pixel-manipulation library for X and cairo (debugging symbols)
  Debugging symbols for the Cairo/X pixel manipulation library.  This is
  needed to debug programs linked against libpixman0.
