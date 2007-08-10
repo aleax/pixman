@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-PACKAGE = libpixman0
+PACKAGE = libpixman-1-0
 
 include /usr/share/quilt/quilt.make
 
