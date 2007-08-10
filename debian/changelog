@@ -1,11 +1,12 @@
-pixman (0.9.4~git20070809-1) experimental; urgency=low
+pixman (0.9.4-1) experimental; urgency=low
 
   * New upstream version
   * Update packaging for the name change. It's now pixman-1, so we use
     libpixman-1-0 for the package names
   * Add myself to uploaders
+  * Pull upstream fix for the .pc file for the library name change
 
- -- David Nusinow <dnusinow@debian.org>  Thu, 09 Aug 2007 21:50:04 -0400
+ -- David Nusinow <dnusinow@debian.org>  Thu, 09 Aug 2007 22:15:45 -0400
 
 pixman (0.9.3~git20070729-1) experimental; urgency=low
 
