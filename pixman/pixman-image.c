@@ -403,25 +403,17 @@ pixman_image_set_transform (pixman_image_t           *image,
 
     if (memcmp (&id, transform, sizeof (pixman_transform_t)) == 0)
     {
-	transform = NULL;
+	free(common->transform);
+	common->transform = NULL;
 	return TRUE;
     }
     
-    if (common->transform)
-	free (common->transform);
-
-    if (transform)
-    {
+    if (common->transform == NULL)
 	common->transform = malloc (sizeof (pixman_transform_t));
-	if (!common->transform)
-	    return FALSE;
+    if (common->transform == NULL)
+	return FALSE;
 
-	*common->transform = *transform;
-    }
-    else
-    {
-	common->transform = NULL;
-    }
+    memcpy(common->transform, transform, sizeof(pixman_transform_t));
 
     return TRUE;
 }
@@ -464,6 +456,18 @@ pixman_image_set_filter (pixman_image_t       *image,
     common->filter_params = new_params;
     common->n_filter_params = n_params;
     return TRUE;
+}
+
+void
+pixman_image_set_source_clipping (pixman_image_t  *image,
+				  pixman_bool_t    source_clipping)
+{
+    image_common_t *common = &image->common;
+
+    if (source_clipping)
+	common->src_clip = &common->clip_region;
+    else
+	common->src_clip = &common->full_region;
 }
 
 /* Unlike all the other property setters, this function does not
