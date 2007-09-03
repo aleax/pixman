@@ -1,3 +1,10 @@
+pixman (0.9.4-2) experimental; urgency=low
+
+  * Update from git master branch (commit 8ff7213f).
+  * Bump shlibs.
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 03 Sep 2007 17:11:24 +0200
+
 pixman (0.9.4-1) experimental; urgency=low
 
   * New upstream version
