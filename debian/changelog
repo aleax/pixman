@@ -1,10 +1,11 @@
-pixman (0.9.5-1) UNRELEASED; urgency=low
+pixman (0.9.5-1) unstable; urgency=low
 
   * New upstream release (no actual changes since 0.9.4-2, just new upstream
     tarball).
   * Add watch file.
+  * Upload to unstable for X.Org 7.3.
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 05 Sep 2007 21:33:32 +0200
+ -- Julien Cristau <jcristau@debian.org>  Wed, 05 Sep 2007 21:43:58 +0200
 
 pixman (0.9.4-2) experimental; urgency=low
 
