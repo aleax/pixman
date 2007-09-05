@@ -1,3 +1,10 @@
+pixman (0.9.5-1) UNRELEASED; urgency=low
+
+  * New upstream release (no actual changes since 0.9.4-2, just new upstream
+    tarball).
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 05 Sep 2007 21:32:50 +0200
+
 pixman (0.9.4-2) experimental; urgency=low
 
   * Update from git master branch (commit 8ff7213f).
