@@ -1,3 +1,13 @@
+pixman (0.9.5-2) unstable; urgency=high
+
+  * High urgency for RC bugfix.
+  * Don't use -msse, to prevent gcc 4.2 from generating SSE instructions for
+    its builtin functions, the X server from going SIGILL on CPUs supporting
+    MMX but not SSE, and us from losing (closes: #442829).
+  * Enable maintainer mode in configure.ac.
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 19 Sep 2007 23:21:46 +0200
+
 pixman (0.9.5-1) unstable; urgency=low
 
   * New upstream release (no actual changes since 0.9.4-2, just new upstream
