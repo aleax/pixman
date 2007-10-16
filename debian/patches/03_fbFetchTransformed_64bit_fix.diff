@@ -1,0 +1,29 @@
+Fix 64-bit arithmetic bug.
+
+This patch by Francis Whittle.
+
+https://bugs.freedesktop.org/show_bug.cgi?id=12398
+https://bugs.freedesktop.org/attachment.cgi?id=11896
+
+Index: pixman/pixman/pixman-compose.c
+===================================================================
+--- pixman.orig/pixman/pixman-compose.c	2007-10-16 09:51:39.000000000 +0200
++++ pixman/pixman/pixman-compose.c	2007-10-16 09:51:54.000000000 +0200
+@@ -3878,7 +3878,7 @@
+ 			    idistx = 256 - distx;
+ 			    idisty = 256 - disty;
+ 			    
+-			    b = bits + (y1)*stride;
++			    b = bits + (signed)((y1)*stride);
+ 			    x_off = x1;
+ 			    
+ 			    x1_out = (x1 < box.x1) | (x1 >= box.x2);
+@@ -3944,7 +3944,7 @@
+ 			    idistx = 256 - distx;
+ 			    idisty = 256 - disty;
+ 			    
+-			    b = bits + (y1)*stride;
++			    b = bits + (signed)((y1)*stride);
+ 			    x_off = x1;
+ 			    
+ 			    tl = pixman_region_contains_point(pict->common.src_clip, x1, y1, &box)
