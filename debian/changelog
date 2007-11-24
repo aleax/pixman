@@ -1,11 +1,11 @@
-pixman (0.9.6-1) UNRELEASED; urgency=low
+pixman (0.9.6-1) unstable; urgency=low
 
-  * New upstream release.
+  * New upstream release (closes: #452734).
     + 02_no-sse.diff: remove, fix included upstream;
     + 03_fbFetchTransformed_64bit_fix.diff: remove, 64bit issues should be
       fixed too.
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 08 Nov 2007 11:16:03 +0100
+ -- Julien Cristau <jcristau@debian.org>  Sun, 25 Nov 2007 00:41:31 +0100
 
 pixman (0.9.5-3) unstable; urgency=low
 
