@@ -1,5 +1,7 @@
-pixman (0.9.6-2) UNRELEASED; urgency=low
+pixman (0.10.0-1) UNRELEASED; urgency=low
 
+  * New upstream release.
+  * Bump shlibs to 0.10.0.
   * Run autoreconf at build-time.
     Build-depend on automake, autoconf, libtool and pkg-config.  Drop patch
     for maintainer mode, and drop build-dep on quilt and corresponding code in
