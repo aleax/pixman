@@ -1,3 +1,14 @@
+pixman (0.9.6-2) UNRELEASED; urgency=low
+
+  * Run autoreconf at build-time.
+    Build-depend on automake, autoconf, libtool and pkg-config.  Drop patch
+    for maintainer mode, and drop build-dep on quilt and corresponding code in
+    debian/rules.  Add new rules autogen and config, where we run autoreconf
+    and configure, respectively.  Update clean rule to remove files generated
+    by autogen.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 30 Mar 2008 15:50:55 +0200
+
 pixman (0.9.6-1) unstable; urgency=low
 
   * New upstream release (closes: #452734).

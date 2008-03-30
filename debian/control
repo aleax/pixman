@@ -3,7 +3,7 @@ Section: devel
 Priority: optional
 Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
 Uploaders: Julien Cristau <jcristau@debian.org>, David Nusinow <dnusinow@debian.org>
-Build-Depends: quilt, debhelper
+Build-Depends: debhelper, automake, autoconf, libtool, pkg-config
 Standards-Version: 3.7.2
 
 Package: libpixman-1-0

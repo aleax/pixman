@@ -2,8 +2,6 @@
 
 PACKAGE = libpixman-1-0
 
-include /usr/share/quilt/quilt.make
-
 CFLAGS = -Wall -g
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
@@ -23,41 +21,58 @@ else
 	confflags += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
 endif
 
-build: patch build-stamp
-build-stamp:
+autogen: autogen-stamp
+autogen-stamp:
+	dh_testdir
+	autoreconf -vfi
+	touch $@
+
+config: config-stamp
+config-stamp: autogen-stamp
 	dh_testdir
 	test -d obj-$(DEB_BUILD_GNU_TYPE) || mkdir obj-$(DEB_BUILD_GNU_TYPE)
 	cd obj-$(DEB_BUILD_GNU_TYPE) && \
 	../configure --prefix=/usr --mandir=\$${prefix}/share/man \
 	--infodir=\$${prefix}/share/info $(confflags) \
 	CFLAGS="$(CFLAGS)" 
+	touch $@
+
+
+build: build-stamp
+build-stamp: config-stamp
+	dh_testdir
 	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE)
 	
-	touch build-stamp
+	touch $@
 
-clean: unpatch
+clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp
+	rm -f autogen-stamp config-stamp build-stamp install-stamp
 	
 	rm -f config.cache config.log config.status
 	rm -f */config.cache */config.log */config.status
 	rm -f conftest* */conftest*
 	rm -rf autom4te.cache */autom4te.cache
 	rm -rf obj-*
+	rm -f $$(find -name Makefile.in)
+	rm -f compile config.guess config.sub configure depcomp install-sh
+	rm -f ltmain.sh missing INSTALL aclocal.m4 config.h.in
 	
 	dh_clean
 
-install: build
+install: install-stamp
+install-stamp: build-stamp
 	dh_testdir
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
 
 	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
+	touch $@
 
 # Install architecture-dependent files here.
-binary-arch: build install
+binary-arch: install
 	dh_testdir
 	dh_testroot
 
@@ -75,8 +90,8 @@ binary-arch: build install
 	dh_md5sums
 	dh_builddeb
 
-binary-indep: build install
+binary-indep: install
 # Nothing to do
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install
+.PHONY: autogen config build clean binary-indep binary-arch binary install
