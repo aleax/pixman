@@ -10,6 +10,7 @@ pixman (0.10.0-1) UNRELEASED; urgency=low
     by autogen.
   * Add symbols file for libpixman-1-0.
   * Bump Standards-Version to 3.7.3.
+  * Add Vcs-Git and Vcs-Browser control fields.
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 30 Mar 2008 15:50:55 +0200
 
