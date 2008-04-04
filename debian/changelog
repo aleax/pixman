@@ -1,4 +1,4 @@
-pixman (0.10.0-1) UNRELEASED; urgency=low
+pixman (0.10.0-1) unstable; urgency=low
 
   * New upstream release.
   * Bump shlibs to 0.10.0.
@@ -12,7 +12,7 @@ pixman (0.10.0-1) UNRELEASED; urgency=low
   * Bump Standards-Version to 3.7.3.
   * Add Vcs-Git and Vcs-Browser control fields.
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 30 Mar 2008 15:50:55 +0200
+ -- Julien Cristau <jcristau@debian.org>  Fri, 04 Apr 2008 14:31:30 +0200
 
 pixman (0.9.6-1) unstable; urgency=low
 
