@@ -18,6 +18,15 @@ Description: pixel-manipulation library for X and cairo
  and implicit mask generation for geometric primitives including
  trapezoids, triangles, and rectangles.
 
+Package: libpixman-1-0-udeb
+Section: debian-installer
+XC-Package-Type: udeb
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: pixel-manipulation library for X and cairo
+ This package contains a minimal set of libraries needed for the Debian
+ installer.  Do not install it on a normal system.
+
 Package: libpixman-1-0-dbg
 Section: libdevel
 Priority: extra
