@@ -1,9 +1,9 @@
-pixman (0.10.0-2) UNRELEASED; urgency=low
+pixman (0.10.0-2) unstable; urgency=low
 
   [ Frans Pop ]
   * Add libpixman-1-0-udeb (needed for cairo).  Closes: #476480.
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 17 Apr 2008 01:00:08 +0200
+ -- Julien Cristau <jcristau@debian.org>  Thu, 17 Apr 2008 14:08:20 +0200
 
 pixman (0.10.0-1) unstable; urgency=low
 
