@@ -1,3 +1,9 @@
+pixman (0.10.0-3) UNRELEASED; urgency=low
+
+  * Update upstream URL in debian/copyright.
+
+ -- Brice Goglin <bgoglin@debian.org>  Fri, 13 Jun 2008 11:39:32 +0200
+
 pixman (0.10.0-2) unstable; urgency=low
 
   [ Frans Pop ]
