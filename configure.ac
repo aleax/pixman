@@ -56,8 +56,8 @@ AC_PREREQ([2.57])
 #      more information
 
 m4_define([pixman_major], 0)
-m4_define([pixman_minor], 10)
-m4_define([pixman_micro], 0)
+m4_define([pixman_minor], 11)
+m4_define([pixman_micro], 6)
 
 m4_define([pixman_version],[pixman_major.pixman_minor.pixman_micro])
 
@@ -102,6 +102,12 @@ if test "x$GCC" = "xyes"; then
   *) CFLAGS="$CFLAGS -Wall" ;;
   esac fi changequote([,])dnl
 
+AC_PATH_PROG(PERL, perl, no)
+if test "x$PERL" = xno; then
+    AC_MSG_ERROR([Perl is required to build pixman.])
+fi
+AC_SUBST(PERL)
+
 dnl =========================================================================
 dnl -fvisibility stuff
 
@@ -123,7 +129,11 @@ AC_MSG_RESULT($have_gcc4)
 dnl ===========================================================================
 dnl Check for MMX
 
-MMX_CFLAGS="-mmmx -Winline --param inline-unit-growth=10000 --param large-function-growth=10000"
+MMX_CFLAGS="-mmmx -Winline"
+
+if test "x$GCC" = "xyes"; then
+    MMX_CFLAGS="$MMX_CFLAGS --param inline-unit-growth=10000 --param large-function-growth=10000"
+fi
 
 have_mmx_intrinsics=no
 AC_MSG_CHECKING(whether to use MMX intrinsics)
@@ -139,13 +149,23 @@ int main () {
     return _mm_cvtsi64_si32 (v);
 }], have_mmx_intrinsics=yes)
 CFLAGS=$xserver_save_CFLAGS
-AC_MSG_RESULT($have_mmx_intrinsics)
+
+AC_ARG_ENABLE(mmx,
+   [AC_HELP_STRING([--disable-mmx],
+                   [disable MMX fast paths])],
+   [disable_mmx=yes], [disable_mmx=no])
+
+if test $disable_mmx = yes ; then
+   have_mmx_intrinsics=disabled
+fi
 
 if test $have_mmx_intrinsics = yes ; then
    AC_DEFINE(USE_MMX, 1, [use MMX compiler intrinsics])
 else
    MMX_CFLAGS=
 fi
+
+AC_MSG_RESULT($have_mmx_intrinsics)
 
 AM_CONDITIONAL(USE_MMX, test $have_mmx_intrinsics = yes)
 
@@ -164,6 +184,9 @@ xserver_save_CFLAGS=$CFLAGS
 CFLAGS="$CFLAGS -msse $MMX_CFLAGS"
 
 AC_COMPILE_IFELSE([
+#if defined(__GNUC__) && (__GNUC__ < 3 || (__GNUC__ == 3 && __GNUC_MINOR__ < 4))
+#error "Need GCC >= 3.4 for SSE intrinsics"
+#endif
 #if !defined(__amd64__) && !defined(__x86_64__)
 #error "Need x86-64 for SSE"
 #endif
@@ -188,27 +211,45 @@ AM_CONDITIONAL(USE_SSE, test $have_sse_intrinsics = yes)
 dnl ===========================================================================
 dnl Check for SSE2
 
-SSE_CFLAGS="-mmmx -msse2 -Winline --param inline-unit-growth=10000 --param large-function-growth=10000"
+SSE_CFLAGS="-mmmx -msse2 -Winline"
+
+if test "x$GCC" = "xyes"; then
+    SSE_CFLAGS="$SSE_CFLAGS --param inline-unit-growth=10000 --param large-function-growth=10000 --param  max-inline-insns-single=6000"
+fi
 
 have_sse2_intrinsics=no
 AC_MSG_CHECKING(whether to use SSE2 intrinsics)
 xserver_save_CFLAGS=$CFLAGS
-CFLAGS="$CFLAGS -msse2 $MMX_CFLAGS"
+CFLAGS="$CFLAGS -msse2 $SSE_CFLAGS"
 
 AC_COMPILE_IFELSE([
+#if defined(__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 2))
+#error "Need GCC >= 4.2 for SSE2 intrinsics"
+#endif
 #include <mmintrin.h>
 #include <xmmintrin.h>
+#include <emmintrin.h>
 int main () {
     __m128i a, b, c;
 	c = _mm_xor_si128 (a, b);
     return 0;
 }], have_sse2_intrinsics=yes)
 CFLAGS=$xserver_save_CFLAGS
-AC_MSG_RESULT($have_sse2_intrinsics)
+
+AC_ARG_ENABLE(sse2,
+   [AC_HELP_STRING([--disable-sse2],
+                   [disable SSE2 fast paths])],
+   [disable_sse2=yes], [disable_sse2=no])
+
+if test $disable_sse2 = yes ; then
+   have_sse2_intrinsics=disabled
+fi
 
 if test $have_sse2_intrinsics = yes ; then
-   AC_DEFINE(USE_SSE2, 1, [use SSE compiler intrinsics])
+   AC_DEFINE(USE_SSE2, 1, [use SSE2 compiler intrinsics])
 fi
+
+AC_MSG_RESULT($have_sse2_intrinsics)
 
 AM_CONDITIONAL(USE_SSE2, test $have_sse2_intrinsics = yes)
 
@@ -216,7 +257,61 @@ dnl ========================================================
 AC_SUBST(MMX_CFLAGS)
 AC_SUBST(SSE_CFLAGS)
 
-PKG_CHECK_MODULES(GTK, [gtk+-2.0], [HAVE_GTK=yes], [HAVE_GTK=no])
+dnl Check for VMX/Altivec
+if test -n "`$CC -v 2>&1 | grep version | grep Apple`"; then
+    VMX_CFLAGS="-faltivec"
+else
+    VMX_CFLAGS="-maltivec -mabi=altivec"
+fi
+
+have_vmx_intrinsics=no
+AC_MSG_CHECKING(whether to use VMX/Altivec intrinsics)
+xserver_save_CFLAGS=$CFLAGS
+CFLAGS="$CFLAGS $VMX_CFLAGS"
+AC_COMPILE_IFELSE([
+#if defined(__GNUC__) && (__GNUC__ < 3 || (__GNUC__ == 3 && __GNUC_MINOR__ < 4))
+#error "Need GCC >= 3.4 for sane altivec support"
+#endif
+#include <altivec.h>
+int main () {
+    vector unsigned int v = vec_splat_u32 (1);
+    v = vec_sub (v, v);
+    return 0;
+}], have_vmx_intrinsics=yes)
+CFLAGS=$xserver_save_CFLAGS
+
+AC_ARG_ENABLE(vmx,
+   [AC_HELP_STRING([--disable-vmx],
+                   [disable VMX fast paths])],
+   [disable_vmx=yes], [disable_vmx=no])
+
+if test $disable_vmx = yes ; then
+   have_vmx_intrinsics=disabled
+fi
+
+if test $have_vmx_intrinsics = yes ; then
+   AC_DEFINE(USE_VMX, 1, [use VMX compiler intrinsics])
+else
+   VMX_CFLAGS=
+fi
+
+AC_MSG_RESULT($have_vmx_intrinsics)
+
+AC_SUBST(VMX_CFLAGS)
+
+AM_CONDITIONAL(USE_VMX, test $have_vmx_intrinsics = yes)
+
+AC_ARG_ENABLE(gtk,
+   [AC_HELP_STRING([--disable-gtk],
+                   [disable tests using GTK+])],
+   [disable_gtk=yes], [disable_gtk=no])
+
+if test $disable_gtk = no ; then
+   PKG_CHECK_MODULES(GTK, [gtk+-2.0], [HAVE_GTK=yes], [HAVE_GTK=no])
+else
+   HAVE_GTK=no
+fi
+
 AM_CONDITIONAL(HAVE_GTK, [test "x$HAVE_GTK" = xyes])
 
 AC_SUBST(GTK_CFLAGS)

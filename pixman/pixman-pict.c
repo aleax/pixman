@@ -30,9 +30,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "pixman-private.h"
 #include "pixman-mmx.h"
+#include "pixman-vmx.h"
 #include "pixman-sse.h"
 
 #define FbFullMask(n)   ((n) == 32 ? (uint32_t)-1 : ((((uint32_t) 1) << n) - 1))
@@ -1187,22 +1187,22 @@ pixman_walk_composite_region (pixman_op_t op,
 			      CompositeFunc compositeRect)
 {
     int		    n;
-    const pixman_box16_t *pbox;
+    const pixman_box32_t *pbox;
     int		    w, h, w_this, h_this;
     int		    x_msk, y_msk, x_src, y_src, x_dst, y_dst;
-    pixman_region16_t reg;
-    pixman_region16_t *region;
+    pixman_region32_t reg;
+    pixman_region32_t *region;
 
-    pixman_region_init (&reg);
-    if (!pixman_compute_composite_region (&reg, pSrc, pMask, pDst,
-					  xSrc, ySrc, xMask, yMask, xDst, yDst, width, height))
+    pixman_region32_init (&reg);
+    if (!pixman_compute_composite_region32 (&reg, pSrc, pMask, pDst,
+					    xSrc, ySrc, xMask, yMask, xDst, yDst, width, height))
     {
 	return;
     }
 
     region = &reg;
 
-    pbox = pixman_region_rectangles (region, &n);
+    pbox = pixman_region32_rectangles (region, &n);
     while (n--)
     {
 	h = pbox->y2 - pbox->y1;
@@ -1258,42 +1258,8 @@ pixman_walk_composite_region (pixman_op_t op,
 	}
 	pbox++;
     }
-    pixman_region_fini (&reg);
+    pixman_region32_fini (&reg);
 }
-
-static pixman_bool_t
-can_get_solid (pixman_image_t *image)
-{
-    if (image->type == SOLID)
-	return TRUE;
-
-    if (image->type != BITS	||
-	image->bits.width != 1	||
-	image->bits.height != 1)
-    {
-	return FALSE;
-    }
-
-    if (image->common.repeat != PIXMAN_REPEAT_NORMAL)
-	return FALSE;
-
-    switch (image->bits.format)
-    {
-    case PIXMAN_a8r8g8b8:
-    case PIXMAN_x8r8g8b8:
-    case PIXMAN_a8b8g8r8:
-    case PIXMAN_x8b8g8r8:
-    case PIXMAN_r8g8b8:
-    case PIXMAN_b8g8r8:
-    case PIXMAN_r5g6b5:
-    case PIXMAN_b5g6r5:
-	return TRUE;
-    default:
-	return FALSE;
-    }
-}
-
-#define SCANLINE_BUFFER_LENGTH 2048
 
 static void
 pixman_image_composite_rect  (pixman_op_t                   op,
@@ -1310,19 +1276,9 @@ pixman_image_composite_rect  (pixman_op_t                   op,
 			      uint16_t                      height)
 {
     FbComposeData compose_data;
-    uint32_t _scanline_buffer[SCANLINE_BUFFER_LENGTH * 3];
-    uint32_t *scanline_buffer = _scanline_buffer;
 
     return_if_fail (src != NULL);
     return_if_fail (dest != NULL);
-
-    if (width > SCANLINE_BUFFER_LENGTH)
-    {
-	scanline_buffer = (uint32_t *)pixman_malloc_abc (width, 3, sizeof (uint32_t));
-
-	if (!scanline_buffer)
-	    return;
-    }
 
     compose_data.op = op;
     compose_data.src = src;
@@ -1337,10 +1293,7 @@ pixman_image_composite_rect  (pixman_op_t                   op,
     compose_data.width = width;
     compose_data.height = height;
 
-    pixman_composite_rect_general (&compose_data, scanline_buffer);
-
-    if (scanline_buffer != _scanline_buffer)
-	free (scanline_buffer);
+    pixman_composite_rect_general (&compose_data);
 }
 
 /* These "formats" both have depth 0, so they
@@ -1428,6 +1381,8 @@ static const FastPathInfo mmx_fast_paths[] =
 
     { PIXMAN_OP_SRC, PIXMAN_a8r8g8b8,  PIXMAN_null,	PIXMAN_a8r8g8b8, fbCompositeCopyAreammx, 0 },
     { PIXMAN_OP_SRC, PIXMAN_a8b8g8r8,  PIXMAN_null,	PIXMAN_a8b8g8r8, fbCompositeCopyAreammx, 0 },
+    { PIXMAN_OP_SRC, PIXMAN_a8r8g8b8,  PIXMAN_null,	PIXMAN_x8r8g8b8, fbCompositeCopyAreammx, 0 },
+    { PIXMAN_OP_SRC, PIXMAN_a8b8g8r8,  PIXMAN_null,	PIXMAN_x8b8g8r8, fbCompositeCopyAreammx, 0 },
     { PIXMAN_OP_SRC, PIXMAN_x8r8g8b8,  PIXMAN_null,	PIXMAN_x8r8g8b8, fbCompositeCopyAreammx, 0 },
     { PIXMAN_OP_SRC, PIXMAN_x8b8g8r8,  PIXMAN_null,	PIXMAN_x8b8g8r8, fbCompositeCopyAreammx, 0 },
     { PIXMAN_OP_SRC, PIXMAN_r5g6b5,    PIXMAN_null,     PIXMAN_r5g6b5,   fbCompositeCopyAreammx, 0 },
@@ -1441,9 +1396,94 @@ static const FastPathInfo mmx_fast_paths[] =
 #ifdef USE_SSE2
 static const FastPathInfo sse_fast_paths[] =
 {
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_a8,       PIXMAN_r5g6b5,   fbCompositeSolidMask_nx8x0565sse2,     0 },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_a8,       PIXMAN_b5g6r5,   fbCompositeSolidMask_nx8x0565sse2,     0 },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_null,     PIXMAN_a8r8g8b8, fbCompositeSolid_nx8888sse2,           0 },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_null,     PIXMAN_x8r8g8b8, fbCompositeSolid_nx8888sse2,           0 },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_null,     PIXMAN_r5g6b5,   fbCompositeSolid_nx0565sse2,           0 },
+    { PIXMAN_OP_OVER, PIXMAN_a8r8g8b8, PIXMAN_null,     PIXMAN_a8r8g8b8, fbCompositeSrc_8888x8888sse2,          0 },
+    { PIXMAN_OP_OVER, PIXMAN_a8r8g8b8, PIXMAN_null,     PIXMAN_x8r8g8b8, fbCompositeSrc_8888x8888sse2,          0 },
+    { PIXMAN_OP_OVER, PIXMAN_a8b8g8r8, PIXMAN_null,     PIXMAN_a8b8g8r8, fbCompositeSrc_8888x8888sse2,          0 },
+    { PIXMAN_OP_OVER, PIXMAN_a8b8g8r8, PIXMAN_null,     PIXMAN_x8b8g8r8, fbCompositeSrc_8888x8888sse2,          0 },
+    { PIXMAN_OP_OVER, PIXMAN_a8r8g8b8, PIXMAN_null,     PIXMAN_r5g6b5,   fbCompositeSrc_8888x0565sse2,          0 },
+    { PIXMAN_OP_OVER, PIXMAN_a8b8g8r8, PIXMAN_null,     PIXMAN_b5g6r5,   fbCompositeSrc_8888x0565sse2,          0 },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_a8,       PIXMAN_a8r8g8b8, fbCompositeSolidMask_nx8x8888sse2,     0 },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_a8,       PIXMAN_x8r8g8b8, fbCompositeSolidMask_nx8x8888sse2,     0 },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_a8,       PIXMAN_a8b8g8r8, fbCompositeSolidMask_nx8x8888sse2,     0 },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_a8,       PIXMAN_x8b8g8r8, fbCompositeSolidMask_nx8x8888sse2,     0 },
+#if 0
+    /* FIXME: This code are buggy in MMX version, now the bug was translated to SSE2 version */
+    { PIXMAN_OP_OVER, PIXMAN_x8r8g8b8, PIXMAN_a8,       PIXMAN_x8r8g8b8, fbCompositeOver_x888x8x8888sse2,       0 },
+    { PIXMAN_OP_OVER, PIXMAN_x8r8g8b8, PIXMAN_a8,       PIXMAN_a8r8g8b8, fbCompositeOver_x888x8x8888sse2,       0 },
+    { PIXMAN_OP_OVER, PIXMAN_x8b8g8r8, PIXMAN_a8,       PIXMAN_x8b8g8r8, fbCompositeOver_x888x8x8888sse2,       0 },
+    { PIXMAN_OP_OVER, PIXMAN_x8b8g8r8, PIXMAN_a8,       PIXMAN_a8r8g8b8, fbCompositeOver_x888x8x8888sse2,       0 },
+#endif
+    { PIXMAN_OP_OVER, PIXMAN_x8r8g8b8, PIXMAN_a8,       PIXMAN_a8r8g8b8, fbCompositeSrc_x888xnx8888sse2,        NEED_SOLID_MASK },
+    { PIXMAN_OP_OVER, PIXMAN_x8r8g8b8, PIXMAN_a8,       PIXMAN_x8r8g8b8, fbCompositeSrc_x888xnx8888sse2,        NEED_SOLID_MASK },
+    { PIXMAN_OP_OVER, PIXMAN_x8b8g8r8, PIXMAN_a8,       PIXMAN_a8b8g8r8, fbCompositeSrc_x888xnx8888sse2,        NEED_SOLID_MASK },
+    { PIXMAN_OP_OVER, PIXMAN_x8b8g8r8, PIXMAN_a8,       PIXMAN_x8b8g8r8, fbCompositeSrc_x888xnx8888sse2,        NEED_SOLID_MASK },
+    { PIXMAN_OP_OVER, PIXMAN_a8r8g8b8, PIXMAN_a8,       PIXMAN_a8r8g8b8, fbCompositeSrc_8888x8x8888sse2,        NEED_SOLID_MASK },
+    { PIXMAN_OP_OVER, PIXMAN_a8r8g8b8, PIXMAN_a8,       PIXMAN_x8r8g8b8, fbCompositeSrc_8888x8x8888sse2,        NEED_SOLID_MASK },
+    { PIXMAN_OP_OVER, PIXMAN_a8b8g8r8, PIXMAN_a8,       PIXMAN_a8b8g8r8, fbCompositeSrc_8888x8x8888sse2,        NEED_SOLID_MASK },
+    { PIXMAN_OP_OVER, PIXMAN_a8b8g8r8, PIXMAN_a8,       PIXMAN_x8b8g8r8, fbCompositeSrc_8888x8x8888sse2,        NEED_SOLID_MASK },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_a8r8g8b8, PIXMAN_a8r8g8b8, fbCompositeSolidMask_nx8888x8888Csse2, NEED_COMPONENT_ALPHA },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_a8r8g8b8, PIXMAN_x8r8g8b8, fbCompositeSolidMask_nx8888x8888Csse2, NEED_COMPONENT_ALPHA },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_a8b8g8r8, PIXMAN_a8b8g8r8, fbCompositeSolidMask_nx8888x8888Csse2, NEED_COMPONENT_ALPHA },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_a8b8g8r8, PIXMAN_x8b8g8r8, fbCompositeSolidMask_nx8888x8888Csse2, NEED_COMPONENT_ALPHA },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_a8r8g8b8, PIXMAN_r5g6b5,   fbCompositeSolidMask_nx8888x0565Csse2, NEED_COMPONENT_ALPHA },
+    { PIXMAN_OP_OVER, PIXMAN_solid,    PIXMAN_a8b8g8r8, PIXMAN_b5g6r5,   fbCompositeSolidMask_nx8888x0565Csse2, NEED_COMPONENT_ALPHA },
+    { PIXMAN_OP_OVER, PIXMAN_x8b8g8r8, PIXMAN_a8r8g8b8, PIXMAN_a8r8g8b8, fbCompositeSrc_8888RevNPx8888sse2,     NEED_PIXBUF },
+    { PIXMAN_OP_OVER, PIXMAN_x8b8g8r8, PIXMAN_a8b8g8r8, PIXMAN_a8r8g8b8, fbCompositeSrc_8888RevNPx8888sse2,     NEED_PIXBUF },
+    { PIXMAN_OP_OVER, PIXMAN_x8b8g8r8, PIXMAN_a8r8g8b8, PIXMAN_x8r8g8b8, fbCompositeSrc_8888RevNPx8888sse2,     NEED_PIXBUF },
+    { PIXMAN_OP_OVER, PIXMAN_x8b8g8r8, PIXMAN_a8b8g8r8, PIXMAN_x8r8g8b8, fbCompositeSrc_8888RevNPx8888sse2,     NEED_PIXBUF },
+    { PIXMAN_OP_OVER, PIXMAN_x8r8g8b8, PIXMAN_a8r8g8b8, PIXMAN_a8b8g8r8, fbCompositeSrc_8888RevNPx8888sse2,     NEED_PIXBUF },
+    { PIXMAN_OP_OVER, PIXMAN_x8r8g8b8, PIXMAN_a8b8g8r8, PIXMAN_a8b8g8r8, fbCompositeSrc_8888RevNPx8888sse2,     NEED_PIXBUF },
+    { PIXMAN_OP_OVER, PIXMAN_x8r8g8b8, PIXMAN_a8r8g8b8, PIXMAN_x8b8g8r8, fbCompositeSrc_8888RevNPx8888sse2,     NEED_PIXBUF },
+    { PIXMAN_OP_OVER, PIXMAN_x8r8g8b8, PIXMAN_a8b8g8r8, PIXMAN_x8b8g8r8, fbCompositeSrc_8888RevNPx8888sse2,     NEED_PIXBUF },
+    { PIXMAN_OP_OVER, PIXMAN_x8b8g8r8, PIXMAN_a8r8g8b8, PIXMAN_r5g6b5,   fbCompositeSrc_8888RevNPx0565sse2,     NEED_PIXBUF },
+    { PIXMAN_OP_OVER, PIXMAN_x8b8g8r8, PIXMAN_a8b8g8r8, PIXMAN_r5g6b5,   fbCompositeSrc_8888RevNPx0565sse2,     NEED_PIXBUF },
+    { PIXMAN_OP_OVER, PIXMAN_x8r8g8b8, PIXMAN_a8r8g8b8, PIXMAN_b5g6r5,   fbCompositeSrc_8888RevNPx0565sse2,     NEED_PIXBUF },
+    { PIXMAN_OP_OVER, PIXMAN_x8r8g8b8, PIXMAN_a8b8g8r8, PIXMAN_b5g6r5,   fbCompositeSrc_8888RevNPx0565sse2,     NEED_PIXBUF },
+#if 0
+    /* FIXME: This code is commented out since it's apparently not actually faster than the generic code */
+    { PIXMAN_OP_OVER, PIXMAN_x8r8g8b8, PIXMAN_null,     PIXMAN_x8r8g8b8, fbCompositeCopyAreasse2,               0 },
+    { PIXMAN_OP_OVER, PIXMAN_x8b8g8r8, PIXMAN_null,     PIXMAN_x8b8g8r8, fbCompositeCopyAreasse2,               0 },
+#endif
+
+    { PIXMAN_OP_ADD,  PIXMAN_a8,       PIXMAN_null,     PIXMAN_a8,       fbCompositeSrcAdd_8000x8000sse2,       0 },
+    { PIXMAN_OP_ADD,  PIXMAN_a8r8g8b8, PIXMAN_null,     PIXMAN_a8r8g8b8, fbCompositeSrcAdd_8888x8888sse2,       0 },
+    { PIXMAN_OP_ADD,  PIXMAN_a8b8g8r8, PIXMAN_null,     PIXMAN_a8b8g8r8, fbCompositeSrcAdd_8888x8888sse2,       0 },
+    { PIXMAN_OP_ADD,  PIXMAN_solid,    PIXMAN_a8,       PIXMAN_a8,       fbCompositeSrcAdd_8888x8x8sse2,        0 },
+
+    { PIXMAN_OP_SRC, PIXMAN_solid,     PIXMAN_a8,       PIXMAN_a8r8g8b8, fbCompositeSolidMaskSrc_nx8x8888sse2,  0 },
+    { PIXMAN_OP_SRC, PIXMAN_solid,     PIXMAN_a8,       PIXMAN_x8r8g8b8, fbCompositeSolidMaskSrc_nx8x8888sse2,  0 },
+    { PIXMAN_OP_SRC, PIXMAN_solid,     PIXMAN_a8,       PIXMAN_a8b8g8r8, fbCompositeSolidMaskSrc_nx8x8888sse2,  0 },
+    { PIXMAN_OP_SRC, PIXMAN_solid,     PIXMAN_a8,       PIXMAN_x8b8g8r8, fbCompositeSolidMaskSrc_nx8x8888sse2,  0 },
+
+#if 0
+    /* FIXME: This code is commented out since it's apparently not actually faster than the generic code */
+    { PIXMAN_OP_SRC, PIXMAN_a8r8g8b8,  PIXMAN_null,     PIXMAN_a8r8g8b8, fbCompositeCopyAreasse2,               0 },
+    { PIXMAN_OP_SRC, PIXMAN_a8b8g8r8,  PIXMAN_null,     PIXMAN_a8b8g8r8, fbCompositeCopyAreasse2,               0 },
+    { PIXMAN_OP_SRC, PIXMAN_x8r8g8b8,  PIXMAN_null,     PIXMAN_x8r8g8b8, fbCompositeCopyAreasse2,               0 },
+    { PIXMAN_OP_SRC, PIXMAN_x8b8g8r8,  PIXMAN_null,     PIXMAN_x8b8g8r8, fbCompositeCopyAreasse2,               0 },
+    { PIXMAN_OP_SRC, PIXMAN_r5g6b5,    PIXMAN_null,     PIXMAN_r5g6b5,   fbCompositeCopyAreasse2,               0 },
+    { PIXMAN_OP_SRC, PIXMAN_b5g6r5,    PIXMAN_null,     PIXMAN_b5g6r5,   fbCompositeCopyAreasse2,               0 },
+#endif
+
+    { PIXMAN_OP_IN,  PIXMAN_a8,        PIXMAN_null,     PIXMAN_a8,       fbCompositeIn_8x8sse2,                 0 },
+    { PIXMAN_OP_IN,  PIXMAN_solid,     PIXMAN_a8,       PIXMAN_a8,       fbCompositeIn_nx8x8sse2,               0 },
+
     { PIXMAN_OP_NONE },
 };
 #endif
+
+#ifdef USE_VMX
+static const FastPathInfo vmx_fast_paths[] =
+{
+    { PIXMAN_OP_NONE },
+};
+#endif
+
 
 static const FastPathInfo c_fast_paths[] =
 {
@@ -1552,7 +1592,7 @@ get_fast_path (const FastPathInfo *fast_paths,
 	if (info->op != op)
 	    continue;
 
-	if ((info->src_format == PIXMAN_solid && can_get_solid (pSrc))		||
+	if ((info->src_format == PIXMAN_solid && pixman_image_can_get_solid (pSrc))		||
 	    (pSrc->type == BITS && info->src_format == pSrc->bits.format))
 	{
 	    valid_src = TRUE;
@@ -1594,7 +1634,98 @@ get_fast_path (const FastPathInfo *fast_paths,
     return NULL;
 }
 
-void
+/*
+ * Operator optimizations based on source or destination opacity
+ */
+typedef struct
+{
+    pixman_op_t			op;
+    pixman_op_t			opSrcDstOpaque;
+    pixman_op_t			opSrcOpaque;
+    pixman_op_t			opDstOpaque;
+} OptimizedOperatorInfo;
+
+static const OptimizedOperatorInfo optimized_operators[] =
+{
+    /* Input Operator           SRC&DST Opaque          SRC Opaque              DST Opaque      */
+    { PIXMAN_OP_OVER,           PIXMAN_OP_SRC,          PIXMAN_OP_SRC,          PIXMAN_OP_OVER },
+    { PIXMAN_OP_OVER_REVERSE,   PIXMAN_OP_DST,          PIXMAN_OP_OVER_REVERSE, PIXMAN_OP_DST },
+    { PIXMAN_OP_IN,             PIXMAN_OP_SRC,          PIXMAN_OP_IN,           PIXMAN_OP_SRC },
+    { PIXMAN_OP_IN_REVERSE,     PIXMAN_OP_DST,          PIXMAN_OP_DST,          PIXMAN_OP_IN_REVERSE },
+    { PIXMAN_OP_OUT,            PIXMAN_OP_CLEAR,        PIXMAN_OP_OUT,          PIXMAN_OP_CLEAR },
+    { PIXMAN_OP_OUT_REVERSE,    PIXMAN_OP_CLEAR,        PIXMAN_OP_CLEAR,        PIXMAN_OP_OUT_REVERSE },
+    { PIXMAN_OP_ATOP,           PIXMAN_OP_SRC,          PIXMAN_OP_IN,           PIXMAN_OP_OVER },
+    { PIXMAN_OP_ATOP_REVERSE,   PIXMAN_OP_DST,          PIXMAN_OP_OVER_REVERSE, PIXMAN_OP_IN_REVERSE },
+    { PIXMAN_OP_XOR,            PIXMAN_OP_CLEAR,        PIXMAN_OP_OUT,          PIXMAN_OP_OUT_REVERSE },
+    { PIXMAN_OP_SATURATE,       PIXMAN_OP_DST,          PIXMAN_OP_OVER_REVERSE, PIXMAN_OP_DST },
+    { PIXMAN_OP_NONE }
+};
+
+/*
+ * Check if the current operator could be optimized
+ */
+static const OptimizedOperatorInfo*
+pixman_operator_can_be_optimized(pixman_op_t op)
+{
+    const OptimizedOperatorInfo *info;
+
+    for (info = optimized_operators; info->op != PIXMAN_OP_NONE; info++)
+    {
+        if(info->op == op)
+            return info;
+    }
+    return NULL;
+}
+
+/*
+ * Optimize the current operator based on opacity of source or destination
+ * The output operator should be mathematically equivalent to the source.
+ */
+static pixman_op_t
+pixman_optimize_operator(pixman_op_t op, pixman_image_t *pSrc, pixman_image_t *pMask, pixman_image_t *pDst )
+{
+    pixman_bool_t is_source_opaque;
+    pixman_bool_t is_dest_opaque;
+    const OptimizedOperatorInfo *info = pixman_operator_can_be_optimized(op);
+
+    if(!info || pMask)
+        return op;
+
+    is_source_opaque = pixman_image_is_opaque(pSrc);
+    is_dest_opaque = pixman_image_is_opaque(pDst);
+
+    if(is_source_opaque == FALSE && is_dest_opaque == FALSE)
+        return op;
+
+    if(is_source_opaque && is_dest_opaque)
+        return info->opSrcDstOpaque;
+    else if(is_source_opaque)
+        return info->opSrcOpaque;
+    else if(is_dest_opaque)
+        return info->opDstOpaque;
+
+    return op;
+
+}
+
+#if defined(USE_SSE2) && defined (__GNUC__)
+
+/*
+ * Work around GCC bug causing crashes in Mozilla with SSE2
+ * 
+ * When using SSE2 intrinsics, gcc assumes that the stack is 16 byte
+ * aligned. Unfortunately some code, such as Mozilla and Mono contain
+ * code that aligns the stack to 4 bytes.
+ *
+ * The __force_align_arg_pointer__ makes gcc generate a prologue that
+ * realigns the stack pointer to 16 bytes.
+ *
+ * See https://bugs.freedesktop.org/show_bug.cgi?id=15693
+ */
+
+__attribute__((__force_align_arg_pointer__))
+#endif
+PIXMAN_EXPORT void
 pixman_image_composite (pixman_op_t      op,
 			pixman_image_t * pSrc,
 			pixman_image_t * pMask,
@@ -1617,12 +1748,16 @@ pixman_image_composite (pixman_op_t      op,
     pixman_bool_t dstAlphaMap = pDst->common.alpha_map != NULL;
     CompositeFunc func = NULL;
 
-#ifdef USE_SSE2
-    fbComposeSetupSSE();
-#endif
-    
 #ifdef USE_MMX
     fbComposeSetupMMX();
+#endif
+
+#ifdef USE_VMX
+    fbComposeSetupVMX();
+#endif
+
+#ifdef USE_SSE2
+    fbComposeSetupSSE();
 #endif
 
     if (srcRepeat && srcTransform &&
@@ -1650,7 +1785,15 @@ pixman_image_composite (pixman_op_t      op,
 	}
     }
 
-    if ((pSrc->type == BITS || can_get_solid (pSrc)) && (!pMask || pMask->type == BITS)
+    /*
+    * Check if we can replace our operator by a simpler one if the src or dest are opaque
+    * The output operator should be mathematically equivalent to the source.
+    */
+    op = pixman_optimize_operator(op, pSrc, pMask, pDst);
+    if(op == PIXMAN_OP_DST)
+        return;
+
+    if ((pSrc->type == BITS || pixman_image_can_get_solid (pSrc)) && (!pMask || pMask->type == BITS)
         && !srcTransform && !maskTransform
         && !maskAlphaMap && !srcAlphaMap && !dstAlphaMap
         && (pSrc->common.filter != PIXMAN_FILTER_CONVOLUTION)
@@ -1676,15 +1819,19 @@ pixman_image_composite (pixman_op_t      op,
 #ifdef USE_SSE2
 	if (pixman_have_sse ())
 	    info = get_fast_path (sse_fast_paths, op, pSrc, pMask, pDst, pixbuf);
-	if (!info)
 #endif
 
 #ifdef USE_MMX
-
-	if (pixman_have_mmx())
+	if (!info && pixman_have_mmx())
 	    info = get_fast_path (mmx_fast_paths, op, pSrc, pMask, pDst, pixbuf);
-	if (!info)
 #endif
+
+#ifdef USE_VMX
+
+	if (!info && pixman_have_vmx())
+	    info = get_fast_path (vmx_fast_paths, op, pSrc, pMask, pDst, pixbuf);
+#endif
+        if (!info)
 	    info = get_fast_path (c_fast_paths, op, pSrc, pMask, pDst, pixbuf);
 
 	if (info)
@@ -1750,6 +1897,51 @@ pixman_image_composite (pixman_op_t      op,
 				  srcRepeat, maskRepeat, func);
 }
 
+
+#ifdef USE_VMX
+/* The CPU detection code needs to be in a file not compiled with
+ * "-maltivec -mabi=altivec", as gcc would try to save vector register
+ * across function calls causing SIGILL on cpus without Altivec/vmx.
+ */
+static pixman_bool_t initialized = FALSE;
+static volatile pixman_bool_t have_vmx = TRUE;
+
+#ifdef __APPLE__
+#include <sys/sysctl.h>
+
+pixman_bool_t pixman_have_vmx (void) {
+    if(!initialized) {
+        size_t length = sizeof(have_vmx);
+        int error =
+            sysctlbyname("hw.optional.altivec", &have_vmx, &length, NULL, 0);
+        if(error) have_vmx = FALSE;
+        initialized = TRUE;
+    }
+    return have_vmx;
+}
+
+#else
+#include <signal.h>
+
+static void vmx_test(int sig, siginfo_t *si, void *unused) {
+    have_vmx = FALSE;
+}
+
+pixman_bool_t pixman_have_vmx (void) {
+    struct sigaction sa, osa;
+    if (!initialized) {
+        sa.sa_flags = SA_SIGINFO;
+        sigemptyset(&sa.sa_mask);
+        sa.sa_sigaction = vmx_test;
+        sigaction(SIGILL, &sa, &osa);
+        asm volatile ( "vor 0, 0, 0" );
+        sigaction(SIGILL, &osa, NULL);
+        initialized = TRUE;
+    }
+    return have_vmx;
+}
+#endif /* __APPLE__ */
+#endif /* USE_VMX */
 
 #ifdef USE_MMX
 /* The CPU detection code needs to be in a file not compiled with
