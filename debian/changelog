@@ -1,9 +1,9 @@
-pixman (0.11.6-1) UNRELEASED; urgency=low
+pixman (0.11.6-1) experimental; urgency=low
 
   * New upstream development release.
   * Bump shlibs and update symbols files.
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 25 Jun 2008 20:06:40 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 15 Jul 2008 21:36:11 +0200
 
 pixman (0.10.0-2) unstable; urgency=low
 
