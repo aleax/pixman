@@ -1,3 +1,11 @@
+pixman (0.11.8-1) UNRELEASED; urgency=low
+
+  * New upstream development release.
+  * Bump versions for pixman_image_create_bits and
+    pixman_format_supported_destination, as some formats were added in 0.11.6.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 18 Jul 2008 15:00:07 +0200
+
 pixman (0.11.6-1) experimental; urgency=low
 
   * New upstream development release.

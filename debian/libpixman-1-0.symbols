@@ -7,7 +7,7 @@ libpixman-1.so.0 libpixman-1-0 #MINVER#
  pixman_edge_step@Base 0
  pixman_fill@Base 0
  pixman_image_composite@Base 0.9.4-2
- pixman_image_create_bits@Base 0.10.0
+ pixman_image_create_bits@Base 0.11.6
  pixman_image_create_conical_gradient@Base 0
  pixman_image_create_linear_gradient@Base 0
  pixman_image_create_radial_gradient@Base 0
@@ -82,5 +82,5 @@ libpixman-1.so.0 libpixman-1-0 #MINVER#
  pixman_transform_point_3d@Base 0
  pixman_version@Base 0.10.0
  pixman_version_string@Base 0.10.0
- pixman_format_supported_destination@Base 0.10.0
+ pixman_format_supported_destination@Base 0.11.6
  pixman_format_supported_source@Base 0.10.0
