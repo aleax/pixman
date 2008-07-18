@@ -2816,7 +2816,7 @@ fbCompositeSrc_x888xnx8888sse2 (pixman_op_t op,
             cachePrefetchNext ((__m128i*)dst);
             cachePrefetchNext ((__m128i*)src);
 
-            xmmSrc = load128Unaligned ((__m128i*)src);
+            xmmSrc = _mm_or_si128 (load128Unaligned ((__m128i*)src), Maskff000000);
             xmmDst = load128Aligned ((__m128i*)dst);
 
             unpack_128_2x128 (xmmSrc, &xmmSrcLo, &xmmSrcHi);
@@ -3839,7 +3839,7 @@ fbCompositeSolidMask_nx8888x0565Csse2 (pixman_op_t op,
     fbComposeGetStart (pDst, xDst, yDst, uint16_t, dstStride, dstLine, 1);
     fbComposeGetStart (pMask, xMask, yMask, uint32_t, maskStride, maskLine, 1);
 
-    xmmSrc = unpack_32_1x128 (src);
+    xmmSrc = expandPixel_32_1x128 (src);
     xmmAlpha = expandAlpha_1x128 (xmmSrc);
 
     while (height--)
@@ -3862,7 +3862,7 @@ fbCompositeSolidMask_nx8888x0565Csse2 (pixman_op_t op,
             {
                 d = *dst;
 
-                *dst++ = pack565_32_16 (pack_1x64_32 (inOver_1x64 (_mm_movepi64_pi64 (xmmSrc),
+                *dst = pack565_32_16 (pack_1x64_32 (inOver_1x64 (_mm_movepi64_pi64 (xmmSrc),
                                                                    _mm_movepi64_pi64 (xmmAlpha),
                                                                    unpack_32_1x64 (m),
                                                                    expand565_16_1x64 (d))));
@@ -3926,7 +3926,7 @@ fbCompositeSolidMask_nx8888x0565Csse2 (pixman_op_t op,
             {
                 d = *dst;
 
-                *dst++ = pack565_32_16 (pack_1x64_32 (inOver_1x64 (_mm_movepi64_pi64 (xmmSrc),
+                *dst = pack565_32_16 (pack_1x64_32 (inOver_1x64 (_mm_movepi64_pi64 (xmmSrc),
                                                                    _mm_movepi64_pi64 (xmmAlpha),
                                                                    unpack_32_1x64 (m),
                                                                    expand565_16_1x64 (d))));

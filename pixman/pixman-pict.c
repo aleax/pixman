@@ -34,6 +34,11 @@
 #include "pixman-mmx.h"
 #include "pixman-vmx.h"
 #include "pixman-sse.h"
+#include "pixman-combine32.h"
+
+#ifdef __GNUC__
+#   define inline __inline__ __attribute__ ((__always_inline__))
+#endif
 
 #define FbFullMask(n)   ((n) == 32 ? (uint32_t)-1 : ((((uint32_t) 1) << n) - 1))
 
@@ -47,21 +52,17 @@ typedef void (* CompositeFunc) (pixman_op_t,
 				int16_t, int16_t, int16_t, int16_t, int16_t, int16_t,
 				uint16_t, uint16_t);
 
-uint32_t
-fbOver (uint32_t x, uint32_t y)
+static inline uint32_t
+fbOver (uint32_t src, uint32_t dest)
 {
-    uint16_t  a = ~x >> 24;
-    uint16_t  t;
-    uint32_t  m,n,o,p;
+    // dest = (dest * (255 - alpha)) / 255 + src
+    uint32_t a = ~src >> 24; // 255 - alpha == 255 + (~alpha + 1) == ~alpha
+    FbByteMulAdd(dest, a, src);
 
-    m = FbOverU(x,y,0,a,t);
-    n = FbOverU(x,y,8,a,t);
-    o = FbOverU(x,y,16,a,t);
-    p = FbOverU(x,y,24,a,t);
-    return m|n|o|p;
+    return dest;
 }
 
-uint32_t
+static uint32_t
 fbOver24 (uint32_t x, uint32_t y)
 {
     uint16_t  a = ~x >> 24;
@@ -74,7 +75,7 @@ fbOver24 (uint32_t x, uint32_t y)
     return m|n|o;
 }
 
-uint32_t
+static uint32_t
 fbIn (uint32_t x, uint8_t y)
 {
     uint16_t  a = y;
@@ -1107,7 +1108,7 @@ pixman_image_composite_rect  (pixman_op_t                   op,
 			      int16_t                       dest_y,
 			      uint16_t                      width,
 			      uint16_t                      height);
-void
+static void
 fbCompositeSolidFill (pixman_op_t op,
 		      pixman_image_t * pSrc,
 		      pixman_image_t * pMask,
@@ -1922,20 +1923,28 @@ pixman_bool_t pixman_have_vmx (void) {
 
 #else
 #include <signal.h>
+#include <setjmp.h>
+
+static jmp_buf jump_env;
 
 static void vmx_test(int sig, siginfo_t *si, void *unused) {
-    have_vmx = FALSE;
+    longjmp (jump_env, 1);
 }
 
 pixman_bool_t pixman_have_vmx (void) {
     struct sigaction sa, osa;
+    int jmp_result;
     if (!initialized) {
         sa.sa_flags = SA_SIGINFO;
         sigemptyset(&sa.sa_mask);
         sa.sa_sigaction = vmx_test;
         sigaction(SIGILL, &sa, &osa);
-        asm volatile ( "vor 0, 0, 0" );
+	jmp_result = setjmp (jump_env);
+	if (jmp_result == 0) {
+	    asm volatile ( "vor 0, 0, 0" );
+	}
         sigaction(SIGILL, &osa, NULL);
+	have_vmx = (jmp_result == 0);
         initialized = TRUE;
     }
     return have_vmx;
