@@ -32,9 +32,12 @@ config-stamp: autogen-stamp
 	dh_testdir
 	test -d obj-$(DEB_BUILD_GNU_TYPE) || mkdir obj-$(DEB_BUILD_GNU_TYPE)
 	cd obj-$(DEB_BUILD_GNU_TYPE) && \
-	../configure --prefix=/usr --mandir=\$${prefix}/share/man \
-	--infodir=\$${prefix}/share/info $(confflags) \
-	CFLAGS="$(CFLAGS)" 
+	../configure \
+	  --prefix=/usr \
+	  --mandir=\$${prefix}/share/man \
+	  --infodir=\$${prefix}/share/info \
+	  $(confflags) \
+	  CFLAGS="$(CFLAGS)"
 	touch $@
 
 
