@@ -83,4 +83,4 @@ libpixman-1.so.0 libpixman-1-0 #MINVER#
  pixman_version@Base 0.10.0
  pixman_version_string@Base 0.10.0
  pixman_format_supported_destination@Base 0.11.6
- pixman_format_supported_source@Base 0.10.0
+ pixman_format_supported_source@Base 0.11.10
