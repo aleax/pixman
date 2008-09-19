@@ -1,8 +1,4 @@
-  - Rename "SSE" to "MMX_EXTENSIONS"
-
   - SSE 2 issues:
-
-      - Commented-out uses of fbCompositeCopyAreasse2()
 
       - Use MM_HINT_NTA instead of MM_HINT_T0
 
@@ -39,11 +35,20 @@
         to indicate the actual depth. That way PIXMAN_x4c4 and PIXMAN_c8
 	won't collide.
 
+  - Maybe bite the bullet and make configure.ac generate a pixman-types.h
+    file that can be included from pixman.h to avoid the #ifdef magic
+    in pixman.h
+
   - Make pixman_region_point_in() survive a NULL box, then fix up
     pixman-compose.c
 
       - Possibly look into inlining the fetch functions
 
+  - There is a bug with source clipping demonstrated by clip-test in the
+    test directory. If we interprete source clipping as given in
+    destination coordinates, which is probably the only sane choice,
+    then the result should have two red bars down the sides.
+    
   - Test suite
 
   - Add a general way of dealing with architecture specific
@@ -172,6 +177,12 @@
 
 
 done:
+
+- Be consistent about calling sse2 sse2
+
+- Rename "SSE" to "MMX_EXTENSIONS". (Deleted mmx extensions).
+
+- Commented-out uses of fbCompositeCopyAreasse2()
 
 - Consider whether calling regions region16 is really such a great
   idea. Vlad wants 32 bit regions for Cairo. This will break X server

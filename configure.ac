@@ -53,8 +53,8 @@ AC_PREREQ([2.57])
 #
 
 m4_define([pixman_major], 0)
-m4_define([pixman_minor], 11)
-m4_define([pixman_micro], 8)
+m4_define([pixman_minor], 12)
+m4_define([pixman_micro], 0)
 
 m4_define([pixman_version],[pixman_major.pixman_minor.pixman_micro])
 
@@ -67,7 +67,7 @@ AC_PROG_CC
 AC_PROG_LIBTOOL
 AC_CHECK_FUNCS([getisax])
 AC_C_BIGENDIAN
-
+AC_C_INLINE
 # 
 # We ignore pixman_major in the version here because the major version should
 # always be encoded in the actual library name. Ie., the soname is:
@@ -113,7 +113,7 @@ AC_MSG_CHECKING(for -fvisibility)
 AC_COMPILE_IFELSE([
 #if defined(__GNUC__) && (__GNUC__ >= 4)
 #else
-#error Need GCC 4.0 for visibility
+error Need GCC 4.0 for visibility
 #endif
 int main () { return 0; } 
 ], have_gcc4=yes)
@@ -123,14 +123,25 @@ if test "x$have_gcc4" = "xyes"; then
 fi
 AC_MSG_RESULT($have_gcc4)
 
+have_sunstudio8=no
+AC_MSG_CHECKING([for -xldscope (Sun compilers)])
+AC_COMPILE_IFELSE([
+#if defined(__SUNPRO_C) && (__SUNPRO_C >= 0x550)
+#else
+error Need Sun Studio 8 for visibility
+#endif
+int main () { return 0; } 
+], have_sunstudio8=yes)
+
+if test "x$have_sunstudio8" = "xyes"; then
+   CFLAGS="$CFLAGS -xldscope=hidden"
+fi
+AC_MSG_RESULT($have_sunstudio8)
+
 dnl ===========================================================================
 dnl Check for MMX
 
 MMX_CFLAGS="-mmmx -Winline"
-
-if test "x$GCC" = "xyes"; then
-    MMX_CFLAGS="$MMX_CFLAGS --param inline-unit-growth=10000 --param large-function-growth=10000"
-fi
 
 have_mmx_intrinsics=no
 AC_MSG_CHECKING(whether to use MMX intrinsics)
@@ -138,7 +149,7 @@ xserver_save_CFLAGS=$CFLAGS
 CFLAGS="$CFLAGS $MMX_CFLAGS"
 AC_COMPILE_IFELSE([
 #if defined(__GNUC__) && (__GNUC__ < 3 || (__GNUC__ == 3 && __GNUC_MINOR__ < 4))
-#error "Need GCC >= 3.4 for MMX intrinsics"
+error "Need GCC >= 3.4 for MMX intrinsics"
 #endif
 #include <mmintrin.h>
 int main () {
@@ -169,62 +180,21 @@ fi
 
 AM_CONDITIONAL(USE_MMX, test $have_mmx_intrinsics = yes)
 
-dnl =======================================================
-
-dnl GCC 4.2 when compiling with -msse will generate SSE instructions
-dnl on its own.  This means anything compiled with -mss can only be
-dnl run after a runtime check for SSE.  Unfortunately, since we still
-dnl need to support MMX-but-not-SSE (such as the OLPC), this means we
-dnl can only use SSE when compiling for x86-64 (where SSE is always
-dnl supported).
-
-have_sse_intrinsics=no
-AC_MSG_CHECKING(whether to use SSE intrinsics)
-xserver_save_CFLAGS=$CFLAGS
-CFLAGS="$CFLAGS -msse $MMX_CFLAGS"
-
-AC_COMPILE_IFELSE([
-#if defined(__GNUC__) && (__GNUC__ < 3 || (__GNUC__ == 3 && __GNUC_MINOR__ < 4))
-#error "Need GCC >= 3.4 for SSE intrinsics"
-#endif
-#if !defined(__amd64__) && !defined(__x86_64__)
-#error "Need x86-64 for SSE"
-#endif
-#include <mmintrin.h>
-#include <xmmintrin.h>
-int main () {
-    __m64 v = _mm_cvtsi32_si64 (1);
-    v = _mm_shuffle_pi16 (v, _MM_SHUFFLE(3, 3, 3, 3));
-    return _mm_cvtsi64_si32 (v);
-}], have_sse_intrinsics=yes)
-CFLAGS=$xserver_save_CFLAGS
-AC_MSG_RESULT($have_sse_intrinsics)
-
-if test $have_sse_intrinsics = yes ; then
-   AC_DEFINE(USE_SSE, 1, [use SSE compiler intrinsics])
-   MMX_CFLAGS="-msse $MMX_CFLAGS"
-fi
-
-AM_CONDITIONAL(USE_SSE, test $have_sse_intrinsics = yes)
-
-
 dnl ===========================================================================
 dnl Check for SSE2
 
-SSE_CFLAGS="-mmmx -msse2 -Winline"
-
-if test "x$GCC" = "xyes"; then
-    SSE_CFLAGS="$SSE_CFLAGS --param inline-unit-growth=10000 --param large-function-growth=10000 --param  max-inline-insns-single=6000"
-fi
+SSE2_CFLAGS="-mmmx -msse2 -Winline"
 
 have_sse2_intrinsics=no
 AC_MSG_CHECKING(whether to use SSE2 intrinsics)
 xserver_save_CFLAGS=$CFLAGS
-CFLAGS="$CFLAGS -msse2 $SSE_CFLAGS"
+CFLAGS="$CFLAGS -msse2 $SSE2_CFLAGS"
 
 AC_COMPILE_IFELSE([
 #if defined(__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 2))
-#error "Need GCC >= 4.2 for SSE2 intrinsics"
+#   if !defined(__amd64__) && !defined(__x86_64__)
+#      error "Need GCC >= 4.2 for SSE2 intrinsics on x86"
+#   endif
 #endif
 #include <mmintrin.h>
 #include <xmmintrin.h>
@@ -250,7 +220,7 @@ if test $have_sse2_intrinsics = yes ; then
 fi
 
 AC_MSG_RESULT($have_sse2_intrinsics)
-if test $enable_sse2 = yes && test $have_sse_intrinsics = no ; then
+if test $enable_sse2 = yes && test $have_sse2_intrinsics = no ; then
    AC_MSG_ERROR([SSE2 intrinsics not detected])
 fi
 
@@ -258,7 +228,7 @@ AM_CONDITIONAL(USE_SSE2, test $have_sse2_intrinsics = yes)
 
 dnl ========================================================
 AC_SUBST(MMX_CFLAGS)
-AC_SUBST(SSE_CFLAGS)
+AC_SUBST(SSE2_CFLAGS)
 
 dnl Check for VMX/Altivec
 if test -n "`$CC -v 2>&1 | grep version | grep Apple`"; then
@@ -273,7 +243,7 @@ xserver_save_CFLAGS=$CFLAGS
 CFLAGS="$CFLAGS $VMX_CFLAGS"
 AC_COMPILE_IFELSE([
 #if defined(__GNUC__) && (__GNUC__ < 3 || (__GNUC__ == 3 && __GNUC_MINOR__ < 4))
-#error "Need GCC >= 3.4 for sane altivec support"
+error "Need GCC >= 3.4 for sane altivec support"
 #endif
 #include <altivec.h>
 int main () {

@@ -11,7 +11,9 @@ libpixman_1_la_SOURCES =		\
 	pixman-private.h		\
 	pixman-image.c			\
 	pixman-combine32.c		\
+	pixman-combine32.h		\
 	pixman-combine64.c		\
+	pixman-combine64.h		\
 	pixman-compose.c		\
 	pixman-compose-accessors.c	\
 	pixman-pict.c			\
@@ -68,12 +70,12 @@ endif
 
 # sse2 code
 if USE_SSE2
-noinst_LTLIBRARIES += libpixman-sse.la
-libpixman_sse_la_SOURCES = \
-	pixman-sse.c \
-	pixman-sse.h
-libpixman_sse_la_CFLAGS = $(DEP_CFLAGS) $(SSE_CFLAGS)
-libpixman_sse_la_LIBADD = $(DEP_LIBS)
-libpixman_1_la_LIBADD += libpixman-sse.la
+noinst_LTLIBRARIES += libpixman-sse2.la
+libpixman_sse2_la_SOURCES = \
+	pixman-sse2.c \
+	pixman-sse2.h
+libpixman_sse2_la_CFLAGS = $(DEP_CFLAGS) $(SSE2_CFLAGS)
+libpixman_sse2_la_LIBADD = $(DEP_LIBS)
+libpixman_1_la_LIBADD += libpixman-sse2.la
 endif
 

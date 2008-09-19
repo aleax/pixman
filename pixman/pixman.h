@@ -74,7 +74,7 @@ SOFTWARE.
 /*
  * Standard integers
  */
-#if defined (_SVR4) || defined (SVR4) || defined (__OpenBSD__) || defined (_sgi)
+#if defined (_SVR4) || defined (SVR4) || defined (__OpenBSD__) || defined (_sgi) || defined (__sun) || defined (sun)
 #  include <inttypes.h>
 #elif defined (_MSC_VER)
 typedef __int8 int8_t;
@@ -85,6 +85,8 @@ typedef __int32 int32_t;
 typedef unsigned __int32 uint32_t;
 typedef __int64 int64_t;
 typedef unsigned __int64 uint64_t;
+#elif defined (_AIX)
+#  include <sys/inttypes.h>
 #else
 #  include <stdint.h>
 #endif
