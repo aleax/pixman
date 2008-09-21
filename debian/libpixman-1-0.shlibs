@@ -1,2 +1,2 @@
-libpixman-1 0 libpixman-1-0 (>= 0.11.6)
-udeb: libpixman-1 0 libpixman-1-0-udeb (>= 0.11.6)
+libpixman-1 0 libpixman-1-0 (>= 0.11.10)
+udeb: libpixman-1 0 libpixman-1-0-udeb (>= 0.11.10)
