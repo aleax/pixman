@@ -26,7 +26,8 @@ libpixman_1_la_SOURCES =		\
 	pixman-edge-imp.h		\
 	pixman-trap.c			\
 	pixman-compute-region.c		\
-	pixman-timer.c
+	pixman-timer.c			\
+	pixman-matrix.c
 
 libpixmanincludedir = $(includedir)/pixman-1/
 libpixmaninclude_HEADERS = pixman.h pixman-version.h
@@ -78,4 +79,16 @@ libpixman_sse2_la_CFLAGS = $(DEP_CFLAGS) $(SSE2_CFLAGS)
 libpixman_sse2_la_LIBADD = $(DEP_LIBS)
 libpixman_1_la_LIBADD += libpixman-sse2.la
 endif
+
+# arm code
+if USE_ARM_SIMD
+noinst_LTLIBRARIES += libpixman-arm-simd.la
+libpixman_arm_simd_la_SOURCES = \
+	pixman-arm-simd.c \
+	pixman-arm-simd.h
+libpixman_arm_simd_la_CFLAGS = $(DEP_CFLAGS) $(ARM_CFLAGS)
+libpixman_arm_simd_la_LIBADD = $(DEP_LIBS)
+libpixman_1_la_LIBADD += libpixman-arm-simd.la
+endif
+
 

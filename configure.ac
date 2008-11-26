@@ -53,8 +53,8 @@ AC_PREREQ([2.57])
 #
 
 m4_define([pixman_major], 0)
-m4_define([pixman_minor], 12)
-m4_define([pixman_micro], 0)
+m4_define([pixman_minor], 13)
+m4_define([pixman_micro], 2)
 
 m4_define([pixman_version],[pixman_major.pixman_minor.pixman_micro])
 
@@ -276,6 +276,44 @@ fi
 AC_SUBST(VMX_CFLAGS)
 
 AM_CONDITIONAL(USE_VMX, test $have_vmx_intrinsics = yes)
+
+dnl Check for ARM SIMD instructions
+
+have_arm_simd=no
+AC_MSG_CHECKING(whether to use ARM SIMD assembler)
+xserver_save_CFLAGS=$CFLAGS
+CFLAGS="$CFLAGS $ARM_CFLAGS"
+AC_COMPILE_IFELSE([
+int main () {
+    asm("uqadd8 r1, r1, r2");
+    return 0;
+}], have_arm_simd=yes)
+CFLAGS=$xserver_save_CFLAGS
+
+AC_ARG_ENABLE(arm-simd,
+   [AC_HELP_STRING([--disable-arm-simd],
+                   [disable ARM SIMD fast paths])],
+   [enable_arm_simd=$enableval], [enable_arm_simd=auto])
+
+if test $enable_arm_simd = no ; then
+   have_arm_simd=disabled
+fi
+
+if test $have_arm_simd = yes ; then
+   AC_DEFINE(USE_ARM_SIMD, 1, [use ARM SIMD compiler intrinsics])
+else
+   ARM_CFLAGS=
+fi
+
+AC_MSG_RESULT($have_arm_simd)
+if test $enable_arm_simd = yes && test $have_arm_simd = no ; then
+   AC_MSG_ERROR([ARM SIMD intrinsics not detected])
+fi
+
+AC_SUBST(ARM_CFLAGS)
+
+AM_CONDITIONAL(USE_ARM_SIMD, test $have_arm_simd = yes)
+
 
 AC_ARG_ENABLE(gtk,
    [AC_HELP_STRING([--enable-gtk],
