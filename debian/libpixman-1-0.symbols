@@ -5,6 +5,19 @@ libpixman-1.so.0 libpixman-1-0 #MINVER#
  pixman_compute_composite_region@Base 0
  pixman_edge_init@Base 0
  pixman_edge_step@Base 0
+ pixman_f_transform_bounds@Base 0.13.2
+ pixman_f_transform_from_pixman_transform@Base 0.13.2
+ pixman_f_transform_init_identity@Base 0.13.2
+ pixman_f_transform_init_rotate@Base 0.13.2
+ pixman_f_transform_init_scale@Base 0.13.2
+ pixman_f_transform_init_translate@Base 0.13.2
+ pixman_f_transform_invert@Base 0.13.2
+ pixman_f_transform_multiply@Base 0.13.2
+ pixman_f_transform_point@Base 0.13.2
+ pixman_f_transform_point_3d@Base 0.13.2
+ pixman_f_transform_rotate@Base 0.13.2
+ pixman_f_transform_scale@Base 0.13.2
+ pixman_f_transform_translate@Base 0.13.2
  pixman_fill@Base 0
  pixman_image_composite@Base 0.9.4-2
  pixman_image_create_bits@Base 0.11.6
@@ -79,6 +92,22 @@ libpixman-1.so.0 libpixman-1-0 #MINVER#
  pixman_region_union_rect@Base 0
  pixman_sample_ceil_y@Base 0
  pixman_sample_floor_y@Base 0
+ pixman_transform_bounds@Base 0.13.2
+ pixman_transform_from_pixman_f_transform@Base 0.13.2
+ pixman_transform_init_identity@Base 0.13.2
+ pixman_transform_init_rotate@Base 0.13.2
+ pixman_transform_init_scale@Base 0.13.2
+ pixman_transform_init_translate@Base 0.13.2
+ pixman_transform_invert@Base 0.13.2
+ pixman_transform_is_identity@Base 0.13.2
+ pixman_transform_is_int_translate@Base 0.13.2
+ pixman_transform_is_inverse@Base 0.13.2
+ pixman_transform_is_scale@Base 0.13.2
+ pixman_transform_multiply@Base 0.13.2
+ pixman_transform_point@Base 0.13.2
+ pixman_transform_rotate@Base 0.13.2
+ pixman_transform_scale@Base 0.13.2
+ pixman_transform_translate@Base 0.13.2
  pixman_transform_point_3d@Base 0
  pixman_version@Base 0.10.0
  pixman_version_string@Base 0.10.0

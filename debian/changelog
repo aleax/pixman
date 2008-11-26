@@ -1,8 +1,9 @@
 pixman (0.13.2-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * Update libpixman-1-0.symbols with new symbols.
 
- -- Timo Aaltonen <tepsipakki@ubuntu.com>  Wed, 26 Nov 2008 10:43:30 +0200
+ -- Timo Aaltonen <tepsipakki@ubuntu.com>  Wed, 26 Nov 2008 12:31:10 +0200
 
 pixman (0.12.0-1) experimental; urgency=low
 
