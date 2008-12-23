@@ -1,7 +1,12 @@
 pixman (0.13.2-1) UNRELEASED; urgency=low
 
+  [ Timo Aaltonen ]
   * New upstream release.
   * Update libpixman-1-0.symbols with new symbols.
+
+  [ Julien Cristau ]
+  * Don't use ARM SIMD code.  It doesn't do runtime detection, and will only
+    work on ARMv6.
 
  -- Timo Aaltonen <tepsipakki@ubuntu.com>  Wed, 26 Nov 2008 12:31:10 +0200
 

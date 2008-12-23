@@ -36,6 +36,7 @@ config-stamp: autogen-stamp
 	  --prefix=/usr \
 	  --mandir=\$${prefix}/share/man \
 	  --infodir=\$${prefix}/share/info \
+	  --disable-arm-simd \
 	  $(confflags) \
 	  CFLAGS="$(CFLAGS)"
 	touch $@
