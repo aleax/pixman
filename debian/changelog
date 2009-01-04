@@ -7,6 +7,7 @@ pixman (0.13.2-1) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * Don't use ARM SIMD code.  It doesn't do runtime detection, and will only
     work on ARMv6.
+  * Fix shlibs for the udeb.
 
  -- Timo Aaltonen <tepsipakki@ubuntu.com>  Wed, 26 Nov 2008 12:31:10 +0200
 

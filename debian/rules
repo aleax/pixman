@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 
 PACKAGE = libpixman-1-0
+SHLIBS_VERSION = 0.13.2
 
 CFLAGS = -Wall -g
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
@@ -87,7 +88,7 @@ binary-arch: install
 	dh_strip --dbg-package=$(PACKAGE)-dbg
 	dh_compress
 	dh_fixperms
-	dh_makeshlibs -p$(PACKAGE) --add-udeb $(PACKAGE)-udeb
+	dh_makeshlibs -p$(PACKAGE) --add-udeb $(PACKAGE)-udeb -V"$(PACKAGE) (>= $(SHLIBS_VERSION))"
 	dh_shlibdeps
 	dh_installdeb
 	dh_gencontrol
