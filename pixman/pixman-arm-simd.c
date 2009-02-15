@@ -60,7 +60,9 @@ fbCompositeSrcAdd_8000x8000arm (pixman_op_t op,
 	srcLine += srcStride;
 	w = width;
 
-	while (w && (unsigned long)dst & 3)
+        /* ensure both src and dst are properly aligned before doing 32 bit reads
+         * we'll stay in this loop if src and dst have differing alignments */
+	while (w && (((unsigned long)dst & 3) || ((unsigned long)src & 3)))
 	{
 	    s = *src;
 	    d = *dst;
