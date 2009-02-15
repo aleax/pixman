@@ -1,7 +1,11 @@
-pixman (0.10.0-3) UNRELEASED; urgency=low
+pixman (0.14.0-1) UNRELEASED; urgency=low
 
+  [ Brice Goglin ]
   * Update upstream URL in debian/copyright.
   * Install the upstream ChangeLog.
+
+  [ Julien Cristau ]
+  * New upstream release.
 
  -- Brice Goglin <bgoglin@debian.org>  Fri, 13 Jun 2008 12:00:17 +0200
 

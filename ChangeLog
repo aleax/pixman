@@ -1,0 +1,3180 @@
+commit 6df6a43dc7119a510cf9db2e62fcc970a539e5a3
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Feb 6 17:31:32 2009 -0500
+
+    Bump version number pre release
+
+commit 6e6c7ac5e0bce2e1893675eb45a8d98876085794
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Feb 6 17:30:24 2009 -0500
+
+    Comment out SrcScaledNearest optimization that hasn't been tested much
+
+commit e651118b67111d36193f55a752d13e66df5ca953
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Feb 6 17:29:04 2009 -0500
+
+    Fix release targets to remove all hashfiles before generating tar balls
+
+commit 072d848f592530973f1f0a0066a320ec5965625c
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Fri Jan 9 12:48:22 2009 -0500
+
+    Add pixman-matrix.c to Makefile.win32
+
+commit c55db2905706ae78364bfb63dcfa62c00cc486c7
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Fri Jan 9 12:48:20 2009 -0500
+
+    Conditionally include config.h in pixman-matrix.c to fix win32 build
+
+commit 8f98ffadf58de1e28294b3ab2c09f380ccc535e5
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Sat Dec 20 17:18:51 2008 +0000
+
+    Fix pixman-1-uninstalled.pc to point to the libtool library
+    
+    Otherwise we fail to link when compiling cairo against the uninstalled
+    library.
+
+commit 9d726712c22d8555d00b9f1ebacd5425dc9a5b61
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Fri Nov 21 01:20:38 2008 +0000
+
+    Allocate initial array of RegionInfo on the stack.
+    
+    The region validate() code is frequently called by cairo as it is used to
+    extract regions from the trapezoids for fast-paths through the drawing
+    code and also for fast-path clipping and the RegionInfo allocation (as
+    well as the pixman_rect_alloc during the final union) appears as a hot
+    spot on application memory profiles.
+
+commit 08530f5bf23386355a19b83db88173302c7a5300
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Wed Dec 17 10:35:03 2008 -0800
+
+    Don't treat PIXMAN_TYPE_YUY2 and PIXMAN_TYPE_YV12 as PIXMAN_FORMAT_COLOR.
+    
+    Various pieces of code expect PIXMAN_FORMAT_COLOR (and its less cool older
+    brother, PICT_FORMAT_COLOR) formats to have ARGB bits, and the YUV formats do
+    not.
+
+commit 4546234c18f5bb5e2d193d2fa8ff5c3ca78bc716
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Fri Dec 5 12:01:03 2008 -0500
+
+    [arm-simd] Add a comment about aligning source and destination pointers.
+
+commit 985829f26b15aaa3e336127412c771027577313f
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Fri Dec 5 11:45:03 2008 -0500
+
+    Check alignment of 'src' pointer in optimized ARM routines
+    
+    fbCompositeSrcAdd_8000x8000arm() tries to align 'dst' already but must check
+    'src' too.  Otherwise, the next 4-byte copy loop might access an odd 'src' address
+    causing an alignment trap.
+    
+    Patch from Enrico Scholz
+
+commit 4238047c228ca885a24bd341aa48a3ad54590837
+Merge: bfa76d4... d625ca5...
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Nov 25 22:04:29 2008 -0800
+
+    Merge commit 'origin/master'
+
+commit bfa76d47ac85c88fbb9d7226f09c6c6654b10342
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Nov 25 22:03:55 2008 -0800
+
+    Bump to 0.13.3 after 0.13.2 release
+
+commit 0191d1a41ea273e5b1920ed83dfa33820870ebae
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Nov 25 21:37:54 2008 -0800
+
+    Bump version to 0.13.2 for release
+
+commit 6002963ea32d05592da05a6eeafd5d8ee9d9d496
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Nov 24 11:49:32 2008 -0800
+
+    Move matrix operations from X server to pixman
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit d625ca5f291c01b3672648e5897f30a17326367f
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Mon Nov 24 15:11:24 2008 -0500
+
+    Optimize rectilinear nearest-neighbour scaling
+    
+    Add a special case for a source transformation that is only a scale and
+    preserves rectangular pixels and doesn't rotate the image. Currently, only
+    SOURCE is special cased, however I plan to do more work in this area as needed.
+    The biggest advantage the specialization currently has is writing directly to
+    the destination surface instead of a temporary scanline buffer. However, it is
+    still pretty unoptimized but I want to keep things simple for now.
+
+commit 0c3dd54f6bf02156e4b94a2b5bfadef148715643
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Fri Nov 21 21:35:30 2008 -0500
+
+    Unify scanline buffer types
+    
+    Change the type of the stack based scanline buffer to uint8_t to match the rest
+    of the variables. Also premultiply the scanline buffer size by sizeof(uint32_t)
+    because the bpp can be either sizeof(uint32_t) or sizeof(uint64_t).
+
+commit e201504da81cd9ceb7d20d12b3a923289f93b108
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Thu Nov 20 10:41:40 2008 -0500
+
+    [arm-simd] Fix typo found by 王新拓
+    
+    'and r7, %[upper_component_mask]' appears to by a short hand for
+    'and r7, %[upper_component_mask], %[upper_component_mask]'. Use
+    the explicit form to avoid any confusion.
+
+commit cd2a79ab81045aa7e35bc901081e57dea6ac4845
+Author: David Woodhouse <dwmw2@infradead.org>
+Date:   Tue Nov 18 16:01:11 2008 -0500
+
+    Less fragile Linux altivec detection
+    
+    Instead of using really fragile SIGILL trapping, use a more reliable
+    detection method by checking what the CPU really supports.
+    
+    https://bugzilla.redhat.com/show_bug.cgi?id=472000
+    https://bugzilla.redhat.com/show_bug.cgi?id=451831
+
+commit b1b0507c24d7a3afb1ee09fc23783fa22cd0e56e
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Nov 10 23:18:09 2008 -0500
+
+    Make comments about PIXMAN_REFLECT more useful
+
+commit 056c6d97db753a928ac2794ec215c86cceffe901
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Nov 5 23:58:56 2008 -0500
+
+    Various formatting fixes, and a simplification of the adjusting code
+
+commit 607562b2a6cc8536350d0a9bcb6fe99224ad4f1f
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Nov 5 17:51:55 2008 -0500
+
+    Inline the fetchers
+
+commit 7a1717e605e502b52ebca999991d2e07791e0cd1
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Nov 5 17:23:45 2008 -0500
+
+    Use fetch_nearest() instead of having duplicated code
+
+commit 49647e705438e0827d4a0e955dfaaf01cfae7524
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Nov 5 17:12:22 2008 -0500
+
+    Do the fetch_bilinear inline rather than in separate functions
+
+commit c8b314c43bd70a1c375aef3cacfe717ca9dbc85b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Nov 5 16:59:56 2008 -0500
+
+    Make use of fetch_bilinear() in the various bilinear implementations
+
+commit bad1ee39d3cc27ec07303f6484515a886430cda6
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Nov 5 16:38:33 2008 -0500
+
+    Add fetch_bilinear function
+
+commit 95f2af9584f8f4327ddf6d6948dee17ab48ad8b3
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Nov 3 13:09:02 2008 -0500
+
+    Add missing pixman-arm-simd.[ch] files.
+    
+    Pointed out by Chris Ball and Adrian Bunk.
+
+commit 1d5bb7a3f17fb88cdabee8a27b79fb9fb129e189
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Oct 31 15:08:03 2008 -0400
+
+    Inlucde inttypes.h on digital Tru64
+    
+    Bug 18007, reported by Joonas Pihlaja.
+
+commit f9db3ec7b94db45f388b210d7bed639048f1aa23
+Author: Adrian Bunk <adrian.bunk@movial.fi>
+Date:   Fri Oct 31 14:59:30 2008 -0400
+
+    Rename the current ARM code to ARM SIMD
+    
+    This code is only for CPUs supporting the SIMD instructions, not for all ARM
+    CPUs.
+    
+    I stumbled above the recent commit with the ARM SIMD code while preparing a
+    patch that models the patch from #13445 after the MMX and SSE2 cases:
+    
+    The ARM SIMD option currently uses --disable-arm, although this code is only
+    for CPUs >= ARMv6. That's as if one would call the option to disable the SSE2
+    code --disable-x86.
+    
+    This patch therefore renames the configure option and the function and file
+    names to arm-simd/arm_simd.
+
+commit b9e2dd783e34969aa7c41877b0aa49920788637b
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Wed Oct 29 18:13:59 2008 -0700
+
+    Define force_inline for compilers other than gcc & MS Visual C
+
+commit 3a775610f22d09fc030804c6dd02208d36920b54
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Wed Oct 29 17:14:41 2008 -0700
+
+    Cleanup inline definitions
+    
+    Replace all inline definitions with a common one in pixman-private.h. Also, add
+    'force_inline' and replace all existing uses of 'inline' as a forced inline
+    with 'force_inline'.
+
+commit d68ebb7701e61d7f19c87d2d3686eb30e85e2ede
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Oct 15 18:46:38 2008 -0400
+
+    Remove unused AddMul_256 macro
+
+commit 8f5cb6916ddea072e453681d80a879a64bd22f8c
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Mon Oct 13 00:05:40 2008 +0200
+
+    unswitch red and blue
+    
+    The previous code assumed a color format of ABGR when naming the
+    variables. The true color format is ARGB. This did not cause any bugs
+    because no functions rely on the order of colors so far. This patch
+    renames the variables just to avoid confusion.
+
+commit f5d4e01c399d6d23fd7e4cfaa26e0b07e2279690
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Wed Oct 8 21:21:58 2008 +0200
+
+    update .gitignore
+
+commit 69dadf231283fadcb117b4d9e799e8633a0e4dab
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Wed Oct 8 21:18:12 2008 +0200
+
+    force alignment of arg pointer in potential SSE users
+    
+    Fix for bug 17824
+
+commit 1c5de7b05831b3d66821707276b71974a232f5c7
+Author: David Müller <dave.mueller@gmx.ch>
+Date:   Tue Sep 23 07:45:51 2008 -0400
+
+    Move _mm_empty() to correct place
+    
+    The "fbComposeSetupSSE2()" function is guarding most of its code
+    depending on the capabilities of the CPU, but unfortunately the call
+    to "_mm_empty()" is not part of this code path but executed
+    unconditionally.  This results in a "illegal instruction" crash on
+    non-MMX / non-SSE capable CPUs caused by the the "emms" instruction
+    (embedded in "_mm_empty()").
+    
+    Fix bug 17729.
+
+commit aadcc7f011004794cf88c126641ef8258183878f
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Sun Sep 21 11:01:07 2008 -0400
+
+    Update TODO
+
+commit 9cb60e142bad01fd54cb7e6f3fa2504ddc87a7da
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Sun Sep 21 11:00:33 2008 -0400
+
+    Make use of SSE2 blt/fill in more places
+
+commit d69d2705d16c813756acd8a685dc9a28a178423a
+Merge: b5a9002... 412b0d5...
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Fri Sep 19 10:29:05 2008 +0200
+
+    Merge tag 'pixman-0.12.0'
+    
+    Conflicts:
+    
+    	configure.ac
+
+commit b5a9002d2e3f0d961bcfe2acee6e9a0f1c583d5d
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Thu Sep 18 19:28:31 2008 -0400
+
+    Inline fetch functions in pixman-transformed.c
+    
+    There was significant performance overhead associated with indirect
+    call to the fetch functions, so inline them.
+    
+    Also, the old code assumed that if the number of rectangles in the
+    source clip was 1, then the clip was identical to the image
+    boundaries. Fix that by running a full region_contains_point()
+    whenever the source clip is different from pict->common.full_region.
+    
+    Based on a patch from Antoine Azar.
+
+commit a57e7bf34a2f312285c8065b8b1328bd5650788a
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Thu Sep 18 11:44:36 2008 -0400
+
+    Fix inner branch code.
+    
+    The entire source must be 0 not just the alpha component.
+    Fix some comments too.
+
+commit 54ee41a6603441bf09bbc95c2fec3d0a41c82d0f
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Wed Sep 17 14:38:47 2008 -0400
+
+    Post release version bump
+
+commit 24de3b74f4db3db569e1edface5e5804b58c02b5
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Wed Sep 17 14:03:23 2008 -0400
+
+    Pre-release version bump
+
+commit 7180230d4d87c55dfef1e17a0cc3b125d45aa3a0
+Author: Vladimir Vukicevic <vladimir@slide.(none)>
+Date:   Wed Sep 17 16:01:31 2008 -0400
+
+    Add SRC x888x0565 C fast path
+
+commit d0b181f347ef4720d130beee3f03196afbd28aba
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Wed Sep 17 15:53:20 2008 -0400
+
+    Add support for ARMv6 SIMD fastpaths.
+
+commit 412b0d5cbc2c0a5200649cbb0b5e26f8b874437d
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Wed Sep 17 14:03:23 2008 -0400
+
+    Pre-release version bump
+
+commit 3f5d6f90b753175a888f36a93d1e79fdc80d95de
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Wed Sep 17 09:50:57 2008 -0400
+
+    Don't include stdio.h
+
+commit eba402092082bf48072671e04e224589af872acd
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Sun Sep 14 14:58:00 2008 -0400
+
+    [sse2] Fix rounding bug in conversion from 565 to 8888
+    
+    When converting from 565 to 8888, replicate the topmost bits instead
+    of appending zeros.
+
+commit 6f00d98f87c019849c611d27e9593c5eecfef4c2
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Tue Sep 9 10:49:56 2008 -0400
+
+    Fix for bug 17477.
+    
+    over_2x128 was changing the alphaLo and alphaHi arguments, causing
+    stripes.
+
+commit bf76505cc6cc5e54c25eb145748e9e364fb367e9
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Sun Sep 7 00:40:09 2008 -0400
+
+    Update TODO
+
+commit da18a5675b3107c9bf99e228d85619d247fa19a6
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Sun Sep 7 00:13:10 2008 -0400
+
+    Extend clip-test to demonstrate a bug in source clipping
+
+commit 00f3d6ef22b5a062323208fd540a17ca65dca42b
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Sat Sep 6 23:49:25 2008 -0400
+
+    Fix bug in pixman_image_is_opaque()
+    
+    Non-repeating gradient images would be reported as opaque. Also add
+    new test program to test source clipping.
+
+commit d5b4fd7e11c2f2b2e8ab3cb95bef252ce142982e
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Sat Sep 6 06:17:32 2008 -0400
+
+    Update RELEASING
+
+commit 35fcdf352a29241f235f2bc7a692c20ad8baf240
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Sat Sep 6 06:15:31 2008 -0400
+
+    Bump release
+
+commit 5e7388540f2cd201331cb3d1f616e3c300dbc45f
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Sat Sep 6 05:14:18 2008 -0400
+
+    Check for __sun || __sun in pixman.h. Update TODO
+    
+    Reported by Bernd Nies.
+
+commit f369d612b3d65529e4b10d8a0b1e015407357d9b
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Sat Sep 6 04:33:16 2008 -0400
+
+    Use error instead of #error in a couple of other places
+
+commit f921c8c57ffdd6d0afd3d41d50e3565084ebd49c
+Author: Peter O'Gorman <pogma@thewrittenword.com>
+Date:   Fri Aug 15 15:00:24 2008 -0500
+
+    Minor portability fixes
+    
+    Use AC_C_INLINE to figure out `inline'.
+    IRIX compiler does not exit with a non-zero exit status when it sees #error
+
+commit e2cbe1a0a4db750ab05d804901f155adb312746b
+Author: Frédéric Plourde <frederic.plourde@polymtl.ca>
+Date:   Thu Sep 4 16:30:21 2008 -0400
+
+    Win32 build system fixes
+    
+    Signed-off-by: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+
+commit ed862f1b2f62ee27884b9b429c54162039f3cb10
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Thu Sep 4 16:21:08 2008 -0400
+
+    Make sure pixman-combine{32,64}.h are disted
+
+commit f9d3f372f907c997abe4c4a65cc4a3dbe0bb41e2
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Aug 24 00:40:16 2008 -0400
+
+    Rename pixman-sse.h pixman-sse2.h
+
+commit fdff58cfa2ed77d2ceb38f48711ac5c91513aab1
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Aug 23 23:59:49 2008 -0400
+
+    A few other renamings of SSE->SSE2
+
+commit 9bfa8aaf17b256d90832802dcd386c05b904b97e
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Aug 23 23:54:24 2008 -0400
+
+    Be consistent in naming SSE2 related things SSE2
+
+commit 00841cb314a3b737dc5f492e113f36c19ba336e1
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Aug 23 23:42:36 2008 -0400
+
+    Remove use of MMX extensions.
+    
+    They were never a big improvement anyway, and now that we have SSE2
+    support, they would only be useful on Pentium IIIs, and only if
+    explicitly enabled, which most distributions couldn't do anyway.
+
+commit 3cd6acfe74dabfbc18af49bed077c2a39b9a742d
+Author: Andre Tupinamba <andrelrt@gmail.com>
+Date:   Thu Aug 21 14:43:17 2008 -0700
+
+    [sse2] Change pixman-sse to pass __mm128i args as pointers, so as not to confuse MSVC
+
+commit 9b9f7b59e5ce17735157ca9b154e8bc545f5c96b
+Author: Ginn Chen <ginn.chen@sun.com>
+Date:   Thu Aug 21 14:21:01 2008 -0700
+
+    Use hidden attribute for private functions when compiling with Sun Studio
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=17183
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+
+commit e78eee87319e0290025c9d87bffe379bec440587
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Tue Aug 19 11:57:53 2008 -0700
+
+    Add sys/inttypes.h include for AIX
+
+commit cb9d5750582ea93ef1902a5185164088cdaa0140
+Merge: daf1745... dfe1f63...
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Thu Jul 31 13:32:59 2008 -0400
+
+    Merge branch 'master' of sandmann@git.freedesktop.org:/git/pixman
+
+commit daf17450607e533dc590b4673c88241862b6b138
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Thu Jul 31 13:32:38 2008 -0400
+
+    Bug 16921. MMX and SSE2 intrinsics not enabled when compiling with Intel's icc
+    
+    Remove GCC specific inline-growth flags, and use __force_inline__ in
+    pixman-sse2 instead. Based on patch by Matt Turner.
+
+commit dfe1f63f709fc711c15d1be317dc1404d72b3efd
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Jul 25 10:14:29 2008 -0700
+
+    Add depth 30 formats to pixman_format_supported_source.
+    
+    Thanks to Julien Cristau for pointing out that these were missing.
+
+commit db3fb5eb605c4e1a6fcb93902389a22fc496151c
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Mon Jul 21 22:06:02 2008 -0400
+
+    Don't require GCC 4.2 on x86-64
+
+commit 53fa7133fdf7f5879f10847228f478983c480b79
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Mon Jul 21 21:55:55 2008 -0400
+
+    TODO
+
+commit 58ab45b85d1732da7c84a274acdca3bfcf1c36b1
+Author: André Tupinambá <andrelrt@gmail.com>
+Date:   Mon Jul 21 21:53:20 2008 -0400
+
+    Use CopyAreasse2, plus a compatibility fix
+
+commit 51576cda8ba830c0d7dbbeaebb79fbef276f7e2d
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Jul 18 14:49:35 2008 -0400
+
+    Fix typo in sse2 configure logic
+
+commit 596218e488fc92c5a03d07892015a106dcd541b4
+Author: Frederic Plourde <frederic.plourde@polymtl.ca>
+Date:   Thu Jul 17 13:51:31 2008 -0700
+
+    Win32 Makefile fix
+
+commit f729457da5de4a96ccd220ce71c583cdec971483
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Thu Jul 17 14:13:34 2008 -0400
+
+    Update RELEASING and release targets in Makefile.am
+
+commit 72045eabd57cf793266424c39246b435b655b19f
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Thu Jul 17 14:07:23 2008 -0400
+
+    Post-release version-bump
+
+commit 2a14ecf1cd07e9a3f367ea66a7b10da929ccc06d
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Thu Jul 17 13:38:57 2008 -0400
+
+    Pre-release version bump
+
+commit 411c0e990f7a96d4e15f2cbbe07d3b50b6a20f95
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Thu Jul 17 13:37:56 2008 -0400
+
+    Make a couple of functions static
+
+commit 96f57c07f24cd6d86c0aad624bd1a16b85f08e04
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Thu Jul 17 13:32:45 2008 -0400
+
+    Speed up fbOver
+    
+    Use FbByteMulAdd to operate on two components at a time and force the function
+    to be inlined.
+
+commit d4855cd9d028c49c2a12f61c6227579fcb8af5b6
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Thu Jul 17 13:32:08 2008 -0400
+
+    Comment FbByteMulAdd
+
+commit dcbe4b3f80fb8dc6a83efa7e66a891f8b102608d
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Wed Jul 16 22:03:29 2008 +0200
+
+    fix --enable-{mmx,sse2,vmx}
+    
+    If --enable-foo is used, don't treat it as --disable-foo, and
+    error out if the appropriate compiler support isn't detected.
+
+commit e21f00db50c30e80c8969fbf63982aeb7434dc1d
+Author: Damien Carbery <damien.carbery@sun.com>
+Date:   Wed Jul 16 15:47:38 2008 -0400
+
+    Add pixman-1-uninstalled.pc file
+    
+    Signed-off-by: Søren Sandmann <sandmann@redhat.com>
+
+commit 1570746350baf82d36aeb7ea1702350700b795d7
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed Jul 16 15:19:17 2008 -0400
+
+    Use -no-undefined -- fixes bug 15927
+
+commit 99fead412e7602daf193035831b952e252dac0e1
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Wed Jul 16 15:07:30 2008 -0400
+
+    Use <inttypes.h> on most types of Unix.
+    
+    Fix for bug 15560.
+
+commit c5bb4ab8fcb784d479c71996f2ff081374741d43
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed Jul 16 14:56:48 2008 -0400
+
+    Update TODO
+
+commit 2070f10db927a97d7d38024e607093f5a6e00291
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed Jul 16 14:30:46 2008 -0400
+
+    Remove unused pixman-combine.c
+
+commit 9d54568d5f93701313fdbb49c1ef9dc79fe5850c
+Author: André Tupinambá <andrelrt@gmail.com>
+Date:   Wed Jul 16 14:29:29 2008 -0400
+
+    Fix SSE2 bug where x888 pixels were treated as 8888
+
+commit 7dfd023e94d9ab5940d7062c2e5cde11ab02f43e
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Wed Jul 16 20:41:02 2008 +0200
+
+    fix Altivec detection
+    
+    the old code used to cause infinite looping on G3 machines.
+
+commit 0a92401678286eb438fe24979fd032efba540a0a
+Author: Behdad Esfahbod <behdad@behdad.org>
+Date:   Tue Jul 15 16:49:32 2008 -0700
+
+    Fix fbCompositeSrc_x888xnx8888mmx to properly ignore source alpha
+
+commit 687176023caf53f2fe234827d152f270048b1cd3
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Tue Jul 15 16:59:21 2008 +0200
+
+    make --{en,dis}able-gtk work correctly
+    
+    --enable-gtk had the same effect as --disable-gtk.
+    Now we check for it by default, and error out if we can't
+    find it and it was explicitly enabled.
+
+commit 9d97716d2fd91d5611a5e7a7b29b38887b672e9f
+Author: André Tupinambá <andrelrt@gmail.com>
+Date:   Tue Jul 8 14:15:27 2008 -0400
+
+    Fix bug 16310 in the SSE2 fast path in function fbCompositeSolidMask_nx8888x0565Csse2
+
+commit 47b95be38ae0ebc61963c0b3b4dddb240a59c18a
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Tue Jul 8 14:10:56 2008 -0400
+
+    Update TODO
+
+commit eb53d111bd8651cd00c1b728b09e8be09b8482f7
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Wed Jun 25 17:55:28 2008 -0700
+
+    Add a lossy 32-bit generic pixel fetch function for wide surfaces.
+    
+    The transformed fetch path currently only works at 32-bit precision.  Until a
+    wide version of that function is added, we need to have a path to perform a
+    wide FetchPixel and then contract it down to a8r8g8b8.
+    
+    Also, use the right format when expanding the result in fbFetchTransformed64.
+    fbFetchTransformed returns a8r8g8b8 results.
+
+commit 3c43b869f3821495978c61b9195f0b0e9e9e1245
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri Jun 27 01:11:30 2008 -0400
+
+    Unexport or delete various functions
+    
+    - Delete pixman_region_append()
+    - Delete pixman_region_empty()
+    - Make pixman_region_validate() static and don't export it.
+    
+    Reported by Julien Cristau.
+
+commit 36b05f2cac7fa28e31131ca0d6b8b133ccd95ab8
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri Jun 27 01:05:30 2008 -0400
+
+    Only export the 16 bit version of pixman_region_set_static_pointers()
+
+commit ab4d45806aacf6208820af07b42852c9e4c89fff
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Wed Jun 25 09:46:12 2008 -0400
+
+    Update versioning documentation
+
+commit a3c12f4ccfda470574bfe8b7796c0b90237dabe0
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Wed Jun 25 09:36:13 2008 -0400
+
+    Update release instructions
+
+commit ca6edbee41e2e4bd18e3615a86bae441822b90e3
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Wed Jun 25 09:24:00 2008 -0400
+
+    Explicitly use my GPG key for signing.
+
+commit c48e3bc5ccf3a2f0aa4cadbaa4a0ae968a5d5a91
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Wed Jun 25 09:16:09 2008 -0400
+
+    Post-release version bump
+
+commit d8e5ff20f12c52a32dcf0543ab436eb7194b794c
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Jun 25 07:58:21 2008 -0400
+
+    Pre-release version bump
+
+commit 4a9df4be7e384cf18e3d7a65d1e0023d2e2a280f
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jun 22 13:44:23 2008 -0400
+
+    TODO
+
+commit a766b62880108f278478888f5167a5fbf2819a97
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jun 22 13:42:21 2008 -0400
+
+    Add configure time options to disable mmx/sse2/vmx
+
+commit 02268903e4311709744c11e495f9b17f171ec5e9
+Author: David Sharp <whereami@gmail.com>
+Date:   Thu Jun 19 20:23:33 2008 -0700
+
+    pixman-sse.c: silence pointer-cast compiler warnings.
+    
+    Cast pointers to words of the same size, not 32-bits.
+    
+    Signed-off-by: Søren Sandmann Pedersen <sandmann@redhat.com>
+
+commit 534e65d54831018b47c169932a04224e5ba53cb8
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Jun 13 16:16:59 2008 -0400
+
+    Update TODO
+
+commit eb2d95de98683a387153f010077ad9c3c3b1b01d
+Author: Luo Jinghua <sunmoon1997@gmail.com>
+Date:   Sat Jun 14 09:07:22 2008 +0800
+
+    Fix implicit declaration of function 'free'.
+    
+    Otherwise pointer will be truncated on 64bit arch and your programs will crash.
+
+commit 29d144712e558aaeb49f4384028dd669d76a410b
+Author: Maximilian Grothusmann <maxi@own-hero.net>
+Date:   Fri Jun 13 12:44:50 2008 -0700
+
+    Fix memory leak by freeing boxes{16,32}.
+    
+    After calling pixman_region_init_rects() or
+    pixman_region32_init_rects(), boxes{16,32} were not freed before
+    returning. Fixes bug 16312.
+
+commit 5d32519316b40b35113c6df9e15d955a16709ba2
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Jun 13 09:52:53 2008 -0700
+
+    Use pixman_malloc_ab instead of plain malloc for the fbStore64_generic scratch buffer.
+
+commit b1c70c4e6435d7f15751111828c381feb1d139cf
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Jun 13 00:25:45 2008 -0400
+
+    Move PIXMAN_FORMAT_16BPC to pixman-private.h
+
+commit 7fa966df0ee781fa486715710f389b148c11d36e
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Jun 6 23:02:51 2008 -0700
+
+    Decide based on the image formats whether we need wide compositing.
+    
+    Signed-off-by: Søren Sandmann Pedersen <sandmann@redhat.com>
+
+commit 7cb735c9c0fa55ae1f4d8d13da9f33e3da2ae8fe
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Jun 6 19:40:25 2008 -0700
+
+    Take the source format into account in pixman_expand.
+    
+    Extract the original bits of the source image for each component and then
+    replicate up to 16 bits to fill the wide components.  Make sure to hard-code the
+    alpha value to 1 if the source format didn't have alpha.
+    
+    Signed-off-by: Søren Sandmann Pedersen <sandmann@redhat.com>
+
+commit c0d98e96605c6d03f4b02f337f2f5827165bb092
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Jun 6 18:51:48 2008 -0700
+
+    Make expansion and contraction loops clearer.
+    
+    Signed-off-by: Søren Sandmann Pedersen <sandmann@redhat.com>
+
+commit fc0b28bf6af81428b7ac045614eea97fbf9c4a70
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Jun 6 18:05:15 2008 -0700
+
+    Add wide source picture, external alpha, and transformed image routines.
+    
+    The wide external alpha path should work correctly with wide formats.  The wide
+    transformed fetch code for now just does a 32-bit fetch and then expands, which
+    will lose precision.  Source pictures, for now, are evaluated at depth 32 and
+    then are expanded to depth 64.  We could get higher precision by evaluating them
+    directly at depth 64, but this should be good enough for now.
+    
+    Signed-off-by: Søren Sandmann Pedersen <sandmann@redhat.com>
+
+commit 42a3a2d6fc8d3e521c6914ff8fb89f1fbc673e28
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Jun 6 15:45:17 2008 -0700
+
+    Add wide fetch/store functions.
+    
+    Use the narrow ones and expand/contract where necessary.  Still need wide paths
+    for fancy pictures, but this gets the basic stuff working.
+    
+    Signed-off-by: Søren Sandmann Pedersen <sandmann@redhat.com>
+
+commit 7591d3f1d7e0884f9362018edf720724095cf380
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Jun 6 15:30:52 2008 -0700
+
+    Add expand and contract functions to convert between ARGB8 and ARGB16.
+    
+    The expansion function isn't quite correct, but gives reasonable results.
+    
+    Signed-off-by: Søren Sandmann Pedersen <sandmann@redhat.com>
+
+commit bae5db893f20eaf9c8ec56057617a8ce800cce48
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Mon Jun 9 13:06:50 2008 -0400
+
+    Post-release version bump
+
+commit 88e02d36792d3ad2615a775c9d21136c760087ef
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Mon Jun 9 12:32:56 2008 -0400
+
+    Pre-release version bump
+
+commit fe43a2c1638ee75ca6bbc437a59461cc5c2b6f46
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Mon Jun 9 12:28:05 2008 -0400
+
+    Add back prototypes for pixman_version() and pixman_version_string() to pixman.h
+
+commit fd380c7764c9cbc05f070b178a4b38b342503471
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Mon Jun 9 12:01:37 2008 +0200
+
+    Add a couple more missing PIXMAN_EXPORTs
+
+commit f8f3b454a8dc4f91b4aff0e3c7ab28d65383ec8f
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Mon Jun 9 11:53:23 2008 +0200
+
+    Add PIXMAN_EXPORT for pixman_region_equal
+    
+    This used to be exported, so removing the export broke ABI.
+
+commit 6e8f785ae7b629f5f81627fdb61f07d99df0b9ba
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Mon Jun 9 02:43:37 2008 -0400
+
+    Post-release version bump
+
+commit 26b486b9a9e599a5b45a73f8b3ec72f9a3560cfb
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Mon Jun 9 01:59:56 2008 -0400
+
+    Bump version number
+
+commit 95e749168d08cd35e151e612404c9318dcb0df9e
+Merge: f7f5da7... ae1f016...
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Mon Jun 9 01:57:26 2008 -0400
+
+    Merge region32 branch; fix conflicts
+
+commit ae1f016d404d323158072499f83185d4e83eaedb
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Mon Jun 9 01:53:03 2008 -0400
+
+    Unbump version number
+
+commit f7f5da7fc446c3cadb3f82a2ddc6ae57f4c4b795
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Mon Jun 9 01:52:36 2008 -0400
+
+    Unbump version number; remove file added to EXTRA_DIST
+
+commit e84db894933b25ef9ab83a6c15a0521e15d61bae
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Mon Jun 9 01:29:14 2008 -0400
+
+    Bump version number and make it distcheck
+
+commit 7145d6dbdab79930ed923ae9551501127be28864
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Mon Jun 9 01:29:14 2008 -0400
+
+    Bump version number and make it distcheck
+
+commit a76826f19893a0575c0e16079fc1ec6d33171594
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Mon Jun 9 01:03:15 2008 -0400
+
+    Fix uses of short variables in pixman-region.c
+
+commit 85bad33380b7b78bdd6a7238c1439bcc42e28231
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Mon Jun 9 00:51:28 2008 -0400
+
+    Add infinite loop test
+
+commit 62e9b4d6cfcbc10046539b8e9643691bb02bea39
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Mon Jun 9 00:00:07 2008 -0400
+
+    Export pixman_compute_composite_region32() and use it in walk_region
+
+commit 57819ae3c219252db98df5eefa36499a6b77970c
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 23:53:35 2008 -0400
+
+    Fix bug in pixman_compute_composite_region()
+    
+    It was using the output region as the input. Add and use
+    pixman_region16_copy_from_region32().
+
+commit 664b891aac50642d6d2ab6c482f4765029ae9b91
+Merge: 0b4c6dc... 2b91152...
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 23:39:29 2008 -0400
+
+    Merge branch 'master' into region32
+
+commit 2b9115293e5fca70ca9ffe44ef74c80885dcedbb
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 23:39:03 2008 -0400
+
+    Call _mm_empty() at the end of fbComposeSetupSSE
+
+commit 0b4c6dcefd63a43aa9bb6556017e259589116522
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 22:48:59 2008 -0400
+
+    Add pixman_image_set_clip_region32
+
+commit 703f82cd02f5224632b4b7f7f3f072067fa4f76d
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 22:20:44 2008 -0400
+
+    Use 32 bit regions internally
+
+commit de150bf82fbe0e346fa38eae10a5bd43538bb3d9
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 22:07:46 2008 -0400
+
+    Add pixman_region32_copy_from_region16
+
+commit e30f7e2eb56b53667ee83e2cad942f171a9486a0
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 21:43:01 2008 -0400
+
+    Some formatting fixing
+
+commit cb7cc369f500a7828dc3c9935d8d82af47573df5
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 21:41:54 2008 -0400
+
+    Move all the PIXMAN_EXPORT into .c files
+
+commit 890f1a4280af4c7b8d8913ba592a9dd617482463
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 21:13:52 2008 -0400
+
+    Move PIXMAN_EXPORT into pixman-region.c
+
+commit 7a32c864e95d35e13d5473f5519639d91f62e20a
+Merge: 81369a4... 1248418...
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 20:14:52 2008 -0400
+
+    Merge branch 'master' into region32
+
+commit 1248418854b0e6e2f7fa8c2760a05b6604d3ded7
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 20:01:37 2008 -0400
+
+    Fix forgotten use of pixman-combine.h
+
+commit fb8f17fdf1eaec4ab8edba1486bfa83c0965d738
+Merge: 9267b0b... 1063933...
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 19:55:43 2008 -0400
+
+    Merge branch 'vmx'
+
+commit 1063933bacb8b5d06b42b7b06a116339ce7c1f0c
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 19:55:35 2008 -0400
+
+    Rename pixman-combine.h -> pixman-combin32.h
+
+commit 81369a4c4f09bc6cceef173947df4c9a78952c7a
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 19:32:15 2008 -0400
+
+    Fix up types in pixman32-region.c
+
+commit 4cf2b696266214482dad6e40184b74e1161e8ea7
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 19:31:31 2008 -0400
+
+    Add prototypes for 32 bit region methods
+
+commit 7d0c507b084e78217145ab82c35d579e5c8c26db
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 19:31:04 2008 -0400
+
+    Add pixman-region32.c
+
+commit c22df027d6b9c9957e73ea9e34f14d504deb9d91
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 19:24:28 2008 -0400
+
+    Add prefixes to global primitive regions
+
+commit cab6a175ec4a1b29b51060293aacaf2cf2f987a0
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 19:20:27 2008 -0400
+
+    Delete more unused stuff
+
+commit 9395f08d6e6316ee853a976b806e57821e13991e
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 19:16:55 2008 -0400
+
+    Delete more unused stuff
+
+commit b00fcb6d627370930daec9d1e9601af7ce28944c
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 19:15:41 2008 -0400
+
+    More data types; remove unused stuff
+
+commit 4bdcd3bdb1223d5e611af9721e2eceb7e867b138
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 19:12:29 2008 -0400
+
+    Add point_type_t
+
+commit abf6b6ca6ce8f54cb8ba9d34570d4cdf0537bbd2
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 19:11:24 2008 -0400
+
+    Replace pixman_box16_t with box_type_t
+
+commit 68ccaa06751e76b9d9c70a7c0b8e9b22cf7d6f62
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 19:07:30 2008 -0400
+
+    Add pixman-region16.c; compile that instead of pixman-region.c
+
+commit 149477457c9463e22350c15ccfca5ddf8a78e7af
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 8 19:05:43 2008 -0400
+
+    macroize pixman-region.c
+
+commit 567b4c255050ee3cc2dd0c03fb091d1f981332eb
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Sat Jun 7 19:38:01 2008 +0200
+
+    Use sigaction instead of signal to restore the previous handler
+
+commit 7ef19261ee5bb4c78ca55533c67e1f267faed61e
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Sat Jun 7 19:28:10 2008 +0200
+
+    Use combine macros from the generated header
+
+commit 795fd8a4c0f9417fb92beaff8595064c573b7652
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Sat Jun 7 19:25:09 2008 +0200
+
+    Split combine.inc generated files in source and header
+
+commit 9267b0bb549044591f28124a86e169b2235339b6
+Author: Dimitrios Apostolou <jimis@gmx.net>
+Date:   Tue Jun 3 16:33:58 2008 -0400
+
+    Fix compilation on SGI
+    
+    Signed-off-by: Søren Sandmann <sandmann@redhat.com>
+
+commit 8ef3f49a9580fb148c2e5f567c0aafddd4b0f136
+Merge: 27b753c... 9a6d3a1...
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Sun Jun 1 16:37:52 2008 +0200
+
+    Fixup
+
+commit 9a6d3a1dcf89fc04f71a9dfed1aeeda1e3fb83bc
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri May 2 17:33:17 2008 -0700
+
+    Fix wide alpha fetch macro.
+    
+    Signed-off-by: Soren Sandmann Pedersen <sandmann@redhat.com>
+
+commit 86ed05b0f93505c136fb279fa4529596fc7c682a
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Wed Apr 23 17:30:14 2008 -0700
+
+    Use wide compositing functions when wide == 1.
+    
+    Signed-off-by: Soren Sandmann Pedersen <sandmann@redhat.com>
+
+commit 4e2d2546b79354a1accff8614d50eb8f75a15c98
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Tue Apr 15 13:58:27 2008 -0700
+
+    Add infrastructure for allocating wide scanline buffers. Not yet used.
+    
+    Signed-off-by: Soren Sandmann Pedersen <sandmann@redhat.com>
+
+commit 598334a15723dc3857d1e932c17365a1f8c5f094
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Tue Apr 15 13:13:46 2008 -0700
+
+    Split fetch/fetchPixel/store proc types into 32-bit and 64-bit versions.
+    
+    Signed-off-by: Soren Sandmann Pedersen <sandmann@redhat.com>
+
+commit 4a7e1676fd381bda53ece2f13204fbe568e07b0d
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Apr 4 14:43:48 2008 -0700
+
+    Move the scanline buffer allocation logic into pixman_composite_rect_general.
+    
+    Pass the src, mask, and dest buffers into pixman_composite_rect_general_* as
+    void* pointers since those functions should not do pointer arithmetic.
+    
+    Signed-off-by: Soren Sandmann Pedersen <sandmann@redhat.com>
+
+commit 30bdbbed073750efa0a0c1e3f68925196e118953
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Thu May 15 01:07:59 2008 -0400
+
+    Update TODO
+
+commit d71bfc7777a48edfeb0aee0e3da97ac700a3dc90
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Thu May 15 01:00:28 2008 -0400
+
+    Work around GCC bug causing crashes in Mozilla with SSE2
+    
+    When using SSE2 intrinsics, gcc assumes that the stack is 16 byte
+    aligned. Unfortunately some code, such as Mozilla and Mono contain
+    code that aligns the stack to 4 bytes.
+    
+    The __force_align_arg_pointer__ makes gcc generate a prologue that
+    realigns the stack pointer to 16 bytes.  Fix bug 15693.
+
+commit 1f275b4bdc28b121f4afd3cfd2df187bebedf35d
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed May 7 22:27:56 2008 -0400
+
+    Add support for 8 bit fills in pixman_fill_mmx()
+
+commit a56df9149d2af0414ba8311b413dbc2f01c94427
+Author: Richard Hult <richard@imendio.com>
+Date:   Sat May 3 15:03:00 2008 -0400
+
+    Add --disable-gtk switch to configure
+    
+    Signed-off-by: Søren Sandmann <sandmann@redhat.com>
+
+commit 9aa1c4e5d2db3793ae6e301496fe39475de84382
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri May 2 21:10:07 2008 -0400
+
+    Update TODO
+
+commit 1e1c8a1f52183edecfea346257468681d6a88c36
+Author: Oswald Buddenhagen <ossi@kde.org>
+Date:   Thu May 1 10:50:58 2008 +0200
+
+    fix pixman compile with srcdir != builddir
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+
+commit 510ee5d8c23e2d9133dc83634e15b7660f411a1f
+Author: Thomas Zimmermann <kuhundbaer@web.de>
+Date:   Fri Apr 25 22:13:24 2008 -0400
+
+    Remove trailing comma from enum (bug 15364)
+
+commit 3cea659d72bc3429a8766e63c66346e76e61c9b5
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Apr 24 18:10:56 2008 -0700
+
+    Fix pixman/Makefile.am to work with Solaris make
+
+commit 27b753c9deabe5ac775021abfae98a6a1830cfc2
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Thu Apr 24 01:08:29 2008 +0200
+
+    Remove unused macro
+
+commit 584118fb6c15d695b6a203c2df51411958957880
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Thu Apr 24 01:06:38 2008 +0200
+
+    Remove VMX from CPUFeatures, ppc isn't using it at all
+
+commit fc96121afd5d8451c9d8ba8a693e589d1999d131
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Thu Apr 24 01:03:08 2008 +0200
+
+    Simplify cpu feature check
+
+commit 08b317a5f519978cfabebd75d5595b19fc1d1425
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Thu Apr 24 00:41:16 2008 +0200
+
+    Refactor path selection
+
+commit 083cadd4c7d1270b0ee9f0365327b872898d1561
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Thu Apr 24 00:36:51 2008 +0200
+
+    Force inlining
+
+commit 92ef26dfed3337831dd5156bfe0d20b132a26a29
+Author: André Tupinambá <andrelrt@gmail.com>
+Date:   Wed Apr 23 00:18:39 2008 -0400
+
+    Add SSE2 implementations of many compositing operations.
+
+commit 8e68544e0d8cc7af24fb8b298fd6afd47c620136
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Sat Apr 12 13:16:46 2008 +0200
+
+    Unbreak vmx pixman
+
+commit 1ec7bd2cb2d02caca06742b0091f293d29d95a44
+Merge: e63bf15... 5388222...
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Sat Apr 12 09:53:24 2008 +0200
+
+    Merge branch 'master' into vmx
+    
+    Conflicts:
+    
+    	pixman/pixman-pict.c
+
+commit 53882228c9bbd50609e2858502b9bc087ca76903
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Apr 12 00:22:35 2008 -0400
+
+    Simplify handling compiler handling in MMX code
+    
+    Instead of using the parameters --param inline-unit-growth=10000 and
+    --param large-function-growth=10000", just make the inline functions
+    __always_inline__.
+    
+    Also support Intel's compiler in pixman-mmx.c.
+    
+    Based on a patch by Serhat <ubunturk@gmail.com>
+
+commit 9f76747adec7ea00e31dd817427c1ed1bfa86aa8
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Thu Apr 3 17:27:08 2008 -0700
+
+    Use a macro to append _accessors to things.
+    
+    Signed-off-by: Søren Sandmann <sandmann@redhat.com>
+
+commit a7065162aff9d1de9fc3db9756e4e76f6b8d063b
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Tue Apr 1 17:26:03 2008 -0700
+
+    Generate 64-bit combining functions.
+    
+    Copy some macros from pixman-private.h into combine.inc and update them to
+    generate 64-bit versions as appropriate.  Add a rule to generate
+    pixman-combine64.c and add it to the build.
+    
+    Signed-off-by: Søren Sandmann <sandmann@redhat.com>
+
+commit 48521e6fe4378f9cc49d2dfb8d87490e65267a49
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Tue Apr 1 16:31:26 2008 -0700
+
+    Replace hardcoded numbers and uint*_t in combine.inc.
+    
+    The masks and shifts have been replaced with preprocessor defines generated by
+    combine.pl.  The uint*_t types have been replaced with comp4_t, comp2_t, and
+    comp1_t depending on how many components the value is supposed to hold.
+    
+    Signed-off-by: Søren Sandmann <sandmann@redhat.com>
+
+commit e0e5c4b72937728d0b36b1077d94ce92a2374c9a
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Mon Mar 31 16:42:53 2008 -0700
+
+    Tack 32 onto the ends of the combining function types.
+    
+    Signed-off-by: Søren Sandmann <sandmann@redhat.com>
+
+commit f88519ed3fed42e41aa5623540466d0bee1a887b
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Mon Mar 31 16:33:09 2008 -0700
+
+    Move combining routines into combine.inc and add a Perl rule to generate it.
+    
+    This will eventually be used to search & replace types and mask/shift
+    calculations to generate a wide version of these functions.
+    
+    Signed-off-by: Søren Sandmann <sandmann@redhat.com>
+
+commit 30746b1e1e5101fd1502c676e777e27953772f75
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Mon Mar 31 16:09:44 2008 -0700
+
+    Move combining macros into pixman-combine.c.
+    
+    Signed-off-by: Søren Sandmann <sandmann@redhat.com>
+
+commit 1ae751215e255adecacad960b5bc98ff86039a07
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed Apr 9 21:39:29 2008 -0400
+
+    Require GCC 3.4 for SSE and SSE2.
+    
+    Also include <emmintrin.h> in the SSE2 test and use SSE_FLAGS rather than MMX_FLAGS
+    
+    Reported by Dave Yeo.
+
+commit a1f51cb09ead3e0007c12e98ce74948a92e80ec5
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue Apr 8 21:58:00 2008 -0400
+
+    Fix bug in FbStore_b2g3r3
+
+commit 0b207ae11065c740f2644a89fc13207a5343554e
+Author: Antoine Azar <cairo@antoineazar.com>
+Date:   Sun Apr 6 10:56:53 2008 -0400
+
+    Optimize operators based on source or dest opacity.
+    
+    Check if we can replace our operator by a simpler one if the src or
+    dest are opaque The output operator should be mathematically
+    equivalent to the source.
+
+commit 2976e690410d10b916014effe5d1842d0c8a7908
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sun Apr 6 17:12:12 2008 +0200
+
+    Revert "pixman-version.h is generated, don't distribute it"
+    
+    This reverts commit 4fd8910ea499eb484e29c44dbee7dbc029656e9c.
+
+commit 4fd8910ea499eb484e29c44dbee7dbc029656e9c
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Fri Apr 4 21:36:02 2008 +0200
+
+    pixman-version.h is generated, don't distribute it
+
+commit 4cde0886b52c82b792e8fbf2248bf8ff9aa079fa
+Author: Frederic Plourde <frederic.plourde@polymtl.ca>
+Date:   Thu Apr 3 13:52:54 2008 -0700
+
+    Add CopyAreammx fast path for argb32 SRC xrgb32 and abgr32 SRC xbgr32
+
+commit f45b331f7bb7d7effe279159d8c899952b52a270
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sun Mar 30 20:53:42 2008 +0200
+
+    Remove prototype for nonexistent pixman_image_set_filter_params
+
+commit a331519b865d157ac5fec231fda02ee74ba1ede1
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Mar 28 12:26:18 2008 -0700
+
+    Get rid of pixman_composeFunctions_accessors.
+    
+    The combining functions operate on scratch memory, so they don't need the access
+    wrappers.  There's also no reason not to use the MMX combining functions in the
+    accessor path.
+
+commit 0c3547bad41e1a5b12c0ffaa1c106043399dc3fc
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Mar 28 12:16:07 2008 -0700
+
+    Fix test build when srcdir != builddir.
+    
+    The tests were including pixman.h, but pixman.h couldn't find pixman-version.h
+    because it was in $(top_builddir)/pixman rather than $(top_srcdir)/pixman.
+
+commit cd3799317fced697e4bc729c3ea8d42ed7edf526
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Mar 28 05:23:34 2008 -0400
+
+    Post-release version bump
+
+commit 92b675db8d3ef44c3c87110443b15a68a871cf7b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Mar 27 10:08:35 2008 -0400
+
+    Fix log generation
+
+commit 0c33317f59b93f5cab348619b1c38a5dce97de94
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Mar 27 10:07:11 2008 -0400
+
+    Bump version to 0.10.0.
+    
+    Also a bunch of changes to the release make targets
+
+commit 0637671959b56bba93f39208c825c0d97e2f90df
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Mar 27 08:37:29 2008 -0400
+
+    Make username configurable; add Makefile.win32 to EXTRA_DIST
+
+commit 10a227ed9311529cd98cb8b3aa1b8d48dad8b517
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Wed Mar 26 16:10:43 2008 -0700
+
+    Fix up unsigned long long/ullong usage
+    
+    A few stray "unsigned long long"s were in place, along with
+    a ullong typedef outside of the appropriate ifdef.
+
+commit eec44d371f278ee1f7de03d1a0fcaa17941c8a00
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed Mar 26 02:20:42 2008 -0400
+
+    Make it distcheck
+
+commit 03b9c143770566ebcbee7ca3abde223529c07ce9
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed Mar 26 01:49:56 2008 -0400
+
+    Move version functions from pixman-version.c into pixman-utils.c.
+    
+    Delete pixman-version.c
+
+commit cb7fceabb9da30d03b29f9ff946a3793a1b9ebab
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue Mar 25 23:11:19 2008 -0400
+
+    Make pixman-version.h print an error if you include it by itself
+
+commit 0982adf0794507899f642bdb55f3a979d6cc486e
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue Mar 25 23:07:03 2008 -0400
+
+    Update TODO
+
+commit 3e700366ef82f0ecd28014cf873ffd292ad9cdc5
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Mar 25 19:43:40 2008 -0700
+
+    Eliminate duplicate case values that were breaking the compilation.
+
+commit 7fa668f4ac4be756d097b29240bf15bb71ae6db9
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Mar 25 13:12:29 2008 -0700
+
+    New API: pixman_format_supported_destination and pixman_format_supported_source
+    
+    These functions allow for callers to use the PIXMAN_FORMAT macro to
+    construct a format code and to then determine if the resulting code
+    is supported by pixman for either destination or source surfaces.
+
+commit bd2a53fc4ece82321f139cdf3276a7ceb871f895
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Mar 24 14:51:09 2008 -0700
+
+    Add pixman_version function and related macros
+    
+    The complete new API here makes available compile-tim version checks:
+    
+    	PIXMAN_VERSION
+    	PIXMAN_VERSION_STRING
+    	PIXMAN_VERSION_ENCODE
+    
+    as well as run-time version checks:
+    
+    	pixman_version()
+    	pixman_version_string()
+
+commit b078cb3250b63b1c942b93738557af7401e42c9b
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Mar 24 12:00:46 2008 -0700
+
+    Increment pixman version to 0.9.7
+    
+    This represents the in-development state, (so that the next release
+    will be 0.9.8 with an even-number micro component).
+
+commit 0c2c891c8f76d1fdb6efe763d35cd5bf75b9a9a7
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Mar 24 11:58:33 2008 -0700
+
+    Document incrementing the micro version immediately after a release
+    
+    This is a cairo-like scheme where the version number is incremented
+    both immediately before and immediately after a release.
+
+commit 11cfd5d1bb9d1ea89f9d82bf6f447e577d673816
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Tue Mar 25 11:45:56 2008 -0700
+
+    Only define pixman_have_sse() as function if USE_SSE2 is also defined
+    
+    .. otherwise it's already a macro evaluating to FALSE.
+
+commit e63bf1554b4adf9e687ec86213a97caab2218a77
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Sun Mar 23 16:12:31 2008 +0100
+
+    Make configure message alike the mmx/sse/sse2 ones
+
+commit dcc530178050522705e70ff2f09b9da2b358ac01
+Merge: 550e5f5... 29a8ae4...
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Sun Mar 23 16:04:26 2008 +0100
+
+    Update vmx
+
+commit 550e5f54abe4f3f0b6fcd278c3b4533036276e3f
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Sat Mar 22 11:28:48 2008 +0100
+
+    update patch
+
+commit 4f33f454c6dbaf356d20cee8d35fdf02f9a0317d
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Mar 21 18:59:45 2008 -0700
+
+    Move fbFetchTransformed and friends into pixman-transformed.c.
+
+commit 90ff2bfbe5fd7f1e3aa5273e0fb72ae05e1e88c1
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Mar 21 18:18:50 2008 -0700
+
+    Move pixmanFetchSourcePict and friends into pixman-source.c.
+
+commit 76febfcd20c962a467d08c2ee9be612216ffa030
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Mar 21 18:06:54 2008 -0700
+
+    Move fetch, fetchPixel, and store routines into pixman-access.c.
+
+commit d6143b8634e2d923456b3198e692ccb463d59952
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Mar 21 17:13:32 2008 -0700
+
+    Get rid of fbPrepareAccess and fbFinishAccess, since the former was unused and neither one did anything anyway.
+
+commit 9fe5913c34a71d83a497e0d2de8db50522db75ee
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Mar 21 14:15:34 2008 -0700
+
+    Rename pixman-compose-operators.c to pixman-combine.c and fix the build.
+    
+    Add pixman-combine.c to the source list.  Make the functions in it static.  Call
+    fbCombineInU through the PIXMAN_COMPOSE_FUNCTIONS table.  Declare the functions
+    tables as extern in pixman-private.h.
+
+commit d47a686d91d28d996fc7326ada0d2f0c3a305852
+Author: Antoine Azar <cairo@antoineazar.com>
+Date:   Thu Feb 21 03:38:46 2008 -0500
+
+    [PATCH] Moved all composition operators from pixman-compose.c to their own c/h file
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+
+commit 29a8ae4185bf65dbafe0dd7aff3b83bef1bbffbc
+Author: Kamalneet Singh <kamalneet.s@samsung.com>
+Date:   Wed Mar 19 10:02:11 2008 -0400
+
+    Fix computation of x_offset in pixman_add_traps.
+
+commit aa9907b237062dade232297aed2269730a988e29
+Author: nmiell@gmail.com <nmiell@gmail.com>
+Date:   Fri Mar 14 22:23:19 2008 -0700
+
+    Fix the SSE related AMD64 build breakage
+    
+    The introduction of pixman_have_sse() copied the #ifdef __amd64__
+    found around pixman_have_mmx() in pixman-mmx.c but didn't include the
+    equivalents of the macros in pixman-mmx.h. As a result, the AMD64 link
+    fails because the pixman_have_sse() function doesn't exist.
+    
+    I also introduced header inclusion guards to pixman-mmx.h and
+    pixman-sse.h while I was at it.
+
+commit 6449782f8a4bea0274a30f86d56214c2c73c0303
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri Mar 14 19:24:28 2008 -0400
+
+    Fix typo; include pixman-sse.h
+
+commit 917e73385f8769f84da453df99d4e8e0dccc5b23
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri Mar 14 19:20:34 2008 -0400
+
+    Require MMX and MMX_Extensions for SSE. Various code style fixes.
+
+commit 6cb327be1f4e64d09bd9fa8d444afda17ed58da4
+Author: Rodrigo Kumpera <kumpera@gmail.com>
+Date:   Fri Mar 14 19:11:17 2008 -0400
+
+    Add build system support for SSE2.
+
+commit ddfb69ae8778ac4b3050ddebf499c137ad6eef7b
+Author: Frederic Plourde <frederic.plourde@polymtl.ca>
+Date:   Thu Mar 13 14:24:08 2008 -0700
+
+    Enable/fix MMX compilation under Win32 with Visual Studio
+
+commit f2d8a5caa63596739b4dc47c00daaaafd9f522e2
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Mon Mar 10 23:41:52 2008 -0400
+
+    Add rounding epsilon for NEAREST filter after transformation, not before.
+    
+    For nearest filtering, the transformed location must be rounded to the
+    nearest sample. For locations that precisely in the middle between two
+    samples, we round down by adding -epsilon to the coordinates.
+    
+    Before, we would do this on untransformed coordinates. This patch
+    changes it to happen after transformation. It also clarifies the
+    difference between sample locations and rounding.
+    
+    Reported by Robert O'Callahan.
+
+commit 5bcde57da704000f0fbb52291d01c7f3c0dc8655
+Author: Antoine Azar <cairo@antoineazar.com>
+Date:   Wed Mar 5 15:27:11 2008 -0800
+
+    Fixed transformed/untransformed cases of extend_pad by using fbfetchtransformed in all cases and making sure no fast path can be taken.
+
+commit 476f10237e432321d7f456b4df9fd206b78d8827
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri Feb 29 18:32:44 2008 -0500
+
+    Update TODO
+
+commit 8533dcbccc142621027469e62dd84030d4248eec
+Author: Antoine Azar <cairo@antoineazar.com>
+Date:   Tue Feb 26 16:36:22 2008 -0500
+
+    Fix EXTEND_PAD for untransformed sources
+
+commit 77c43c6c49511b203fb098a78d38bb4cef7c2cfd
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Feb 25 20:12:42 2008 -0500
+
+    Fix another NULL dereference in pixman-compose.c, reported by Joel
+    Bosveld.
+    
+    Update TODO.
+
+commit 8d79c48126398aa7b31e9bb9e25af9d231075604
+Author: Bertram Felgenhauer <int-e@gmx.de>
+Date:   Thu Feb 14 16:40:54 2008 +0100
+
+    Fix a NULL pointer dereference in fbFetchFromNRectangles().
+    As pointed out by Soeren Sandmann Pedersen, calling
+    pixman_region_contains_point with a NULL box argument leads to a crash.
+    Also fix a few warnings.
+
+commit 435086f6a437d8e6b707fad7c9bb30b91ff80684
+Author: Antoine Azar <cairo@antoineazar.com>
+Date:   Tue Jan 29 11:53:03 2008 +0100
+
+    Refactor fbFetchTransformed()
+
+commit e95638c629334151e27633cc1c476ea582d766ec
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Sun Jan 27 14:49:12 2008 -0800
+
+    Include only pixman-private.h, not pixman.h, in local .c files
+    
+    This is so that changes (such as symbol renames) can take place in
+    pixman-private and ensure that they're included before the prototypes from
+    pixman.h.  pixman-private.h includes pixman.h right at the start.
+
+commit 787cc57c7cb36a3b7eff836dd979d08cf7861e29
+Author: Bertram Felgenhauer <int-e@gmx.de>
+Date:   Wed Jan 23 16:08:48 2008 +0100
+
+    export pixman_transform_point_3d function
+
+commit e4d482a6bb766f50f49ba81591ca7c26ba3ce047
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Jan 22 16:33:58 2008 -0800
+
+    A tiny amount of ifdef reduction.
+    
+    Just moving two common assignments outside the condition to
+    drop the #else part.
+
+commit bcac3335893a24e1d16790cb38d8a105b1e19951
+Merge: e5ceddf... 054be10...
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Jan 22 16:31:44 2008 -0800
+
+    Merge commit 'inte/sampling'
+
+commit e5ceddf038d69cef74df0632f93abae37ec6d7ce
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Oct 30 13:03:18 2007 -0700
+
+    Ignore test/fetch-test
+
+commit ad773927d885515bf43d9824c1577199fccfc535
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Oct 30 12:52:19 2007 -0700
+
+    Add release-publish target and RELEASING instructions
+
+commit 054be107365cac5dc6cff2b6f705978f1899c79e
+Author: Bertram Felgenhauer <int-e@gmx.de>
+Date:   Tue Jan 22 08:00:05 2008 +0100
+
+    eliminate a special case in fbRasterizeEdges{4,8}.
+
+commit 5467807e757ad6a5ec45085c963425f9dd6d2414
+Author: Bertram Felgenhauer <int-e@gmx.de>
+Date:   Tue Jan 22 07:57:54 2008 +0100
+
+    fix cairo's  a1-traps-sample  test
+    For 1 bit alpha targets, the left and right boundaries of edges were
+    not rounded correctly.
+
+commit 1d89bac5a7a5693911d8a74701bd1c0292160478
+Author: Bertram Felgenhauer <int-e@gmx.de>
+Date:   Sat Jan 19 13:29:56 2008 +0100
+
+    fix cairo's  a1-image-sample  test
+    Move the sampling point for image surfaces very slightly so that it's in
+    the upper left quadrant of the pixel.
+
+commit 45074018c3c221272719ecb2bf9f4ec66ffb8729
+Author: Alp Toker <alp@toker.com>
+Date:   Tue Jan 15 16:34:57 2008 -0500
+
+    Avoid use of C++ keyword xor in header
+
+commit e0af5922cdc5caa97cfb822b792d744e28a3bb37
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Tue Jan 15 16:51:59 2008 -0800
+
+    Remove trailing ; in SETUP_YV12 macro
+    
+    Causes compilation problems with MSVC.
+
+commit 9a0639650e276c4c0da5dfe37a8d3ba5a6b81712
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Tue Nov 6 16:15:01 2007 -0800
+
+    Remove last CVS $Id$ tags
+
+commit df964790e893a8b511e9322e7161087d8ba182cc
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Thu Dec 20 00:23:18 2007 -0500
+
+    Don't use the pixbuf fast paths when the source picture has alpha. Bug
+    13650, reported by Wu Nian.
+
+commit 49240111dbb31c335856f9653544a039275bf033
+Merge: 808e4f5... 72b46bc...
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Sun Dec 16 00:38:16 2007 +0100
+
+    Merge branch 'master' of git://anongit.freedesktop.org/pixman
+
+commit 72b46bcf345db668b3ec00e7f27c5454cf2ad8b5
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri Dec 7 18:59:54 2007 -0500
+
+    Guard MMX get_fast_path() with pixman_have_mmx()
+
+commit bb056d4e02ff8ff27f4d2a14f630f5dc01b85d28
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Mon Dec 3 13:14:42 2007 -0500
+
+    Use -fvisibility=hidden by default.
+    
+    Add a PIXMAN_EXPORT macro that expands to the appropriate GCC magic.
+    Various formatting fixes.
+
+commit 48d52fadc23ab027215a3d6c07ffcdbb6d40eb3f
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Dec 1 22:50:05 2007 -0500
+
+    Make the tables static; remove unused flag
+
+commit 0a53c41dbc5d6476595b2ad58dd9a14a3e85295c
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Dec 1 21:56:25 2007 -0500
+
+    Set maskRepeat to FALSE when the function is NEED_SOLID_MASK
+
+commit 47d39c002d3b5bce827ab1f782583ae8625a5975
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Dec 1 20:55:56 2007 -0500
+
+    Conditionalize MMX code with USE_MMX
+
+commit 14d628b0154c6101f0d1bb03d91ff99ca07e4398
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Dec 1 20:54:13 2007 -0500
+
+    Add some commented-out plain C fast paths.
+
+commit a916c69cc6a02cf35e6aa26181581faf560b6e9d
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Dec 1 20:46:29 2007 -0500
+
+    Delete switch of doom.
+
+commit 4dcddfa6e9d4de4f4e08fd8e8879db5327b8bf2a
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Dec 1 20:41:49 2007 -0500
+
+    Check for correct op.
+
+commit 60134ed7ab638b244dc4f3007d56d794815dab7b
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Dec 1 20:35:03 2007 -0500
+
+    Add code to locate fast paths. Comment out switch of doom.
+
+commit 819a6d6878d57d3b55075f048a7eed6d5bcab694
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Dec 1 19:56:26 2007 -0500
+
+    Beginning of the end for the Switch of Doom.
+    
+    Add tables with information about the MMX and plain-C fast paths.
+    Update TODO.
+
+commit f1f52ae4b1b2cca27104c1210625356084baf2f8
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Oct 30 11:48:31 2007 -0700
+
+    Track name change from pixman.pc to pixman-1.pc in .gitignore
+
+commit d4d78c8c1a73d1007ebaae3117923bb72d09118f
+Merge: 85bccce... b39ca42...
+Author: Alan Hourihane <alanh@tungstengraphics.com>
+Date:   Wed Oct 24 21:39:34 2007 +0100
+
+    Merge branch 'master' of git+ssh://git.freedesktop.org/git/pixman into yuv-porting
+
+commit b39ca42fce85248f6c19459388f71bf73a147792
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Oct 24 15:48:45 2007 -0400
+
+    Bump version number
+
+commit 85bccce4d863b99be4b9ce62a8ac7d95f0acab3d
+Merge: 8aa38d2... 2853243...
+Author: Alan Hourihane <alanh@tungstengraphics.com>
+Date:   Thu Oct 18 17:33:43 2007 +0100
+
+    Merge branch 'master' of git+ssh://git.freedesktop.org/git/pixman into yuv-porting
+    
+    Conflicts:
+    
+    	pixman/pixman-compose.c
+    	pixman/pixman.h
+
+commit 28532430efeb4a1aba8f3e30a790531d2a9e1472
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed Oct 17 20:01:27 2007 -0400
+
+    Only compile with -msse on x86-64.
+
+commit ab6743b17074dfedffb0ee32fe2e37cad03769bf
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed Oct 17 19:20:55 2007 -0400
+
+    Make stride signed in various places. This should fix some the
+    crashers that people have reported in bug 12398.
+
+commit aca8b610d9ab178fcbcfa4a44d87e52aa7918ea4
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed Oct 17 18:43:13 2007 -0400
+
+    Remove comma from enumerator list. Bug 12621, reported by Matt Kraai.
+
+commit 089c3e6ad00105b2f9a1118d15b4f381653ea6ff
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed Oct 17 18:40:28 2007 -0400
+
+    Add README file based on text from Bjorn Lindquist
+
+commit 8aa38d2256c191bf3437034f6176bae30c3c3d19
+Merge: cea752b... 39a67d3...
+Author: Alan Hourihane <alanh@tungstengraphics.com>
+Date:   Wed Oct 17 19:39:41 2007 +0100
+
+    Merge branch 'master' of git+ssh://git.freedesktop.org/git/pixman into yuv-porting
+    
+    Conflicts:
+    
+    	pixman/pixman-image.c
+
+commit 808e4f541b4cfde40c91e6c6cd942f9074d38e94
+Merge: 33d4028... 39a67d3...
+Author: Luca Barbato <lu_zero@gentoo.org>
+Date:   Mon Oct 1 22:13:05 2007 +0000
+
+    Merge branch 'master' of git://anongit.freedesktop.org/pixman
+
+commit 39a67d35f05aa47cf50191e0837a2125593a7bbc
+Author: Tilman Sauerbeck <tilman@code-monkey.de>
+Date:   Sat Sep 29 22:45:42 2007 +0200
+
+    Fixed the declaration of pixman_image_set_source_clipping().
+
+commit 7f820e15070c9b9618d78425b8cb1a4df722eb22
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Thu Sep 27 12:46:46 2007 +0100
+
+    [pixman-image] [mlk] Free the locally allocated bits.
+    
+    If we fail to allocate the image, remember to free the bits if we have
+    created the buffer on behalf of the caller.
+
+commit b4f0cc6eeaff8d5ea114734fcfa293fce1904ce4
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Thu Sep 27 12:44:44 2007 +0100
+
+    [pixman-image] Avoid a potential malloc(0).
+    
+    Do not attempt to allocate bits if either the image width or height is
+    0 - Cairo has a habit of attempting to create such surfaces when
+    generating glyphs. The malloc(0) may return a NULL pointer and be treated
+    as an out-of-memory error.
+
+commit 958a650b8eb1b61143122c3ad1f9b637b6467984
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Thu Sep 27 12:40:59 2007 +0100
+
+    [pixman-image] Avoid integer overflow when allocating bits.
+    
+    Check for potential overflows at every step of the calculation of the
+    buffer size required for the pixels.
+    
+    (Fixes https://bugs.freedesktop.org/show_bug.cgi?id=11627)
+
+commit 5b60c91fd6865021aa6027ee65fa8371a4e2d297
+Author: Jeff Muizelaar <jeff@freiheit.infidigm.net>
+Date:   Thu Sep 20 15:40:17 2007 -0400
+
+    Fix special case selection when the mask has a transform
+    
+    http://gitweb.freedesktop.org/?p=xorg/xserver.git;a=commitdiff;h=c19ece1d8c32dc81740a4036a642661f54064e75
+    was a mismerge that avoided setting the maskTransform condition when the mask
+    has a transform.  This allowed a special case routine to be chosen when the
+    mask had a transform, which is not expected by the special case routines.
+
+commit cea752bdb80c8e6317a8c8af8510807c87d87694
+Author: José Fonseca <jrfonseca@tungstengraphics.com>
+Date:   Mon Sep 17 18:49:40 2007 +0100
+
+    Prevent promotion to unsigned when calculating strides.
+
+commit 1092cdd09f71748182e578957de9610b729df257
+Author: José Fonseca <jrfonseca@tungstengraphics.com>
+Date:   Mon Sep 17 17:08:31 2007 +0100
+
+    Use a consistent type for stride and more importantly, use always a signed type.
+
+commit be4990f4a0a8d278b99df7669c5162136120ccd5
+Author: José Fonseca <jrfonseca@tungstengraphics.com>
+Date:   Fri Sep 14 15:48:18 2007 +0100
+
+    Remove the macro magic from READ/WRITE macros.
+
+commit 14f2a4c222bb6f0748a07e21663663b43beef466
+Author: José Fonseca <jrfonseca@tungstengraphics.com>
+Date:   Fri Sep 14 10:53:32 2007 +0100
+
+    Remove the MMX code path for YV12 for the meanwhile, as pixel output is not
+    exactly the same as the non-MMX code.
+    
+    This reverts commit c61d6ae39e5039dcb27bf95334a86520b562bbc5.
+
+commit 3be35594c99b7abd2af43b66349ca53bfa1462d6
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Sep 11 16:29:06 2007 +0100
+
+    Fix build breakage when under the influence of USE_MMX
+    
+    This was recently broken (dc7c047d1c68f343b66e81d9e79084e4171e2634) when
+    removing an assignment to noinst_LTLIBRARIES.
+
+commit dc7c047d1c68f343b66e81d9e79084e4171e2634
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Mon Sep 10 15:20:44 2007 -0700
+
+    [memlk] don't try to allocate new data for 0-rectangle regions
+
+commit c61d6ae39e5039dcb27bf95334a86520b562bbc5
+Author: José Fonseca <jrfonseca@tungstengraphics.com>
+Date:   Fri Sep 7 10:52:01 2007 +0100
+
+    MMX code path for YV12 copy, taken from the xserver glucose-2 branch.
+
+commit 562fa00e40b5466914b4f4cf49ae183e7b38e4f8
+Author: José Fonseca <jrfonseca@tungstengraphics.com>
+Date:   Fri Sep 7 10:49:21 2007 +0100
+
+    YUV formats fetch support.
+
+commit 469dd84cf8862a54ac31f0fc91ee539f3ad439e2
+Author: José Fonseca <jrfonseca@tungstengraphics.com>
+Date:   Thu Sep 6 12:27:12 2007 +0100
+
+    New test for image fetching.
+
+commit ba5fc60317e177a4140d4ea2cf8cb538d1e4e07a
+Author: José Fonseca <jrfonseca@tungstengraphics.com>
+Date:   Wed Sep 5 21:56:24 2007 +0100
+
+    Perform stride calculations inside the callback functions.
+
+commit 1b098ede1938d1225c32cf5639e4c7a891859897
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Tue Sep 4 11:19:33 2007 -0700
+
+    [win32] Makefile and compilation fixes for win32
+
+commit 5fc4d5ab1fae8677f5a95f5eb0e4fad3a9e0bf82
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Tue Sep 4 11:18:40 2007 -0700
+
+    compilation: build edge/compose with accessors separately
+    
+    Simplify the build by creating a new file for pixman-compose and
+    pixman-edge built with accessor functions.
+
+commit 6b96b62ca419ac414d5715a4ba9f30664e510fcd
+Author: Carl Worth <cworth@cworth.org>
+Date:   Tue Sep 4 17:24:04 2007 -0700
+
+    Don't copy unused bits to an alpha channel
+    
+    This bug was identified by cairo's rgb24-ignore-alpha test which
+    blends RGB24 over ARGB32 and notices that "alpha" values are
+    making it from the source to the destination.
+
+commit 8ff7213f39edc1b2b8b60d6b0cc5d5f14ca1928d
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Sat Aug 25 23:30:41 2007 -0700
+
+    rasterize traps that extend outside of the image bounds correctly
+    
+    Traps that extend outside of the image bounds are rasterized incorrectly
+    currently; the problem is a signed vs. unsigned comparison that got
+    introduced when a width parameter went from int -> uint.  This patch
+    puts it back to int (since it's stored as an int in the bits structure
+    to begin with), and also fixes a similar warning in the memset wrapper
+
+commit 028993aacb9ec48aa9d347d0d189250b464cf30f
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri Aug 24 16:49:29 2007 -0400
+
+    Set accessors for the destination image in composite-test.c
+
+commit 341be6a408e86d5b8976e63746e646ef973339bb
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri Aug 24 16:30:10 2007 -0400
+
+    Add missing comma in enum
+
+commit fb667257ab8f5cf9c6af399ac394b8aa7826fd96
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri Aug 24 16:19:31 2007 -0400
+
+    Remove trailing comma in enum
+
+commit c7dad7b9a038fbe94a2bdc67cc0a5f40f8a40d5c
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri Aug 24 16:12:30 2007 -0400
+
+    Add conjoint and disjoint operators to pixman.h
+
+commit 245a5e04eb4bf3b973d32ce5f21e6e2eac00b48b
+Merge: 25846ed... 9c09561...
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Aug 21 16:31:45 2007 -0400
+
+    Merge branch 'master' of ssh+git://sandmann@git.freedesktop.org/git/pixman
+
+commit 25846ed93a87fcaefbfdb397343e986c8f53f997
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Aug 21 14:11:54 2007 -0400
+
+    Fix bug 12039, based on Chris Wilson's patch.
+
+commit 9c09561a91debfd7c77a39b337b51b2ab16d6da9
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Aug 20 12:58:47 2007 -0700
+
+    Fix failure to set identity transform in pixman.
+    
+    While here, optimize out a free/malloc in the case where a transform
+    existed previously and the new transform is non-identity.
+
+commit 3e74bc431908dd42775d8e82ca2e4d589de820cb
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 17 18:01:09 2007 -0400
+
+    Add pixman_image_set_source_clipping()
+
+commit c7bec5898891f3077986c141b48e5ff77f1d5046
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Aug 15 10:16:11 2007 -0700
+
+    Fix typo AC_MAJOR -> PIXMAN_MAJOR
+    
+    This typo was causing build failures for some. Thanks to David Sharp for
+    pointing out the problem.
+
+commit d9b989c890724480d27aec471d5f5fbcc09c0a61
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Tue Aug 14 16:16:27 2007 -0700
+
+    Remove redundant defines.
+
+commit 7bdb9840eb414b41ad41871864baa4f2445d8c05
+Author: Arcady Goldmints-Orlov <arcadyg@nvidia.com>
+Date:   Mon Aug 13 17:37:59 2007 -0700
+
+    One more minor wrapping fix
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+
+commit 166b78295683d9bcf688702e98259e62f9b25c86
+Author: Arcady Goldmints-Orlov <arcadyg@nvidia.com>
+Date:   Mon Aug 13 15:20:18 2007 -0700
+
+    Remove unnecessary wrapping from fbFetch/fbStore.
+    
+    These functions fetch from a picture to a scanline buffer, or store
+    from a scanline buffer to a picture. Since pixman allocates its own
+    scanline buffer, we don't need to wrap accesses to it.
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+
+commit 7b1d0c091dd5ae8797b6f7a0ab3d40d5c3676fe9
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Mon Aug 13 17:26:51 2007 -0700
+
+    Don't skip fbFetch/fbStore when PIXMAN_FB_ACCESSORS is enabled.
+    
+    pixman_composite_rect_general_accessors skips the fetch / store steps by setting
+    store to NULL when the op is ADD or OVER and the dest format is [ax]8r8g8b8.
+    This optimization is only valid when no accessors are in play.
+
+commit 43370d1ce793ef2754c2e6f0fc08e534d4247793
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Aug 6 20:06:48 2007 -0700
+
+    Update .pc file for library version name change.
+
+commit 778a3f9d7136de062806473dd3604eb03ba5d866
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Wed Aug 1 14:16:55 2007 -0700
+
+    Return a bool from pixman_image_unref.
+    
+    Returns TRUE when the refcount reaches 0 and the image is freed.
+
+commit 4838e2e9d9635883841e692a7074bcb2be96dcf5
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Aug 6 17:28:06 2007 -0400
+
+    Bump version number; fix typo in configure.ac
+
+commit 7b3c9cef49cdedef03112054925005fa21120bd5
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Aug 6 17:24:44 2007 -0400
+
+    Change the library name to pixman-1
+    Set the soname to something based on the library version.
+
+commit 19c46bf18b9cf6694fa3de9c836a3d1eed6c6dac
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Fri Aug 3 15:24:03 2007 -0700
+
+    Fix OpenSolaris compilation
+
+commit 0c80a0cd84f30616563cef5910df9deb4f8ed687
+Author: Alan Coopersmith <alanc@sun.com>
+Date:   Mon Jul 16 15:06:23 2007 -0400
+
+    Build fixes for Solaris.
+
+commit 0f392d81748ab1338d294de96e28c43270f24180
+Author: Jinghua Luo <sunmoon1997@gmail.com>
+Date:   Tue Jul 10 14:47:28 2007 +0800
+
+    Fix bug in rasterizeEdges() where the stride should be signed.
+
+commit bbef73192e558695933d7f05befaa8c18550bb63
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Mon Jul 2 12:18:42 2007 -0400
+
+    Port Vlad's fixes for integer overflows with malloc().
+
+commit 33d4028e3fffa231f40d66b5843de589ec2642fe
+Author: root <root@echo.(none)>
+Date:   Sun Jul 1 11:42:49 2007 +0000
+
+    First import of vmx
+
+commit 2e61f30e4c8d0e01e175495e13a5f132521ad6f2
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri Jun 22 13:37:46 2007 -0400
+
+    Revert "Add a cache of images to reduce malloc/free time"
+    
+    Revert the image cache since it isn't thread safe.
+    
+    This reverts commit deb09d769ae4fc55cde595c170f417692284b3e8.
+
+commit 64e3146c5ddfad415663fa5f87f7b9ff327a8c56
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Jun 22 00:58:05 2007 -0400
+
+    Don't treat void as a value. Bug 11322, Alan Coopersmith.
+
+commit 8216ba1cbd27c5428970b8d393722d0f4343efed
+Author: Vladimir Vukicevic <vladimir@pobox.com>
+Date:   Wed Jun 20 15:13:30 2007 -0400
+
+    Add pixman_region_init_rects()
+
+commit f1194a8bc0599e3ecceb785795ad8283a7c04dc0
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Jun 20 12:12:43 2007 -0400
+
+    Fix typo
+
+commit 3dbb2a56bd1918595091006c6e0de5260d43af09
+Author: Alex Larsson <alexl@redhat.com>
+Date:   Wed Jun 20 12:01:12 2007 -0400
+
+    Add non-mmx fast paths for In_8x8 and In_nx8x8. Bug 4191, patch by
+    Alex Larsson.
+
+commit 658acaad4e73ac705f705f947a42a2cd0979042c
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Jun 20 11:36:22 2007 -0400
+
+    Add fbCompositeSrc_8888xx888(); comment out
+    fbCompositeOver_x888x8x8888{mmx} since they are not actually faster
+    than the generic code.
+
+commit 440ed1da1c7ac600865c615cf257173cac2af214
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jun 19 14:41:04 2007 -0400
+
+    Optimize pixman_fill_rectangles() in a few more cases
+
+commit deb09d769ae4fc55cde595c170f417692284b3e8
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jun 19 12:41:21 2007 -0400
+
+    Add a cache of images to reduce malloc/free time
+
+commit 6cb74dfe3d395051f9a2e4b850979a018ac340ca
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jun 19 11:23:05 2007 -0400
+
+    Also store the g3 part correctly
+
+commit 07e73371ef096b42d3a983266105b71ea01b4cc8
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jun 19 11:19:43 2007 -0400
+
+    Fix fbStore_b2g3r3(). Pointed out by Dan Amelang
+
+commit d7f426806d25a9cea93a4c43a3f23e7ae9d67383
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jun 19 10:46:36 2007 -0400
+
+    Smplify the 1x1r optimization for the general compositing and fix the
+    1xn and nx1 cases.
+
+commit 9ebec1f7dbe5576d572fede28d7560ea6000b566
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jun 19 10:40:58 2007 -0400
+
+    Fix pixman_fill() to return TRUE when it succeeded
+
+commit 15b5960bcb7cadfe6fe92036dc0f08a85a2009f1
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jun 19 00:57:33 2007 -0400
+
+    Add in 0xff alpha channel in Over_x888x8x8888mmx
+
+commit e73e000d5bd44a198e35b6d0c421a735d00e0b3f
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jun 19 00:35:58 2007 -0400
+
+    Fix solid fill optimization to compute the src correctly
+
+commit edbe099ad3906d7626de854d144fc23d78408357
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 18 14:29:02 2007 -0400
+
+    Add non-mmx solid fills. Update TODO
+
+commit f9454b3423b948022f36b7191db8c5f988f46273
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 18 13:37:20 2007 -0400
+
+    Make sure the output of fbCompositeOver_x888x8x8888 is actually stored
+
+commit 0e4292666de736a584a3d4e0bcfc6db7d2c6538d
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jun 17 23:10:23 2007 -0400
+
+    Also use this function in the xBGR case
+
+commit 80a61bfb3dcf26271766e36aa31d454889ee43a5
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jun 17 22:57:47 2007 -0400
+
+    Add new fbCompositeOver_x888x8x8888mmx() operation
+
+commit 19360d0df2ba55d34963101a662dd0ab51d84836
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jun 17 22:43:55 2007 -0400
+
+    Add fbCompositeOver_x888x8x8888() fast path
+
+commit ff4004f3fbd3c576f1c931c680ad293c5038846d
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jun 17 22:24:46 2007 -0400
+
+    Rename fbCompositeSrc_x888x8x8888 to x888xnx8888
+
+commit 30f198fe53949da59821d2f394f0cecb5bdaa646
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jun 17 18:50:00 2007 -0400
+
+    Remove accidentally committed use of TIMER_BEGIN/END
+
+commit e71844095ea75b4f9f66c85c87b4b3b6c287e02f
+Merge: 4f9f7ae... 647852d...
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jun 17 18:49:02 2007 -0400
+
+    Merge branch 'master' of ssh+git://sandmann@git.freedesktop.org/git/pixman
+
+commit 647852d714ddfe6e1d71af1f4aea0e272c459fc6
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sun Jun 17 18:55:37 2007 -0400
+
+    Add timer macros
+
+commit 4f9f7ae47ad258a1605a6b38c5ec268c9ee17150
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jun 17 18:02:06 2007 -0400
+
+    Update TODO
+
+commit ad80d4d2bc8c4e37a8266b98a2241c0ebd7f0e43
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jun 17 01:00:07 2007 -0400
+
+    Optimize fill rectangles in the op=PIXMAN_OP_CLEAR case
+
+commit 9deaaae3f61f1701b022fe7daa1823a99fda7d00
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Jun 16 23:08:53 2007 -0400
+
+    Use the general code in some cases even when a fast path is available
+    
+    If src or mask are repeating 1x1 images and srcRepeat or
+    maskRepeat are still TRUE, it means the fast path we
+    selected does not actually handle repeating images.
+    So rather than call the "fast path" with a zillion
+    1x1 requests, we just use the general code (which does
+    do something sensible with 1x1 repeating images).
+
+commit e0a501d9b7e5c4ca07115552a16c4c4953ec5702
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Jun 16 22:10:36 2007 -0400
+
+    Remove ACCESS_MEM macro; define READ and WRITE to directly use the wrapper functions
+
+commit 9b3cfcc13d0613cfb9d15b21a6b90e4a91a1666f
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Jun 16 21:40:43 2007 -0400
+
+    Move some utility functions from pixman-edge.c to pixman-utils.c
+    Set up so pixman-edge.c is compiled twice.
+
+commit 3cd36dae288ac0923f214b8ae81dbfc0f4d5b1b0
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Jun 16 21:23:20 2007 -0400
+
+    Slight tweak to the definition of pixman_composeFunctions
+
+commit 68d6c68adaba3a1d538bceca7d7955129d6075de
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat Jun 16 21:19:51 2007 -0400
+
+    Add #defines etc to compile pixman-compose.c twice
+
+commit b5d07147fba7085d52966aa162db5d38164dfebf
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jun 16 15:13:04 2007 -0400
+
+    Make fbCompositeSrc_8888x8888mmx() check if the mask is 0
+
+commit 5122f2b28bfbf08479cc88ff9ddfeb371f92264f
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jun 16 14:56:25 2007 -0400
+
+    Unroll loop in fbComposite_x888x8x8888()
+
+commit 8fc40c3b0076e99cc996bd27a2479db4c94cc77b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jun 16 14:49:11 2007 -0400
+
+    Optimize 1x1 repeating images in the general case
+    
+    Reinstate checks for empty masks in mmxCombineOverU() and mmxCombineMaskU()
+
+commit 15e5cf16a9770da682addeaff5df8b1793cf4b73
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jun 16 12:55:59 2007 -0400
+
+    Add a few optimizations for solid fills
+
+commit 10854b9d63afe6893ac15fb67714eb98b7a8eca6
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jun 16 01:40:07 2007 -0400
+
+    Plug leak of the gradient stops
+
+commit e365aaf7f34d9257fc53e8f180a84fa243edcb2c
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jun 16 01:15:05 2007 -0400
+
+    Plug leak in the bits=NULL case for pixman_image_create_bits()
+
+commit 451a0510324491e82269d8e0d997ee4707ba8df8
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Jun 15 14:33:57 2007 -0400
+
+    When setting identity transformations store them as NULL to prevent
+    
+    hitting the general compositing code.
+
+commit cd9c484f0d8cef0cc243a73de5a8d742b8678230
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri Jun 15 01:45:04 2007 -0400
+
+    Turn off debug spew for incorrect arguments
+
+commit e1dd17451cbe2c7d36205fe2fc4cea0092ee4141
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Fri Jun 15 00:15:03 2007 -0400
+
+    Disable source clipping by default
+
+commit 1426483f8af21553bd8b2ad997617680944be420
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Thu Jun 14 17:37:12 2007 -0400
+
+    Update TODO
+
+commit 7a8877bc0800ffcfe18bedec49068049c877fa5d
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Thu Jun 14 17:35:28 2007 -0400
+
+    Update TODO
+
+commit a0e161ca9aa562a0f4b55b15b1ab3b9380f0d9bb
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Thu Jun 14 17:34:42 2007 -0400
+
+    Update TODO
+
+commit 596bd530205e9835ede0bc8816c9b2dfff75e921
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Thu Jun 14 12:59:15 2007 -0400
+
+    Reset clip regions correctly when NULL is passed
+
+commit e8dfb54ccea26b7e7948ca9806c97194892f0791
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue Jun 12 23:50:04 2007 -0400
+
+    Make default clip region the full image
+
+commit 42192ad0fc7fe0fa7600f879646de867691351bb
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue Jun 12 23:37:25 2007 -0400
+
+    Don't complain if users try to read non-existing data from images
+
+commit 0e77667851869849cbddc30466db99ff5dc02b19
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue Jun 12 22:53:35 2007 -0400
+
+    Don't require rowstride to be a multiple of 4 when bits is NULL
+
+commit b6bdd8273cc3500d1f69402f39c3d6e718920a66
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue Jun 12 22:14:32 2007 -0400
+
+    Add pixman_fill_rectangles()
+
+commit 0ab81dc6383e843aa3fa78da289820a55f4a08f0
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue Jun 12 15:32:27 2007 -0400
+
+    Add pixman_add_trapezoids() function
+
+commit 756b54f6e45bb423ffabfcad2b6d8574130c6e53
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue Jun 12 15:27:31 2007 -0400
+
+    Add boolean returns to various setters
+
+commit 6d62986ee0be7191ad6ef938d82cbadbe995c377
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue Jun 12 14:30:53 2007 -0400
+
+    Allow bits to be NULL when bit images are created
+
+commit d466cf1d2f09f78baaafac713d6bc7d4f003b860
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue Jun 12 14:24:40 2007 -0400
+
+    Add various accessors; remove composite_rect
+
+commit b62b769c0da8d8eae68bd41a53f390c1f0917be0
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 11 22:02:03 2007 -0400
+
+    Bump version number
+
+commit c663029510c8a329dc87246cc895b21f0af79eb6
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 11 21:39:24 2007 -0400
+
+    Make use of pixman_fill_mmx() in various places. Delete #if0'ed code
+
+commit 3dca89a677528845ccaee7ff6d355207c631ddd2
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 11 21:35:14 2007 -0400
+
+    Add pixman_fill_mmx() function
+
+commit cf6b8f63d4dd2d96efcde673696e1703856a3787
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 11 14:55:31 2007 -0400
+
+    Forgotten fbHaveMMX()
+
+commit 02f6129400eda40167e91e0ff4724d7a5ae5a80d
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 11 14:54:44 2007 -0400
+
+    Rename fbHaveMMX() pixman_have_mmx()
+    Guard pixman_blt_mmx() with pixman_have_mmx()
+
+commit 105d398c4d061eb102747f824e6c04ab897cb5e1
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 11 14:41:01 2007 -0400
+
+    Add pixman_blt_mmx() based on fbBltmmx() from the X server.
+    
+    Implement fbCompositeAreammx() in terms of it.
+    
+    Uncomment calls to fbCompositeAreammx() in pixman-pict.c
+    
+    Add public pixman_blt() that just returns false if not using mmx.
+
+commit 6a64eb109449806186164332383be1235ab9c21c
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 11 09:15:05 2007 -0400
+
+    Bump version number
+
+commit 30499e2e88985df2cd1ece82227802a316e31a32
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 11 00:22:19 2007 -0400
+
+    Add a version of miComputeCompositeRegion; call it from
+    pixman_image_composite(). Remove const from return value of
+    pixman_region_rectangles().
+
+commit 5ca61dc99b198243f08e6f1f3f96e3c87ff818b9
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jun 5 11:33:17 2007 -0400
+
+    Fix bug in pixman_image_set_filter() where only the parameters were
+    updated, not the filter type. Reported by Michel Dänzer.
+
+commit 808e2de3a6270b32a026722f59a49736d224d46c
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu May 24 16:24:39 2007 +0300
+
+    Add .gitignore file
+
+commit d1ce3f95509bd86c0aa850d6b58c8a065517c84f
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu May 24 16:19:40 2007 +0300
+
+    Use canonical autogen.sh
+    
+    Use the standard autogen.sh, which allows for srcdir != builddir.
+
+commit 8129984603de569e01563d810a334765c2ec5062
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 23 16:38:38 2007 -0400
+
+    Declare the two new trapezoid functions in pixman.h
+
+commit 4355cc5c57f3e402af9a508762c8ed3a5ac9f2ca
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed May 23 16:40:23 2007 -0400
+
+    Add pixman-trap with the trapezoid rasterization code from the X server.
+    
+    Add two different trapezoid types that X makes use of.
+
+commit 35f99a530de11bcf0e98c372bc49b9bf0f2ecf37
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 23 16:09:49 2007 -0400
+
+    Make sure gradient-test.c builds when srcdir != buildir. Patch from
+    Julien Cristau <jcristau@debian.org>.
+
+commit d5e8a7b8bdd4b18e504859059683cb9723503b3c
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed May 23 15:39:03 2007 -0400
+
+    Fix bug in rasterizeEdges() where the stride was treated as if in
+    bytes, when it was in uint32_t's. Formatting fixes. Delete misleading
+    comment from pixman-private.h
+
+commit ee37469d6adad32cb31e52a95abafa32943b3e8d
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 23 12:18:09 2007 -0400
+
+    Fix function name
+
+commit 727b77983bd8b684764e69cdea38ce6290c60467
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 22 13:39:25 2007 -0400
+
+    Add more edge functions
+
+commit 4600c6823e4dea52a34fe881f5374691bc76f555
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 22 12:52:52 2007 -0400
+
+    Add implementation of edge rasterization
+
+commit 1413bb7a5ddc2d49109a1e9669fab155352bc3c7
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 22 11:58:46 2007 -0400
+
+    Add edge data types
+
+commit e32b240145ee7bbc2e69020b0bb00c33c68acf15
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue May 22 10:00:46 2007 -0400
+
+    Detect endianness
+
+commit e5cf135170198a33429b00f7c506a84054f0297e
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue May 22 09:54:19 2007 -0400
+
+    Include string.h in pixman-pict.c
+
+commit 097de78d135259c64c5cf8789680bfdc354c12f9
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue May 22 09:51:54 2007 -0400
+
+    Check for getisax() support
+
+commit 37f90ba0b2d9797de93477aaa9e113329e50f93d
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue May 22 09:49:23 2007 -0400
+
+    Check for MMX in the build system
+
+commit 56623268a76ab65228c41dba5fbf27463b1a5691
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue May 22 00:04:39 2007 -0400
+
+    Update TODO
+
+commit ed184ebb7c2f12010207ffa210975a9b22b152ef
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Tue May 22 00:03:31 2007 -0400
+
+    Make the mmx code compile
+
+commit 2db377de616c4c0826d1a56777d7a4f858049758
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Mon May 21 23:46:24 2007 -0400
+
+    Add pixman-mmx.[ch] and move macros around to make it compile.
+    Not yet hooked up.
+
+commit ce506999e6dc6ad07d2665277d0250e7d9e0b6a8
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Mon May 21 20:03:37 2007 -0400
+
+    Use the general code if the images have read/write functions
+
+commit a54096d554414dd88a3c6a7a53816552844a5b08
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Mon May 21 17:51:41 2007 -0400
+
+    Update TODO
+
+commit ccef70a685191bb3cd4b7891f1ebde1881b3aa13
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Mon May 21 15:03:41 2007 -0400
+
+    Fix bug in fbCompositeGetSolid() where a format was compared to a format type
+
+commit 154c4dd97896178cd54bdb1057bef2eab3870c0c
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Mon May 21 14:27:40 2007 -0400
+
+    Make pixman_image_composite() take a region parameter; comment out non-implemented functions from the switch of doom
+
+commit 4518de9fec813bcb19facbc944821e882a91671a
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Mon May 21 10:00:05 2007 -0400
+
+    Add slightly changed copy of miComputeCompositeRegion() to pixman-pict.c
+
+commit 4df446bb73b1ab89e119d6714a3feae8a384e113
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat May 19 17:19:39 2007 -0400
+
+    Move mod and div macros to pixman-private.h
+
+commit bcb4c8f02137178096473191a05c3b84e4ce5116
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat May 19 17:13:02 2007 -0400
+
+    Add fbComposeGetStart() macro
+
+commit e9e326eafe3e4ed221eefbb7ddbd46d5d983505d
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat May 19 17:05:23 2007 -0400
+
+    Add fbComposeGetSolid() macro
+
+commit 456ebbbb27381d5fff4d2426a261c4760eb0b8df
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat May 19 16:44:40 2007 -0400
+
+    Add implementation of can_get_solid()
+
+commit eabc2f48f07decb5fa15db985fffa9e648506568
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat May 19 16:40:10 2007 -0400
+
+    Various formatting/style tweaks
+
+commit bdb307ac4a6ad20e687f286491a3d9df6807567f
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat May 19 15:53:37 2007 -0400
+
+    Add macro FUNC that expands to __PRETTY_FUNCTION__ or __func__
+    depending on the compiler.
+
+commit 4c15a7838eadf9b608b28ebafccceb0aa25a83dc
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat May 19 12:04:21 2007 -0400
+
+    Include limits.h in pixman-compose.c; patch from Alan Coopersmith
+
+commit 595ca53c094b8dee6747670aaa471fb19f1a6d94
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 18 15:21:51 2007 -0400
+
+    Add pixman-pict.c which is a version of fbpict.c. It compiles, but
+    isn't hooked up to anything.
+
+commit e1328980457ce6f51ce2649d79feefa616408ce9
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 18 13:38:26 2007 -0400
+
+    Make pixman_image_set_indexed() not copy its argument
+
+commit e12ca669af9143581c4af4c8c885273fc6b12c2d
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 18 12:04:16 2007 -0400
+
+    Free the indexed table when the image is freed
+
+commit ff2e0e9636b1dd3690b5ab5e1dff04ff5c9a07ab
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 18 11:54:01 2007 -0400
+
+    Add new function pixman_image_set_indexed()
+
+commit 74b76ad9fefd39d7d60a059f2f8537b5f6b94652
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Thu May 17 10:19:29 2007 -0400
+
+    Fix wrong type in composite-test.c
+
+commit d25d77852d253042b859468f64b228d11c2a0f82
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Thu May 17 09:12:09 2007 -0400
+
+    Add a TODO file. Indent pixman-compose.c
+
+commit db3c13c8fea0e3d0be382d55d58fc9d0d01bba44
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed May 16 19:35:55 2007 -0400
+
+    Add macro magic in pixman-private.h to allow reading and writing to
+    happen through functions. Use them in pixman-compose.c; also delete
+    unnecessary READ and WRITE macros that always operate on host memory.
+    Add accessor functions to composite-test.c
+
+commit 57d6894ab06d2ac07e17108c01e8ba282fc51384
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 16 11:13:11 2007 -0400
+
+    Add an image argument to all the store functions
+    
+    Some tweaks to composite-test.c
+
+commit 0cfb66104cc553ba365df546d7ba9b0e8415e30f
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 16 11:07:54 2007 -0400
+
+    Add an image argument to all the fetch functions
+
+commit a49e425933e3ccd1ae59c0e60ddbab8a88282639
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 16 11:03:09 2007 -0400
+
+    Move some macros from pixman-compose.c to pixman-private.h
+
+commit 24f8cfce32d3c5dcd3ff6d9ebd513c35cdacc972
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 16 10:56:08 2007 -0400
+
+    Add API to have accessor functions on pixman
+
+commit 195100527f6c678bf9848dc6c2a08658ed39a17d
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 15 16:40:40 2007 -0400
+
+    Various formatting fixes
+    
+    Rename pixman_image_composite() to pixman_image_composite_rect()
+
+commit 97a4ce541c9fc72aeee0f05b8529d0ca87fb7863
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 15 12:15:46 2007 -0400
+
+    Fix typo in pixman.h
+
+commit 322659703d7c52d45ba3962b8386ac5f61e403db
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 15 12:13:01 2007 -0400
+
+    Replace hack to get standard integer types with #if/#elif construction
+
+commit ffbb4a6b1fb52dc46639d18bf0dd769fe53d3e88
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 15 11:08:24 2007 -0400
+
+    Don't build GTK+ test programs if GTK+ is not available
+
+commit b8d223d6837d37bc09efdf3c4d957ff24337004a
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat May 12 19:24:42 2007 -0400
+
+    Export pixman_region_reset
+
+commit 38c4ac5a1d25d96087bfe1e3d02816feaa6b8bf9
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat May 12 17:58:50 2007 -0400
+
+    Export a pixman_region_selfcheck
+
+commit f226c2b4f2465aba5f9e1f3fed48f0840d0b67c0
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat May 12 17:55:48 2007 -0400
+
+    Export pixman_region_equal()
+
+commit ecf9d36f6a62f4d77e2c025ee3109ac46f13f15d
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Sat May 12 17:32:43 2007 -0400
+
+    Add new pixman_region_set_static_pointers
+
+commit ffab43129163de418c324cffcf602e6254024f95
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Thu May 10 22:15:57 2007 -0400
+
+    Make the region data struct public
+
+commit e126ef091151372ed29562f3ff1a964774583b9b
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Thu May 10 16:14:40 2007 -0400
+
+    Make the pixman_transform_point_3d() function public
+
+commit f267e4dce73819a4a511ffaebd0cca9dcb3bd5fb
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Thu May 10 16:08:12 2007 -0400
+
+    Change the names of a few functions to prevent them from clashing with the X names
+
+commit c976db965862c0b2ba940122dc7e690cd23b5fa3
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Thu May 10 10:13:54 2007 -0400
+
+    Use a radial gradient in the gradien-test
+
+commit 7ad923eb6ff71b3865ea43b2ee247715607146da
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Thu May 10 09:30:17 2007 -0400
+
+    Make sure 64 bit fixed point types are signed
+
+commit a5a11df9024f9b7ee6194e0b842cd430f4fb5697
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Thu May 10 09:16:34 2007 -0400
+
+    Add a transformation to the gradient test
+
+commit 1a58e8478f6f87de3ffe31b0fd2b1ee06d08fe6c
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed May 9 18:18:38 2007 -0400
+
+    Use fixpoint instead of double in gradient test
+
+commit 0ebb7e31db85a179afdcd731fcc6b0e311084cb1
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Wed May 9 18:10:30 2007 -0400
+
+    Remove AM_MAINTAINER_MODE ; add new gradient-test
+
+commit dd670c29bf1de3e951f936dba834e4bfe07a9bd4
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 9 14:20:57 2007 -0400
+
+    Fix various stupid mistakes, such as inverted return_if_fail() tests
+    and only allocating space for a pointer instead of an image.
+
+commit 271c830eb0b817bd892704fb15856b19b0458d07
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 9 11:22:56 2007 -0400
+
+    Remove *error from solid fill constructor
+
+commit e9b1be0151d7bc677bd74f0a5a6836672c1ad9dd
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 9 11:12:21 2007 -0400
+
+    Various formatting fixes
+
+commit 059f62f3b02b6244b866e58d248bc8e6869f506e
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 9 11:09:59 2007 -0400
+
+    Handle setting of NULL properties
+
+commit 7529b47ee5f55e7b16bdfa750dd18dac11194210
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 9 11:00:06 2007 -0400
+
+    Make images ref counted. Memory management.
+
+commit 8bdb8b1d93bbbffafe111b4fc4dac0df9bbb6fe5
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 9 09:47:33 2007 -0400
+
+    Export pixman_gradient_stop; get rid of *error argument from init functions.
+    
+    Add return_if_fail macros to pixman-private.h
+
+commit 4ea0d782092d9bd7c1570bcfccf3fe340a3d258a
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Wed May 9 08:20:43 2007 -0400
+
+    Change to use malloced image instead of stack allocated
+
+commit 45c261d75ae348cb4afc6c97d4daa90cfd50e890
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 8 17:02:44 2007 -0400
+
+    Apply bad hack to avoid including config.h
+
+commit 59df25cbe403112c3c301dd212cfaa7b8f848499
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 8 14:24:32 2007 -0400
+
+    Install header file in pixman/pixman.h
+
+commit 2f882e03614608a2a39690cf4e7105e4dde25e21
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 8 14:00:13 2007 -0400
+
+    Fix libpixman.pc.in
+
+commit 0c01cbedbaf068a9db4edefbb130c58f1f1c85ac
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 8 13:37:03 2007 -0400
+
+    Add setters for various properties
+
+commit e36c6a5eb4cc89da8cf8d66dd45d02b75584e243
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 8 13:19:51 2007 -0400
+
+    Make the test program test something useful.
+    
+    Also add a check that the public image struct is big enough to contain the
+    private union.
+
+commit 4bd9ebc83d5a25141b5c9868513b918befd433d0
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 8 10:48:27 2007 -0400
+
+    Add a simple test program; fix linking problems
+
+commit 50289aace6a8699c08593a8cb93bf8dfc30ed818
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Tue May 8 10:32:54 2007 -0400
+
+    Implement pixman_image_composite() in terms of fbCompositeRect().
+
+commit df7570f0ad6b903d7b910734f1906d423928c048
+Author: Søren Sandmann <sandmann@redhat.com>
+Date:   Mon May 7 22:36:15 2007 -0400
+
+    Add a version of fbcompose.c. Fixes and additions to make it compile
+
+commit 589604bfa36524809f3f44b96f624f7c7bedbee0
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Sun May 6 12:46:42 2007 -0400
+
+    Fix copyright notice
+
+commit c2602792aa8d5d4a376beb9557f544b78735c210
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 4 23:45:19 2007 -0400
+
+    Add fixed point macros, add declarations for image init functions
+
+commit da2510138584c4dd80b011f3bc767923c6ee443e
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 4 22:34:54 2007 -0400
+
+    Run configure from autogen.sh
+
+commit 560a2f52ade892526d5d64a1fb36471ade57ed45
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 4 22:34:22 2007 -0400
+
+    Don't run configure from autogen.sh
+
+commit eb90370859435390d0276d0c2c5f3251b32e431a
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 4 22:18:33 2007 -0400
+
+    Make autogen.sh run configure
+
+commit 97cdcabe18a2e910dbfa4892dd8f32354fb02463
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 4 22:16:40 2007 -0400
+
+    Changes to autogen.sh
+
+commit 261a293555d45245f34214e646131a410e8fd4a7
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 4 22:11:49 2007 -0400
+
+    Make autogen.sh run configure
+
+commit 9f40d13e9f9e23f62280375605f4234e71642c24
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 4 22:08:40 2007 -0400
+
+    Add pixman.pc.in
+
+commit 7f0b18c94cf84750b097fe96aa3c8ac9e1b406e3
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 4 22:07:19 2007 -0400
+
+    Add code to initialize images, based on picture.c from the X server
+
+commit af13f449087a5dd72abf5f1178234e85add33632
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 4 19:44:13 2007 -0400
+
+    Change autogen.sh to call autoreconf. Remove reference to libcomp.h
+
+commit 565f410a1c420da875cd9d13efa22126ad5fa567
+Author: Soren Sandmann Pedersen <ssp@dhcp83-218.boston.redhat.com>
+Date:   Fri May 4 19:13:57 2007 -0400
+
+    Add the files.
