@@ -5,6 +5,43 @@ pixman (0.10.0-3) UNRELEASED; urgency=low
 
  -- Brice Goglin <bgoglin@debian.org>  Fri, 13 Jun 2008 12:00:17 +0200
 
+pixman (0.13.2-1) experimental; urgency=low
+
+  [ Timo Aaltonen ]
+  * New upstream release.
+  * Update libpixman-1-0.symbols with new symbols.
+
+  [ Julien Cristau ]
+  * Don't use ARM SIMD code.  It doesn't do runtime detection, and will only
+    work on ARMv6.
+  * Fix shlibs for the udeb.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 04 Jan 2009 21:39:31 +0100
+
+pixman (0.12.0-1) experimental; urgency=low
+
+  * New upstream release.
+  * Bump pixman_format_supported_source's version in the symbols file, depth
+    30 formats were added in 0.11.10.
+  * Bump shlibs to 0.11.10 as well.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 21 Sep 2008 17:01:01 +0200
+
+pixman (0.11.8-1) experimental; urgency=low
+
+  * New upstream development release.
+  * Bump versions for pixman_image_create_bits and
+    pixman_format_supported_destination, as some formats were added in 0.11.6.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 18 Jul 2008 15:21:17 +0200
+
+pixman (0.11.6-1) experimental; urgency=low
+
+  * New upstream development release.
+  * Bump shlibs and update symbols files.
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 15 Jul 2008 21:36:11 +0200
+
 pixman (0.10.0-2) unstable; urgency=low
 
   [ Frans Pop ]

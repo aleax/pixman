@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 
 PACKAGE = libpixman-1-0
+SHLIBS_VERSION = 0.13.2
 
 CFLAGS = -Wall -g
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
@@ -32,9 +33,13 @@ config-stamp: autogen-stamp
 	dh_testdir
 	test -d obj-$(DEB_BUILD_GNU_TYPE) || mkdir obj-$(DEB_BUILD_GNU_TYPE)
 	cd obj-$(DEB_BUILD_GNU_TYPE) && \
-	../configure --prefix=/usr --mandir=\$${prefix}/share/man \
-	--infodir=\$${prefix}/share/info $(confflags) \
-	CFLAGS="$(CFLAGS)" 
+	../configure \
+	  --prefix=/usr \
+	  --mandir=\$${prefix}/share/man \
+	  --infodir=\$${prefix}/share/info \
+	  --disable-arm-simd \
+	  $(confflags) \
+	  CFLAGS="$(CFLAGS)"
 	touch $@
 
 
@@ -83,7 +88,7 @@ binary-arch: install
 	dh_strip --dbg-package=$(PACKAGE)-dbg
 	dh_compress
 	dh_fixperms
-	dh_makeshlibs -p$(PACKAGE) --add-udeb $(PACKAGE)-udeb
+	dh_makeshlibs -p$(PACKAGE) --add-udeb $(PACKAGE)-udeb -V"$(PACKAGE) (>= $(SHLIBS_VERSION))"
 	dh_shlibdeps
 	dh_installdeb
 	dh_gencontrol
