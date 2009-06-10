@@ -1,3 +1,10 @@
+pixman (0.14.0-2) UNRELEASED; urgency=low
+
+  * Update debian/copyright from upstream COPYING (closes: #519078).  Thanks,
+    Jo Shields!
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 10 Jun 2009 22:47:46 +0200
+
 pixman (0.14.0-1) unstable; urgency=low
 
   [ Brice Goglin ]
