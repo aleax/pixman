@@ -19,13 +19,13 @@ libpixman-1.so.0 libpixman-1-0 #MINVER#
  pixman_f_transform_scale@Base 0.13.2
  pixman_f_transform_translate@Base 0.13.2
  pixman_fill@Base 0
- pixman_image_composite@Base 0.9.4-2
- pixman_image_create_bits@Base 0.11.6
+ pixman_image_composite@Base 0.15.14
+ pixman_image_create_bits@Base 0.15.12
  pixman_image_create_conical_gradient@Base 0
  pixman_image_create_linear_gradient@Base 0
  pixman_image_create_radial_gradient@Base 0
  pixman_image_create_solid_fill@Base 0
- pixman_image_fill_rectangles@Base 0.9.4-2
+ pixman_image_fill_rectangles@Base 0.15.14
  pixman_image_get_data@Base 0
  pixman_image_get_depth@Base 0
  pixman_image_get_height@Base 0
@@ -37,6 +37,7 @@ libpixman-1.so.0 libpixman-1-0 #MINVER#
  pixman_image_set_clip_region32@Base 0.11.2
  pixman_image_set_clip_region@Base 0
  pixman_image_set_component_alpha@Base 0
+ pixman_image_set_destroy_function@Base 0.15.12
  pixman_image_set_filter@Base 0
  pixman_image_set_has_client_clip@Base 0
  pixman_image_set_indexed@Base 0
@@ -111,5 +112,5 @@ libpixman-1.so.0 libpixman-1-0 #MINVER#
  pixman_transform_point_3d@Base 0
  pixman_version@Base 0.10.0
  pixman_version_string@Base 0.10.0
- pixman_format_supported_destination@Base 0.11.6
- pixman_format_supported_source@Base 0.11.10
+ pixman_format_supported_destination@Base 0.15.12
+ pixman_format_supported_source@Base 0.15.12
