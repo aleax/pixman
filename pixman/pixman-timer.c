@@ -27,14 +27,14 @@
 #include <stdio.h>
 #include "pixman-private.h"
 
-#ifdef PIXMAN_TIMER
+#ifdef PIXMAN_TIMERS
 
-static PixmanTimer *timers;
+static pixman_timer_t *timers;
 
 static void
 dump_timers (void)
 {
-    PixmanTimer *timer;
+    pixman_timer_t *timer;
 
     for (timer = timers; timer != NULL; timer = timer->next)
     {
@@ -47,7 +47,7 @@ dump_timers (void)
 }
 
 void
-pixman_timer_register (PixmanTimer *timer)
+pixman_timer_register (pixman_timer_t *timer)
 {
     static int initialized;
 
