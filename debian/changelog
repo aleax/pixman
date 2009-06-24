@@ -14,6 +14,7 @@ pixman (0.15.14-1) UNRELEASED; urgency=low
   * Use filter instead of findstring for DEB_BUILD_OPTIONS parsing, as
     standardized by policy 3.8.0.
   * Handle parallel=n in DEB_BUILD_OPTIONS.
+  * Bump Standards-Version to 3.8.2.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 10 Jun 2009 22:47:46 +0200
 
