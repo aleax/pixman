@@ -5,6 +5,7 @@ pixman (0.15.14-1) UNRELEASED; urgency=low
   * New upstream development release.
   * Enable arm simd, we can do runtime detection now.
   * Update symbols file and bump shlibs for new version.
+  * Run dh_shlibdeps after dh_installdeb to avoid a dpkg-shlibdeps warning.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 10 Jun 2009 22:47:46 +0200
 

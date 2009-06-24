@@ -88,8 +88,8 @@ binary-arch: install
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs -p$(PACKAGE) --add-udeb $(PACKAGE)-udeb -V"$(PACKAGE) (>= $(SHLIBS_VERSION))"
-	dh_shlibdeps
 	dh_installdeb
+	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
