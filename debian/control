@@ -28,7 +28,7 @@ Description: pixel-manipulation library for X and cairo
  installer.  Do not install it on a normal system.
 
 Package: libpixman-1-0-dbg
-Section: libdevel
+Section: debug
 Priority: extra
 Architecture: any
 Depends: libpixman-1-0 (= ${binary:Version})
