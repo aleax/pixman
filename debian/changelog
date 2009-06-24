@@ -7,6 +7,8 @@ pixman (0.15.14-1) UNRELEASED; urgency=low
   * Update symbols file and bump shlibs for new version.
   * Run dh_shlibdeps after dh_installdeb to avoid a dpkg-shlibdeps warning.
   * Move libpixman-1-0-dbg to new 'debug' section.
+  * Add ~ to pixman_image_set_source_clipping version in symbols file, to make
+    lintian happy.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 10 Jun 2009 22:47:46 +0200
 

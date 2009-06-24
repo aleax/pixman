@@ -42,7 +42,7 @@ libpixman-1.so.0 libpixman-1-0 #MINVER#
  pixman_image_set_has_client_clip@Base 0
  pixman_image_set_indexed@Base 0
  pixman_image_set_repeat@Base 0
- pixman_image_set_source_clipping@Base 0.9.4-2
+ pixman_image_set_source_clipping@Base 0.9.4-2~
  pixman_image_set_transform@Base 0
  pixman_image_unref@Base 0
  pixman_line_fixed_edge_init@Base 0
