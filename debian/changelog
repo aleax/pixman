@@ -9,6 +9,8 @@ pixman (0.15.14-1) UNRELEASED; urgency=low
   * Move libpixman-1-0-dbg to new 'debug' section.
   * Add ~ to pixman_image_set_source_clipping version in symbols file, to make
     lintian happy.
+  * Don't handle nostrip explicitly in debian/rules, dh_strip does that for
+    us.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 10 Jun 2009 22:47:46 +0200
 
