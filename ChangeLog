@@ -1,3 +1,1332 @@
+commit f3ac1368775542e09f3741d2ad7b72af20bd9663
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 21 07:20:57 2009 -0400
+
+    Pre-release version bump
+
+commit 7c56911e3b5b97b26dceff9b68d9fed32693d57b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 21 07:01:10 2009 -0400
+
+    Don't assert when malformed regions are detected.
+    
+    Instead print a message to stderr so that it will end up in the X log
+    file.
+
+commit f9660ce29ed072c6cbaec711c5d18b9f0ba113ae
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 21 04:23:56 2009 -0400
+
+    Fix another search and replace issue
+
+commit b3196b63274134a594fc091ec2f8be3b44734411
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 21 04:18:35 2009 -0400
+
+    Fix search-and-replace issue pointed out by Koen Kooi.
+
+commit 0ff5733c16804d5b10782556eeeade7061924846
+Author: George Yohng <georgefd@oss3d.com>
+Date:   Tue Jul 21 03:43:42 2009 -0400
+
+    Add implementation of MMX __m64 functions for MSVC x64.
+    
+    Microsoft C++ does not define __m64 and all related MMX functions in
+    x64.  However, it succeeds in generating object files for SSE2 code
+    inside pixman.
+    
+    The real problem happens during linking, when it cannot find MMX functions
+    (which are not defined as intrinsics for AMD64 platform).
+    
+    I have implemented those missing functions using general programming.
+    
+    MMX __m64 is used relatively scarcely within SSE2 implementation, and the
+    performance impact probably is negligible.
+    
+    Bug 22390.
+
+commit 0b95afd259bb839a026955e7fda15b44fa22a805
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Mon Jul 20 14:07:18 2009 +0100
+
+    Fix read of BITS members from a solid image.
+    
+    During the fast-path query, the read_func and write_func from the bits
+    structure are queried for the solid image.
+    
+    ==32723== Conditional jump or move depends on uninitialised value(s)
+    ==32723==    at 0x412AF20: _pixman_run_fast_path (pixman-utils.c:681)
+    ==32723==    by 0x4136319: sse2_composite (pixman-sse2.c:5554)
+    ==32723==    by 0x4100CD2: _pixman_implementation_composite
+    (pixman-implementation.c:227)
+    ==32723==    by 0x412396E: pixman_image_composite (pixman.c:140)
+    ==32723==    by 0x4123D64: pixman_image_fill_rectangles (pixman.c:322)
+    ==32723==    by 0x40482B7: _cairo_image_surface_fill_rectangles
+    (cairo-image-surface.c:1180)
+    ==32723==    by 0x4063BE7: _cairo_surface_fill_rectangles
+    (cairo-surface.c:1883)
+    ==32723==    by 0x4063E38: _cairo_surface_fill_region
+    (cairo-surface.c:1840)
+    ==32723==    by 0x4067FDC: _clip_and_composite_trapezoids
+    (cairo-surface-fallback.c:625)
+    ==32723==    by 0x40689C5: _cairo_surface_fallback_paint
+    (cairo-surface-fallback.c:835)
+    ==32723==    by 0x4065731: _cairo_surface_paint (cairo-surface.c:1923)
+    ==32723==    by 0x4044098: _cairo_gstate_paint (cairo-gstate.c:900)
+    ==32723==  Uninitialised value was created by a heap allocation
+    ==32723==    at 0x402732D: malloc (vg_replace_malloc.c:180)
+    ==32723==    by 0x410099F: _pixman_image_allocate (pixman-image.c:100)
+    ==32723==    by 0x41265B8: pixman_image_create_solid_fill
+    (pixman-solid-fill.c:75)
+    ==32723==    by 0x4123CE1: pixman_image_fill_rectangles (pixman.c:314)
+    ==32723==    by 0x40482B7: _cairo_image_surface_fill_rectangles
+    (cairo-image-surface.c:1180)
+    ==32723==    by 0x4063BE7: _cairo_surface_fill_rectangles
+    (cairo-surface.c:1883)
+    ==32723==    by 0x4063E38: _cairo_surface_fill_region
+    (cairo-surface.c:1840)
+    ==32723==    by 0x4067FDC: _clip_and_composite_trapezoids
+    (cairo-surface-fallback.c:625)
+    ==32723==    by 0x40689C5: _cairo_surface_fallback_paint
+    (cairo-surface-fallback.c:835)
+    ==32723==    by 0x4065731: _cairo_surface_paint (cairo-surface.c:1923)
+    ==32723==    by 0x4044098: _cairo_gstate_paint (cairo-gstate.c:900)
+    ==32723==    by 0x403C10B: cairo_paint (cairo.c:2052)
+
+commit c7b84f8b043018368fade4ad13730cfcaaf5c8cc
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 21 00:17:15 2009 -0400
+
+    Only apply the workaround if the clip region extends beyond the drawable.
+    
+    This works because the X server always attempts to set a clip region
+    within the bounds of the drawable, and it only fails at it when it is
+    computing the wrong translation and therefore needs the workaround.
+
+commit 6bd17f1e9861693262fa88bfeff5d3279b3f6e7d
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 20 23:46:06 2009 -0400
+
+    Rework the workaround for bogus X server images.
+    
+    Bug 22844 demonstrates that it is not sufficient to play tricks with
+    the clip regions to work around the bogus images from the X
+    server. The problem there is that if the operation hits the general
+    path and the destination has a different format than a8r8g8b8, the
+    destination pixels will be fetched into a temporary array. But because
+    those pixels would be outside the clip region, they would be fetched
+    as black. The previous workaround was relying on fast paths fetching
+    those pixels without checking the clip region.
+    
+    In the new scheme we work around the problem at the
+    pixman_image_composite() level. If an image is determined to need a
+    work around, we translate both the bits pointer, the coordinates, and
+    the clip region, thus effectively undoing the X server's broken
+    computation.
+
+commit dfdb8509e2160a0db7d72e775dd348090e6fb968
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 20 22:45:47 2009 -0400
+
+    Add test case for bug 22844.
+
+commit 96340123eba05bff85433bb2db3a7ad80c8e57ba
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 21 01:24:43 2009 -0400
+
+    Fix typo in sse2_combine_over_pixbuf_0565()
+
+commit 767542cfb955ba22dad1259eff8a2fe16e7b8ba4
+Author: Adrian Bunk <adrian.bunk@movial.com>
+Date:   Mon Jul 20 20:16:32 2009 -0400
+
+    Fix NEON build for older ARM CPUs
+    
+    The pld instruction used in the NEON assembler code is only available
+    for ARMv5e and >= ARMv6.
+    
+    Set -mcpu=cortex-a8 when compiling the source file (similar to what is
+    already done for the SIMD build).
+
+commit 184cd80aa46dd9d8bd023d3b70a345330b72d7e7
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 20 19:56:46 2009 -0400
+
+    Some formatting changes to pixman-arm-neon.c
+
+commit 5d2c527a2234d34b6269c561b08ebcaabf0b3ea3
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Jul 17 13:03:21 2009 +0300
+
+    ARM: Fixes for the inline assembly constraints in pixman_fill_neon
+    
+    Some of the variables in the inline assembly arguments list are
+    actually modified by the assembly code, they are now marked
+    appropriately.
+
+commit c27a60f94cea7deb0afb21e734c892d475bfa06d
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Jul 17 12:54:44 2009 +0300
+
+    ARM: Workaround cs2007q3 compiler bug for NEON registers clobber list
+    
+    128-bit registers "qX" are incorrectly handled in inline assembly
+    clobber list for codesourcery cs2007q3 gcc toolchain. Only the
+    first 64-bit half is saved and restored by gcc. Changing clobber
+    list to use only 64-bit register aliases can solve this problem.
+    For example, 128-bit register q0 is mapped to two 64-bit
+    registers d0 and d1, q1 is mapped to d2 and d3, etc.
+
+commit cb4a5fd18f20f49ed2721f04a886c2ffd1645d09
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Jul 17 00:11:14 2009 +0300
+
+    ARM: Commented out the rest of buggy NEON optimizations
+    
+    These functions have problems with invalid memory accesses and often
+    crash X server
+
+commit 1aee6813ac45e6b206522623f58f1110a54186b1
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Jul 17 00:08:42 2009 +0300
+
+    ARM: Use Ian's variant of 'neon_composite_over_n_8_0565' function again
+    
+    This patch effectively reverts the changes done by commit
+    8eeeca993252edc39da9c5c57545b81215fafc81 which was causing
+    severe stability issues, and restores old variant of
+    'neon_composite_over_n_8_0565' function, which used to work
+    correctly.
+
+commit 2356ba38fd0c0002be4484adb8ca51de32b2ff81
+Author: Miha Vrhovnik <miha.vrhovnik@cordia.si>
+Date:   Mon Jul 20 19:30:59 2009 -0400
+
+    Update Makefile.win32 to make it work again.
+
+commit d4b22bd9935662912641abe5fd010d906c839405
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Tue Jul 21 00:49:40 2009 +0200
+
+    Add a lot more sanity checks to region code
+    
+    - Introduce a GOOD_RECT() macro that checks that a pixman_box_t is not
+      empty or degenerate an use it.
+    - Use GOOD_RECT() instead of magic if statements for funtions that take
+      x, y, width, height arguments
+    - Use GOOD_RECT() in _reset(). The checks in the previous code seemed to
+      allow an empty box, but then created a broken region from it.
+    - Add GOOD(region) check at the end of _translate()
+
+commit a3ad8bb5412f47776285bfc954d2275f075c8796
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Mon Jul 20 23:38:36 2009 +0200
+
+    Handle degenerate case in pixman_init_extents()
+    
+    Create an empty region instead
+
+commit 854ec2ea4d0fc940e91c4ec1c419fb4e5635dc95
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 19 12:29:42 2009 -0400
+
+    Replace // comments with /* */ comments in various places
+
+commit 54cad29dc55fc0a670bf87abacd5f45e1289db54
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jul 18 17:59:43 2009 -0400
+
+    Align the stack in _pixman_implementation_create_sse2()
+    
+    When compiled without optimization, GCC will place various temporaries
+    on the stack. Since Firefox sometimes causes the stack to be aligned
+    to four bytes, this causes movdqa to generate faults.
+
+commit 6aa26296f5831bddc9b3f3e3e2ea018fc0cefb75
+Author: M Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
+Date:   Sun Jul 19 18:20:53 2009 +0300
+
+    Check whether the linker understands the hwcap file before using it.
+    
+    If we're trying to use the GNU linker on Solaris we shouldn't use
+    our solaris-hwcap.mapfile since it doesn't grok the mapfile format.
+
+commit 934f4f4604ccf06db5d5aec07e58f0a0fbe7d283
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Jul 17 22:40:41 2009 -0400
+
+    Move read and write functions to the bits_image_t struct.
+    
+    Those fields were duplicated between image_common and bits_image_t
+    before.
+
+commit 737d00063e8b8aaeaab9aecd0fbe731e8ab3f6b3
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Fri Jul 17 16:01:59 2009 +0200
+
+    Handle degenerate case in pixman_init_rect()
+    
+    Create an empty region in that case.
+
+commit e3a6df08a4bedfe82a8d3a7c1143e4db00a18d27
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Jul 17 06:43:35 2009 -0400
+
+    Add back check for need_workaround that got removed during reindenting
+
+commit ecc54a7f02dbb6f57043e51173584f96c42fd2cc
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jul 16 10:38:22 2009 -0400
+
+    Fix combine_src_ca() to fill out all of the destination line.
+
+commit 4df925bb28196974617804d680380522c048dedd
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jul 16 09:34:22 2009 -0400
+
+    Change composite test to use a rainbow gradient as source.
+    
+    Also make the destination a yellow patch. This makes the output a bit
+    more comparable to the image in the PDF specification.
+
+commit 4f369faffa7670e0e57c83c298359992223a998b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jul 16 06:23:25 2009 -0400
+
+    Various minor formatting changes
+
+commit 3d3baa3c5e76a4f851614a7794d92d15a56ac04e
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jul 16 06:06:17 2009 -0400
+
+    Change name of macro from RGB16_TO_ENTRY to RGB15_TO_ENTRY
+
+commit 12e829a8de1e45708b5dfeaa8137af6eeaf0f662
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Thu Jul 16 15:33:43 2009 +0200
+
+    Clarify color burn code - no semantical changes
+    
+    - Improve documentation to be equal to Proposed ISO32000 Extension
+    - Simplify code in default case
+
+commit acf5738a82afb51a2284f5e61d9fac8dae7a47d5
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Thu Jul 16 15:28:05 2009 +0200
+
+    Clarify color dodge code - no semantical changes
+    
+    - Improve documentation to be equal to Proposed ISO32000 Extension
+    - Simplify code in default case
+
+commit 3dafe926b2405ba3404a41bb5b2842413308c8fa
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Thu Jul 16 15:02:51 2009 +0200
+
+    Fix terms in comments describing the blend modes
+
+commit 90ac94b9cb3defa8bf174af8c7c9fc6c42e8762b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 14 18:49:43 2009 -0400
+
+    Add -fno-strict-aliasing
+
+commit 268561a3c674c5a4da945124b7b8f075b792a170
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 13 22:22:20 2009 -0400
+
+    Post-release version bump
+
+commit 466cf2b4452ec9bf4fa17cbf2186f5c472b66c26
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 13 22:00:52 2009 -0400
+
+    Pre-release version bump
+
+commit 83f6e2eacff826ef9dbdefb95fcb76fa1247ac4e
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 13 19:58:04 2009 -0400
+
+    Reindent and rename identifiers in scaling-test.c
+
+commit 9a6ad34810421a30250ef331fb75b2a48ce9e564
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 13 02:37:19 2009 -0400
+
+    Reformat pixman.h
+
+commit 22f322fe246155d40465d4e14d65051a204f27f6
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 13 01:35:15 2009 -0400
+
+    Reindent and reformat pixman-private.h
+
+commit b4d196009881a4121b49996bdc87f7770bfa5c1b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 13 01:17:53 2009 -0400
+
+    Reindent and reformat pixman-combine.h.template
+
+commit f54c776e75a44a095304dd7374384a2a0c96d479
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 13 01:13:47 2009 -0400
+
+    Reindent and reformat pixman-combine.c.template
+
+commit d57b55bb2662837feafb4f9f88d10549164ee142
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 22:05:32 2009 -0400
+
+    Reindent and reformat pixman-vmx.c
+
+commit 01b604c606cd0842c8f4eccc41511a472e4450e9
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 21:57:08 2009 -0400
+
+    Reformat and reindent pixman-utils.c
+
+commit 1d52ecbbe04c810d3f30e7915663b2cd21befcba
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 21:40:41 2009 -0400
+
+    Reformat and reindent pixman-trap.c
+
+commit c1178e49417bbea7f91b23f71c9ba957500da0ff
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 21:37:16 2009 -0400
+
+    Reformat pixman-timer.c
+
+commit 74774bad001504b4b2283689b6b55e21fa943dd8
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 21:36:32 2009 -0400
+
+    Reformat and reindent pixman-sse2.c
+
+commit 7dc3593d8172e292b39a7d6cc7772fcf9a04bb1f
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 20:31:26 2009 -0400
+
+    Reformat and reindent pixman-solid-fill.c
+
+commit 3db9f5ff6e32c353cff640d3504eb54bd2a69ed3
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 20:30:44 2009 -0400
+
+    Reformat and reindent pixman-region.c
+
+commit 317df68e94498b6a287eb736a6e5991e8b7d2d78
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 19:59:17 2009 -0400
+
+    Reindent and reformat pixman-radial-gradient.c
+
+commit 8820c81b50299f13791594fe6ddd01d536745231
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 19:37:45 2009 -0400
+
+    Reindent and reformat pixman-mmx.c
+
+commit c68283360d2e5917f15bddc0a14aa7a1c1b3852e
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 19:24:31 2009 -0400
+
+    Reindent and reformat pixman-matrix.c
+
+commit 19397bc732b30a861416220974edca6404d2890b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 19:19:13 2009 -0400
+
+    Reindent and reformat pixman-linear-gradient.c
+
+commit e8e08b35e7a8d221378e3a411efdfad74b1614e3
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 19:15:17 2009 -0400
+
+    Reindent and reformat pixman-implementation.c
+
+commit 2c74165179b07f31b82402d74dc9fbaf8bf52191
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 19:13:17 2009 -0400
+
+    Reindent and reformat pixman-image.c
+
+commit 5aadc28e19328054b15c7ee88996c407a9a7d9b3
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 19:10:53 2009 -0400
+
+    Reindent and reformat pixman-gradient-walker.c
+
+commit ac043ac2da643d872f519971a316f8bc6bdca0f8
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 19:09:24 2009 -0400
+
+    Reindent and reformat pixman-general.c
+
+commit 7b3f5fdc571e8d6b4d64f950f2578d47b1056c86
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 19:06:30 2009 -0400
+
+    Reindent and reformat pixman-fastpath.c
+
+commit c332e229bb274447b8b46c8f8ba7bce8cfaa21b2
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 19:02:29 2009 -0400
+
+    Reindent and reformat pixman-edge.c
+
+commit 4ba9a44e8f4098fc61bfb62650c521b2e37cf9cb
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 18:59:10 2009 -0400
+
+    Reindent and reformat pixman-cpu.c
+
+commit e01fc6bba7f90c80e86b206f28efa3f1f94a083b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 18:55:45 2009 -0400
+
+    Reindent and reformat pixman-conical-gradient.c
+
+commit 2871add52ece8bc4a02c0f4fae98912a0f4a830c
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 18:54:31 2009 -0400
+
+    Reindent and reformat pixman.c
+
+commit 0e6e08d380a16f8804706270e74f66960a681167
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 18:52:33 2009 -0400
+
+    Reindent and reformat pixman-bits-image.c
+
+commit 89eda86549e8cf938556b1a238960f2fbb7b911c
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 18:45:56 2009 -0400
+
+    Reindent and reformat pixman-arm-simd.c
+
+commit 9a26a60a233955aadab65fde5bf31fc0199663ea
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 18:42:31 2009 -0400
+
+    Reindent and reformat pixman-arm-neon.c
+
+commit 0af8ef742c6e1aa150b591bc7cdacb8d2293f7af
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 18:04:21 2009 -0400
+
+    Reindent and reformat pixman-access.c.
+
+commit be3a1b04ae9ef52f60fa1c6423d743b628aa57ca
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Mon Jul 13 18:02:09 2009 -0400
+
+    Fix burn and dodge operators to match acroread output
+
+commit 7dc2c48bcab7404ace9b41959e2233d0025801b3
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 13 05:58:43 2009 -0400
+
+    Return immediately if the operator is CONJOINT_DST or DISJOINT_DST
+    
+    These are noops just like plain DST is.
+
+commit bb383def00b3d30d991295274b58a841a7162620
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 13 05:39:40 2009 -0400
+
+    Fix bits_image_fetch_{un}transformed() for 64 bit buffers.
+    
+    The buffer pointer has to advance twice as far as in the 32 bit case.
+
+commit c88b75d24c6fc618d638373dce5e5f0281de1f40
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 13 04:43:37 2009 -0400
+
+    Make sure we get all 64 bits in bits_image_fetch_solid_64()
+    
+    Previously we would only store the first 32 bits.
+
+commit f73ecb3f0ff516e4411de9a2738b8851e679a163
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 13 04:04:59 2009 -0400
+
+    Fix typo in bits_image_fetch_solid_64().
+    
+    Found by blitters-test.
+
+commit 03c6b294a4517f5dfbc87504fceb3a88efef6a17
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 12 03:55:23 2009 -0400
+
+    Only destroy the regions when pixman_compute_composite_region() returns TRUE
+
+commit 2af5f64e938f0d3b81f3f014441cdff650fe5457
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jul 11 03:25:25 2009 -0400
+
+    Move workaround logic to pixman-bits-image.c.
+    
+    Instead of computing whether a workaround is needed on every call to
+    _pixman_run_fast_path(), just cache this information in the image.
+    
+    Also, when workarounds are needed, clip against the source geometry to
+    prevent out of bound reads.
+
+commit 5088ca8d97c9c918746c3e261a31b6edab6c964b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Jul 10 18:18:00 2009 -0400
+
+    Only apply the workaround to source images when out_of_bounds_workaround is set.
+    
+    Pointed out by Siarhei Siamashka.
+
+commit 51418786e4cba2e8fbb44052fbed2f107244b733
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Jul 10 13:50:15 2009 -0400
+
+    Return nonzero code from scaling-test program in case of failure.
+    
+    This can potentially help in tests automation.
+
+commit 71862fe84e5eeb0b178ed3a7dec8430d506b8515
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Jul 10 11:49:53 2009 +0300
+
+    Fix scaling-test to work on big endian systems
+
+commit 0f8c5d2fd447d2d9a0350c33715f140ab0dac452
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Fri Jul 10 11:28:11 2009 +0200
+
+    Convert some leftover instances of Alpha() in pixman-vmx.c.
+    
+    They were probably missed due to the space before the parens.
+
+commit 0fce356762864572ae126733f657600fbb9116ce
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jul 9 01:35:11 2009 -0400
+
+    Add workarounds for X servers doing out-of-bounds accesses.
+    
+    Old X servers rely on out-of-bounds accesses when they are asked
+    to composite with a window as the source. They create a pixman image
+    pointing to some bogus position in memory, but then they set a clip
+    region to the position where the actual bits are.
+    
+    Due to a bug in old versions of pixman, where it would not clip
+    against the image bounds when a clip region was set, this would
+    actually work.
+    
+    The workaround added by this commit is to try and detect whether a
+    source drawable is actually a window without a client clip set. Such a
+    window will generally have a clip region that corresponds exactly to
+    the hierarchy clip in the server, whereas pixmaps will have a clip
+    region that is an exact match to the drawable.
+    
+    When we detect such a window, we allow a fast path to run that would
+    normally be rejected due to the sources not completely subsuming the
+    composite region.
+    
+    Fixed X servers should call the new function
+    pixman_disable_out_of_bounds_workaround() to disable the workaround.
+    
+    This was reported in bug 22484.
+
+commit 61254a3c09497214a9c7ca89e275286533a3be2e
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jul 9 23:17:56 2009 -0400
+
+    Add a BUILT_SOURCES with pixman-combine{32,64}.{c.h}
+    
+    Bug 22681.
+
+commit 34ec50a4761cab50c6216b08ef5cfb36bf94209e
+Author: Adrian Bunk <adrian.bunk@movial.com>
+Date:   Fri Jul 10 00:11:15 2009 +0300
+
+    Fix the NEON build after "Convert CamelCase names to underscore_names."
+    
+        This patch fixes the following build error caused
+        by commit a98b71eff4041df58c9dcc2b1e25cefa38f364ff
+        (Convert CamelCase names to underscore_names.):
+    
+        <--   snip  -->
+    
+        ...
+        pixman-arm-neon.c: In function 'neon_composite_over_n_8_0565':
+        pixman-arm-neon.c:1784: error: 'x_dst' undeclared (first use in this function)
+        pixman-arm-neon.c:1784: error: (Each undeclared identifier is reported only once
+        pixman-arm-neon.c:1784: error: for each function it appears in.)
+        pixman-arm-neon.c:1785: error: 'p_dst' undeclared (first use in this function)
+        pixman-arm-neon.c: In function 'neon_composite_over_n_0565':
+        pixman-arm-neon.c:1937: error: 'x_dst' undeclared (first use in this function)
+        pixman-arm-neon.c:1938: error: 'p_dst' undeclared (first use in this function)
+        pixman-arm-neon.c: In function 'neon_composite_over_8888_0565':
+        pixman-arm-neon.c:2074: error: 'x_dst' undeclared (first use in this function)
+        pixman-arm-neon.c:2075: error: 'p_dst' undeclared (first use in this function)
+        make[3]: *** [libpixman_arm_neon_la-pixman-arm-neon.lo] Error 1
+        ...
+    
+        <--  snip  -->
+
+commit 6b34482870fd53a9285f795f47656ac73fd706b0
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jul 9 04:04:00 2009 -0400
+
+    Update the CRC value in scaling-test.c.
+    
+    The changes in pixman behavior justifying this are:
+    
+    - New clipping rules
+    
+    - Bug fixes in region code. In particular, when
+      pixman_region_init_rects() is called on these two boxes:
+    
+    	{ 2, 6, 7, 6 }
+    	{ 4, 1, 6, 7 }
+    
+      it now ignores the first one, which is empty and produces
+    
+    	{ 4, 1, 6, 7 }
+    
+      Previously, it would produce:
+    
+    	{ 2, 1, 7, 7 }
+    
+      for some reason.
+
+commit 4c60ed5ec662e2d7088a7800dd7c71d3926c42a4
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jul 9 04:00:19 2009 -0400
+
+    Fix bug in pixman-region.c where empty regions would not be properly initialized.
+    
+    Also add a couple more tests to region-test.c.
+
+commit bcf01c21d704717264011182e71cfaaf6922a437
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jul 9 01:47:19 2009 -0400
+
+    Fix a couple of problems with the tests when HAVE_GTK is not defined.
+    
+    - Make sure the non-gtk+ test programs are added to noinst_PROGRAMS
+      when HAVE_GTK is not set.
+    
+    - Don't include glib.h in oob-test.c
+
+commit 0db0430d1d410855863e669f0de9e8b5d26db7fd
+Merge: 31a40a1 b3cf3f0
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Jul 8 18:59:15 2009 -0400
+
+    Merge branch 'naming'
+
+commit 31a40a172591ab373add9dd41a52881bea9dc6f2
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Jul 8 18:41:41 2009 -0400
+
+    Eliminate boxes with x1 > x2 or y1 > y2 in pixman_region_init_rects().
+
+commit 706e6594310a490956d21e939c23de2b5dbe1561
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Jul 8 18:39:43 2009 -0400
+
+    Add a box with y2 < y1 in region-test.c
+
+commit b3cf3f0c2be462cd61e63e07655d1b45e55f4a7b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 6 20:33:05 2009 -0400
+
+    Fix up some overeager search-and-replace renamings
+
+commit c2e331693d858c01b69135342c139546780b7021
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 6 12:48:59 2009 -0400
+
+    Rename num_rects back to numRects.
+    
+    The name numRects is public API and can't be changed.
+
+commit 8261b4d57cfdf77d7fdd4e4c0fc805ba48f7e0a0
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 02:12:21 2009 -0400
+
+    Rename combine_*_c to combine_*_ca
+    
+    s/combine_(.+)_c([^a-z0-9A-Z])/combine_$1_ca$2/g;
+
+commit 3c03990ba214bff000d3494587353b94f9432453
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 01:42:28 2009 -0400
+
+    Various sse2 renamings
+
+commit 9d0be1d4c81153ef2407518f605bc55380485955
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 01:38:10 2009 -0400
+
+    s/sse2combine/sse2_combine/g
+
+commit a98b71eff4041df58c9dcc2b1e25cefa38f364ff
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 01:35:14 2009 -0400
+
+    Convert CamelCase names to underscore_names.
+    
+    s/sizeRI/size_ri/g;
+    s/numRI/num_ri/g;
+    s/RepeatNone/REPEAT_NONE/g;
+    s/fbOver/over/g;
+    s/fbIn/in/g;
+    s/iSrc/src_image/g;
+    s/iMask/mask_image/g;
+    s/iDst/dest_image/g;
+    s/SaDa/Sa.Da/g;
+    s/FbMaskBits/MASK_BITS/g;
+    s/RenderSamplesX/RENDER_SAMPLES_X/g;
+    s/MMXData/mmx_data_t/g;
+    s/RegionInfo/region_info_t/g;
+    
+    s/([^0x])([a-z])([A-Z])/$1$2_\l$3/g;
+    s/([^0x])([A-Z])([A-Z])([a-z])/$1$2_\l$3$4/g;
+    s/([^0x])([A-Z])([a-z]+)_([a-z])/$1\l$2$3_$4/g;
+    s/([a-z])_([A-Z])/$1_\l$2/g;
+    
+    s/su_sE/SuSE/g;
+    s/X_Free86/XFree86/g;
+    s/X_free86/XFree86/g;
+    
+    s/_ULL/ULL/g;
+    s/_uLL/ULL/g;
+    
+    s/U_nc/UNc/g;
+    s/combine ##/combine_ ##/g;
+    s/## U/## _u/g;
+    s/## C/## _c/g;
+    s/UNc_aDD/UNc_ADD/g;
+    
+    s/BLEND_MODE \((.+)\)/BLEND_MODE (\l$1)/g;
+    s/blend_(.+)/blend_\l$1/g;
+    
+    s/AN_ds/ANDs/g;
+    s/O_rs/ORs/g;
+    s/over565/over_565/g;
+    s/8pix/8_pix/g;
+    s/Over565/over_565/g;
+    s/inU/in_u/g;
+    s/inPart/in_part/g;
+    s/inC/in_c/g;
+    s/inreverse/in_reverse/g;
+    s/get_exception_code/GetExceptionCode/g; # GetExceptionCode is WinCE API
+    s/CP_us/CPUs/g;
+    s/authentic_aMD/AuthenticAMD/g;
+    s/op_sR_cx_mAS_kx_dST/op_src_mask_dest/g;
+    s/no_VERBOSE/noVERBOSE/g;
+    s/mc_cormack/McCormack/g;
+    s/r1band/r1_band/g;
+    s/r2band/r2_band/g;
+    s/as GOOD things/as good things/g;
+    s/brokendata/broken_data/g;
+    s/X_render/XRender/g;
+    s/__open_bSD__/__OpenBSD__/g;
+    s/^Quick/quick/g;
+    s/NextRect/next_rect/g;
+    s/RectIn/rect_in/g;
+    s/pboxout/pbox_out/g;
+    s/F_sorted/FSorted/g;
+    s/usse2/u_sse2/g;
+    s/csse2/c_sse2/g;
+    s/cPixelsse2/c_pixel_sse2/g;
+    s/Mask565/mask_565/g;
+    s/565fix_rB/565_fix_rb/g;
+    s/565fix_g/565_fix_g/g;
+    s/565r/565_r/g;
+    s/565g/565_g/g;
+    s/565b/565_b/g;
+    s/uPixelsse2/u_pixel_sse2/g;
+    s/Mask00ff/mask_00ff/g;
+    s/Mask0080/mask_0080/g;
+    s/Mask0101/mask_0101/g;
+    s/Maskffff/mask_ffff/g;
+    s/Maskff000000/mask_ff000000/g;
+    s/load128Aligned/load_128_aligned/g;
+    s/load128Unaligned/load_128_unaligned/g;
+    s/save128Aligned/save_128_aligned/g;
+    s/save128Unaligned/save_128_unaligned/g;
+    s/fillsse2/fill_sse2/g;
+    s/unpack565/unpack_565/g;
+    s/pack565/pack_565/g;
+    s/bltsse2/blt_sse2/g;
+    s/x565Unpack/x565_unpack/g;
+    s/r1End/r1_end/g;
+    s/r2End/r2_end/g;
+    s/argb8Pixels/argb8_pixels/g;
+
+commit 437ab049872063c78ee934766596dc6859749a3d
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 01:34:07 2009 -0400
+
+    Remove reference to 8888_RevNP
+
+commit 55e63bd0f09290cf1165030edbb4e92efb09ee6e
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 00:55:45 2009 -0400
+
+    Remove reference to 8888RevNP
+
+commit 01994a59ca642f4e5ce126d3ad01e864d3daa0bb
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 00:41:53 2009 -0400
+
+    NoFeatures => NO_FEATURES
+
+commit 309d358ea673b5d4c163670c3c449fb855df7775
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 00:31:07 2009 -0400
+
+    s/FbScrRight/SCREEN_SHIFT_RIGHT/g
+
+commit 71fe4e3e5c64f177a8756e51eddc190b3a08ea40
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 00:26:30 2009 -0400
+
+    CPUFeatures => cpu_features
+
+commit 255ddbe5358b0ed4a7a01ef0ab127833dba94b02
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 00:19:18 2009 -0400
+
+    Rename FbGet8 to GET8
+
+commit 446276c36fd336531745fc1427c4af2ccdbe9875
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 00:11:57 2009 -0400
+
+    Rename RBmask/Gmask => rb_mask/g_mask in pixman-arm-neon.c
+
+commit 412b4b50f7bd8ac29e4c9b20e613154c1b5e371a
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 00:06:59 2009 -0400
+
+    Use ALPHA_8 in pixman-image.c instead of Alpha
+
+commit 887383b0adab89bcc131a9a28c4d60af9e4773d1
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 00:05:42 2009 -0400
+
+    Uppercase a few more macros in pixman-combine.c.template
+
+commit 4153361c52f332bce9e9cc32adf1e01064014e15
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 00:02:45 2009 -0400
+
+    Rename macros for non-separable blend modes
+    
+    Lum => LUM
+    Sat => SAT
+    Min => CH_MIN
+    Max => CH_MAX
+
+commit 68405c326db4cd087bdb6290ae42953a98b81838
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jul 4 23:45:01 2009 -0400
+
+    Rename some macros in pixman-combine.c.template
+    
+    s/Combine([AB])([a-zA-Z]+)([^a-zA-Z])/COMBINE_$1_\U$2$3/g;
+    s/CombineA/COMBINE_A/g;
+    s/CombineB/COMBINE_B/g;
+    s/CombineXor/COMBINE_XOR/g;
+    s/CombineClear/COMBINE_CLEAR/g;
+
+commit 835520b28ff1412bd9b00460a107e72c9ea21e35
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jul 4 23:24:27 2009 -0400
+
+    Rename U{no}mask => U_{no_}mask in pixman-vmx.c
+
+commit f9bdd1a82c7629a360109bdf4519c73ba5a99225
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jul 4 23:13:55 2009 -0400
+
+    Change name fbComposeGetStart to PIXMAN_IMAGE_GET_LINE.
+
+commit e064aa761831296c8570e0fdfaa0c3585c4a3871
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jul 4 23:12:18 2009 -0400
+
+    Rename fbCombine* to combine*
+    
+        s/fbCombine/combine/g;
+
+commit f61855e186519a490b5d013d2de67dcc8da7a0ac
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 12:51:28 2009 -0400
+
+    Fix overeager search and replace
+
+commit 1de32ae2ef8044b349f3ec87ae339fdcedeb83ef
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 12:07:56 2009 -0400
+
+    Uppercase some more macro names
+
+commit 47296209dae2e3d33426532a3e896e06373fc088
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 11:40:21 2009 -0400
+
+    Consolidate channel macros in pixman-combine.h
+    
+    There are now RED_8/RED_16 etc. macros instead of the old Red/Green/Blue.
+
+commit 2f3e3d62f7727a652090ea003c98218f3b550818
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 11:17:28 2009 -0400
+
+    Change some macro names to be all uppercase
+
+commit 8339a4abc4edcaee6fafbde1a147ba7fcaa9c108
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 09:29:32 2009 -0400
+
+    Change names of the FbByte* macros to be more descriptive.
+    
+    But also more cryptic unfortunately. For example FbByteMul() becomes
+    UN8x4_MUL_UN8() to indicate that it multiplies 4 UN8 numbers with one
+    UN8 number.
+
+commit e7f162a5a81221ca6abca79a9a77924d39bf4e16
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 08:42:19 2009 -0400
+
+    Clarify a couple of comments
+
+commit b02c33e7da3eb733ca4ada66a6c35b293a191144
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 08:30:36 2009 -0400
+
+    Change name of macros that operate on normalized integers.
+    
+    For example IntMul becomes MUL_UN8 to indicate that it multiplies two
+    unsigned normalized 8 bit integers.
+
+commit d4a366193b12cf241980a621a15ec0ee67e8f6bb
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 08:10:20 2009 -0400
+
+    Fix names in the trap rasterizer.
+    
+    s/Shift4/SHIFT_4/g;
+    s/Get4/GET_4/g;
+    s/Put4/PUT_4/g;
+    s/DefineAlpha/DEFINE_ALPHA/g;
+    s/AddAlpha/ADD_ALPHA/g;
+    s/StepAlpha/STEP_ALPHA/g;
+    s/add_saturate_8/ADD_SATURATE_8/g;
+    s/RenderEdgeStepSmall/RENDER_EDGE_STEP_SMALL/g;
+    s/RenderEdgeStepBig/RENDER_EDGE_STEP_BIG/g;
+    s/fbRasterizeEdges/b00_re/g;
+    s/rasterizeEdges/RASTERIZE_EDGES/g;
+    s/b00_re/rasterize_edges_/g;
+
+commit bcdf0861be346a8a4662376f4305474da9236163
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 08:02:45 2009 -0400
+
+    Rename QuadwordCopy_neon to neon_quadword_copy
+    
+        s/QuadwordCopy_neon/neon_quadword_copy/g;
+
+commit a08548bd5275c69c1e7a7fd894a844ad6ad59638
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 08:00:56 2009 -0400
+
+    Fix up the names in pixman_compute_composite_region()
+    
+        s/miClipPictureSrc/clip_source_image/g;
+        s/miClipPictureReg/clip_general_image/g;
+
+commit e27b2a1fcc890d3abf272cc27fa2c0a2e8d7ab09
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 07:59:10 2009 -0400
+
+    Fix some more pFoo names
+    
+    s/([^a-z])pReg/$1region/g;
+    s/([^a-z])pY/$1y_line/g;
+    s/([^a-z])pU/$1u_line/g;
+    s/([^a-z])pV/$1v_line/g;
+    s/([^a-z])p([A-Z])/$1\l$2/g;
+
+commit 006f21b02b23e1865c0e35d0f9b97af63f52a469
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 07:54:10 2009 -0400
+
+    Fix the names of some common parameters
+    
+        s/xDst/dest_x/g;
+        s/yDst/dest_y/g;
+        s/xMask/mask_x/g;
+        s/yMask/mask_y/g;
+        s/xSrc/src_x/g;
+        s/ySrc/src_y/g;
+
+commit d2a4281376786fc7f31f7367807c7caa8a99d414
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 07:46:11 2009 -0400
+
+    Various simple renamings
+    
+        s/CvtR8G8B8toY15/CONVERT_RGB24_TO_Y15/g;
+        s/cvt8888to0565/CONVERT_8888_TO_0565/g;
+        s/cvt0565to0888/CONVERT_0565_TO_0888/g;
+        s/miIndexToEnt15/RGB16_TO_ENTRY/g;
+        s/miIndexToEnt24/RGB24_TO_ENTRY/g;
+        s/miIndexToEntY24/RGB24_TO_ENTRY_Y/g;
+        s/miCvtR8G8B8to15/CONVERT_RGB24_TO_RGB15/g;
+        s/is_same/IS_SAME/g;
+        s/is_zero/IS_ZERO/g;
+        s/is_int([ (])/IS_INT$1/g;
+        s/is_one/IS_ONE/g;
+        s/is_unit/IS_UNIT/g;
+        s/Fetch4/FETCH_4/g;
+        s/Store4/STORE_4/g;
+        s/Fetch8/FETCH_8/g;
+        s/Store8/STORE_8/g;
+        s/Fetch24/fetch_24/g;
+        s/Store24/store_24/g;
+        s/_64_generic/64_generic/g;
+        s/64_generic/_generic_64/g;
+        s/32_generic_lossy/_generic_lossy_32/g;
+        s/PdfSeparableBlendMode/PDF_SEPARABLE_BLEND_MODE/g;
+        s/PdfNonSeparableBlendMode/PDF_NON_SEPARABLE_BLEND_MODE/g;
+        s/([^_])HSL/$1Hsl/g;
+        s/Blend/blend_/g;
+        s/FbScrLeft/SCREEN_SHIFT_LEFT/g;
+        s/FbScrRigth/SCREEN_SHIFT_RIGHT/g;
+        s/FbLeftMask/LEFT_MASK/g;
+        s/FbRightMask/RIGHT_MASK/g;
+        s/Splita/SPLIT_A/g;
+        s/Split/SPLIT/g;
+        s/MMX_Extensions/MMX_EXTENSIONS/g;
+
+commit 1c5774bf6d39e7b349c03866c96811ee1754c9d7
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 07:35:40 2009 -0400
+
+    Get rid of pFoo names.
+    
+        s/([^o])pSrc/$1src_image/g;
+        s/([^o])pDst/$1dst_image/g;
+        s/([^o])pMask/$1mask_image/g;
+        s/pRegion/region/g;
+        s/pNextRect/next_rect/g;
+
+commit e3489730c317061a2cd888b927d36bda0590a3f2
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 07:30:47 2009 -0400
+
+    Change the name of some routines that were simply misnamed.
+    
+        s/Src_pixbuf/_over_pixbuf/g;
+        s/Src_x888_n/_over_x888_n/g;
+        s/CompositeSrc_8888_8888/composite_over_8888_8888/g;
+        s/CompositeSrc_8888_0565/composite_over_8888_0565/g;
+        s/CompositeSrc_8888_8_8888/composite_over_8888_n_8888/g;
+
+commit 90cac1115551c0fd70ace419179bcf2a30d6b1c2
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jun 28 21:06:01 2009 -0400
+
+    Fix up names of compositing functions
+    
+        s/SrcAdd/Add/g;
+        s/SolidMaskSrc/Src/g;
+        s/SolidMaskIn/In/g;
+        s/SolidMask/Over/g;
+        s/Solid_n/Over_n/g;
+        s/SrcIn/In/g;
+    
+        s/(fb)(Composite.*)sse2/sse2_$2/g;
+        s/(fb)(Composite.*)mmx/mmx_$2/g;
+        s/(fb)(Composite.*)neon/neon_$2/g;
+        s/(fb)(Composite.*)arm/arm_$2/g;
+        s/(fb)(Composite.*)vmx/vmx_$2/g;
+        s/(fb)(Composite.*)/fast_$2/g;
+    
+        s/b8g8r8x8/f00bar/g;
+        s/8888C/8888_ca/g;
+        s/0565C/0565_ca/g;
+        s/8888RevNPx/pixbuf_x_/g;
+        s/8x0/8_x_0/g;
+        s/00x8/00_x_8/g;
+        s/8x8/8_x_8/g;
+        s/8x8/8_x_8/g;
+        s/nx8/n_x_8/g;
+        s/24x16/24_x_16/g;
+        s/16x16/16_x_16/g;
+        s/8xx8/8_x_x8/g;
+        s/8xn/8_x_n/g;
+        s/nx0/n_x_0/g;
+        s/_x_/_/g;
+        s/f00bar/b8g8r8x8/;
+    
+        # Fix up NEON type names
+        s/uint8_8/uint8x8/g;
+
+commit e987661667ac5c650af1c3a2ba173558ff287e06
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jun 28 20:45:58 2009 -0400
+
+    Rename fetchers.
+    
+    s/fbFetchPixel/fetch_pixels/g;
+    s/fbFetch/fetch_scanline/g;
+    s/fbStore/store_scanline/g;
+
+commit 2d32d91e5d89bb04fcbaffb23244a9f023d39239
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Jul 8 00:38:28 2009 -0400
+
+    Use postfix decrement, not prefix, in region-test.c
+
+commit 4e41905bacbf533740e999ba79e0620f358c0597
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Jul 8 00:08:49 2009 -0400
+
+    Eliminate empty rectangles in pixman_region_init_rects().
+    
+    Otherwise they show up in the validated regions.
+
+commit 967ff0bdc7f46806b7a6d16332ad39cf2c1f01c1
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 7 22:55:32 2009 -0400
+
+    Add an initialization with an empty rectangle to region-test.c
+    
+    This should produce a valid region without empty rectangles in
+    it. Currently it doesn't.
+
+commit 40fcc14d1cf8cb6b6c71f27b0a3d3ccc9a845949
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jul 6 20:37:14 2009 -0400
+
+    Expand comment in miClipPictureSrc() to explain why a client clip is required.
+
+commit eba3be7b7a2b9a8df235af6255b9d8c70d2b8c93
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jul 5 00:35:31 2009 -0400
+
+    Fix forgotten use BITMAP_BIT_ORDER to be ifndef WORDS_BIG_ENDIAN
+
+commit 06f5b51fee35727a823bd86294654178cbfac629
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jul 4 22:49:16 2009 -0400
+
+    Return TRUE for the two new formats in pixman_format_supported_source().
+
+commit b0f220b7f236b5dea30ddc5dec51b73c11120e10
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 11:21:33 2009 -0400
+
+    Inlucde pixman-private.h in pixman-region.c
+    
+    Delete some duplicated macros.
+
+commit f6ef071e2805bcf52473f06cd7171097b4afd926
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Jun 29 11:07:20 2009 -0400
+
+    Rename OptimizedOperatorInfo to optimized_operator_info_t
+
+commit 7b7e4b23cab361b444d0c69a1b9c1678d3c5df2b
+Author: Ben Skeggs <bskeggs@redhat.com>
+Date:   Wed Jul 1 10:18:29 2009 +1000
+
+    Add accessor functions for PIXMAN_x2r10g10b10 and PIXMAN_a2r10g10b10
+
+commit 968f720d0e8b97bbeb2db9edb75ec524d697e1d6
+Author: Jonathan Morton <jmorton@sd070.hel.movial.fi>
+Date:   Wed Jul 1 16:29:48 2009 +0300
+
+    Avoid overrunning scanlines in NEON blitters.
+
+commit 863f9e9b7599b89c9dd42dd9c7913c2513384761
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jun 28 18:54:32 2009 -0400
+
+    Change comma to semicolon in pixman-combine.c.template
+
+commit 10aa32315529eaff848b8348cad47b2673f853cf
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Sat Jun 27 11:56:38 2009 +0300
+
+    Really fix ARM build.
+    
+    Commit 9d3f71d726c8b959b64c3e6b43ca4d3ccb320c32 broke the build
+    on ARM architectures by just removing custom include files and
+    not providing "pixman-private.h" as a replacement.
+
+commit 996e59f7f81864f7935d6dd58d8efd5a5ea265ea
+Author: Guillaume Letellier <glet.n800@googlemail.com>
+Date:   Fri Jun 26 19:02:08 2009 -0400
+
+    Fix ARM build.
+    
+    Commit 6e20c2574354d1cb071a1201ff166cb5e92c00d2 broke the build on ARM
+    architectures by not updating the use of fbComposeGetSolid()
+    correctly.
+
+commit e8addcc69a36375d1330749e00854d9651c8f8d0
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Jun 26 18:58:23 2009 -0400
+
+    Change checks for srca == 0 to src == 0
+    
+    It is not generally correct to bail out just because the source alpha
+    is 0. The color channels still mig not be and in that case the correct
+    result is:
+    
+           s + (1 - srca) * d = s + d
+    
+    which is not generally 0.
+
+commit 9a7ce32ef5cf70a17d83154cfd1b96aa54ce9232
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jun 25 12:42:03 2009 -0400
+
+    Make arm compositing functions static
+
+commit 9d3f71d726c8b959b64c3e6b43ca4d3ccb320c32
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jun 25 10:20:44 2009 -0400
+
+    Delete ARM header files
+
+commit 9837465fd9a5d4e7280d4c79c41d2d9a9c8f71c0
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Jun 24 01:30:34 2009 +0300
+
+    Use -mcpu instead of -march for ARM SIMD runtime autodetection
+    
+    Option -mcpu has higher priority than -march with the current versions
+    of gcc and that's why it is better to use. There is no particular
+    reason why 'arm1136j-s' is used in this patch, it could be any armv6
+    compatible core.
+
+commit 6b8251039a905114e4b0776c3f8f58cb0678a532
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Jun 24 20:08:50 2009 -0400
+
+    Add test cases to oob-test using PIXMAN_{a,x}2b10g10r10
+
+commit f94053cd9b1dc8db6c924c8cf50d75ccc1898cce
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Jun 24 13:12:07 2009 -0400
+
+    Post-release version bump
+
 commit f6faa06ef85fc4c9ff38dbc9243c060b4cdacc1a
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
 Date:   Wed Jun 24 12:51:40 2009 -0400

@@ -1,3 +1,9 @@
+pixman (0.15.18-1) UNRELEASED; urgency=low
+
+  * New upstream beta release.
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 21 Jul 2009 16:22:58 +0200
+
 pixman (0.15.14-1) experimental; urgency=low
 
   * Update debian/copyright from upstream COPYING (closes: #519078).  Thanks,
