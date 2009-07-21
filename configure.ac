@@ -54,7 +54,7 @@ AC_PREREQ([2.57])
 
 m4_define([pixman_major], 0)
 m4_define([pixman_minor], 15)
-m4_define([pixman_micro], 14)
+m4_define([pixman_micro], 18)
 
 m4_define([pixman_version],[pixman_major.pixman_minor.pixman_micro])
 
@@ -101,10 +101,18 @@ AC_SUBST(LT_VERSION_INFO)
 
 changequote(,)dnl
 if test "x$GCC" = "xyes"; then
+
   case " $CFLAGS " in
   *[\ \	]-Wall[\ \	]*) ;;
   *) CFLAGS="$CFLAGS -Wall" ;;
-  esac fi changequote([,])dnl
+  esac 
+
+  case " $CFLAGS " in
+  *[\ \	]-fno-strict-aliasing[\ \	]*) ;;
+  *) CFLAGS="$CFLAGS -fno-strict-aliasing" ;;
+  esac
+
+fi changequote([,])dnl
 
 AC_PATH_PROG(PERL, perl, no)
 if test "x$PERL" = xno; then
@@ -259,9 +267,19 @@ case $host_os in
    solaris*)
       # When building 32-bit binaries, apply a mapfile to ensure that the
       # binaries aren't flagged as only able to run on MMX+SSE capable CPUs
-      # since they check at runtime before using those instructions
+      # since they check at runtime before using those instructions.
+      # Not all linkers grok the mapfile format so we check for that first.
       if test "$AMD64_ABI" = "no" ; then
-         HWCAP_LDFLAGS='-Wl,-M,$(srcdir)/solaris-hwcap.mapfile'
+	 use_hwcap_mapfile=no
+	 AC_MSG_CHECKING(whether to use a hardware capability map file)
+	 hwcap_save_LDFLAGS="$LDFLAGS"
+	 HWCAP_LDFLAGS='-Wl,-M,$(srcdir)/solaris-hwcap.mapfile'
+	 LDFLAGS="$LDFLAGS -Wl,-M,pixman/solaris-hwcap.mapfile"
+	 AC_LINK_IFELSE([int main() { return 0; }],
+			use_hwcap_mapfile=yes,
+			HWCAP_LDFLAGS="")
+	 LDFLAGS="$hwcap_save_LDFLAGS"
+	 AC_MSG_RESULT($use_hwcap_mapfile)
       fi
       if test "x$MMX_LDFLAGS" = "x" ; then
          MMX_LDFLAGS="$HWCAP_LDFLAGS"
@@ -327,7 +345,7 @@ AM_CONDITIONAL(USE_VMX, test $have_vmx_intrinsics = yes)
 
 dnl ===========================================================================
 dnl Check for ARM SIMD instructions
-ARM_SIMD_CFLAGS="-march=armv6"
+ARM_SIMD_CFLAGS="-mcpu=arm1136j-s"
 
 have_arm_simd=no
 AC_MSG_CHECKING(whether to use ARM SIMD assembler)
@@ -366,7 +384,7 @@ AM_CONDITIONAL(USE_ARM_SIMD, test $have_arm_simd = yes)
 
 dnl ==========================================================================
 dnl Check for ARM NEON instructions
-ARM_NEON_CFLAGS="-mfpu=neon"
+ARM_NEON_CFLAGS="-mfpu=neon -mcpu=cortex-a8"
 
 have_arm_neon=no
 AC_MSG_CHECKING(whether to use ARM NEON)

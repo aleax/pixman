@@ -6,6 +6,7 @@ TESTPROGRAMS =			\
 	scaling-test		\
 	fetch-test		\
 	oob-test		\
+	window-test		\
 	trap-crasher
 
 fetch_test_LDADD = $(TEST_LDADD)
@@ -13,6 +14,7 @@ region_test_LDADD = $(TEST_LDADD)
 scaling_test_LDADD = $(TEST_LDADD)
 trap_crasher_LDADD = $(TEST_LDADD)
 oob_test_LDADD = $(TEST_LDADD)
+window_test_LDADD = $(TEST_LDADD)
 
 # GTK using test programs
 
@@ -29,8 +31,6 @@ TESTPROGRAMS +=			\
 	screen-test		\
 	convolution-test	\
 	trap-test
-
-noinst_PROGRAMS = $(TESTPROGRAMS)
 
 INCLUDES += $(GTK_CFLAGS)
 
@@ -59,4 +59,6 @@ convolution_test_LDADD = $(GTK_LDADD)
 convolution_test_SOURCES = convolution-test.c utils.c utils.h
 
 endif
+
+noinst_PROGRAMS = $(TESTPROGRAMS)
 
