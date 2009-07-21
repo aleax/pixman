@@ -3,6 +3,7 @@ libpixman-1.so.0 libpixman-1-0 #MINVER#
  pixman_add_traps@Base 0
  pixman_blt@Base 0
  pixman_compute_composite_region@Base 0
+ pixman_disable_out_of_bounds_workaround@Base 0.15.16
  pixman_edge_init@Base 0
  pixman_edge_step@Base 0
  pixman_f_transform_bounds@Base 0.13.2
@@ -112,5 +113,5 @@ libpixman-1.so.0 libpixman-1-0 #MINVER#
  pixman_transform_point_3d@Base 0
  pixman_version@Base 0.10.0
  pixman_version_string@Base 0.10.0
- pixman_format_supported_destination@Base 0.15.12
- pixman_format_supported_source@Base 0.15.12
+ pixman_format_supported_destination@Base 0.15.16
+ pixman_format_supported_source@Base 0.15.16

@@ -1,6 +1,8 @@
 pixman (0.15.18-1) UNRELEASED; urgency=low
 
   * New upstream beta release.
+  * Bump shlibs and update symbols file for
+    pixman_disable_out_of_bounds_workaround and new formats.
 
  -- Julien Cristau <jcristau@debian.org>  Tue, 21 Jul 2009 16:22:58 +0200
 

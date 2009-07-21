@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 PACKAGE = libpixman-1-0
-SHLIBS_VERSION = 0.15.14
+SHLIBS_VERSION = 0.15.16
 
 CFLAGS = -Wall -g
 ifneq (,$(filter noopt,$(DEB_BUILD_OPTIONS)))
