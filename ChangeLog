@@ -1,3 +1,517 @@
+commit bfdae053eaff528aa869bc05a0520ab22d540a08
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Aug 11 13:56:16 2009 -0400
+
+    Pre-release version-bump
+
+commit d6016d406a649f7a95bec2a477dfd89ba280188d
+Merge: 93923c6 e084351
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Aug 11 02:04:40 2009 -0400
+
+    Merge branch 'blitter-test'
+
+commit 93923c626f2df18e29e215410e6d4bb2f5c1616f
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Aug 10 20:47:36 2009 -0400
+
+    Fix x/y mixup in bits_image_fetch_pixel_convolution()
+    
+    Bug 23224, reported by Michel Dänzer.
+
+commit e084351b13faad6a3ba67808b5721957b51d16f0
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 00:45:53 2009 -0400
+
+    Update CRC value in blitters-test.
+    
+    At this point, the SIMD, SSE2, MMX and general implementations all
+    agree.
+
+commit ba5c5325e77b36374d3be22bd92816c332a321bb
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 00:25:56 2009 -0400
+
+    Various formatting fixes
+
+commit cc5c59b3f25dc595ce17a876e89ca549bb477e46
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Aug 5 16:28:10 2009 -0400
+
+    Add the ability to print intermediate CRC values
+
+commit 0bc4adae3eb758a2cd9026397c284bd6cc7bcd65
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Aug 5 15:53:33 2009 -0400
+
+    Reenable commented-out tests in blitter-test.
+    
+    The crashes and valgrind issues are all fixed at this point.
+
+commit 9ee18806a944ddde36dc1b045f89f02d025cbe48
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Aug 3 00:01:01 2009 +0300
+
+    One more update to blitters-test - use aligned memory
+    allocations in order in order to make reproducibility
+    of alignment sensitive bugs more deterministic
+    Also testing of masks is reenabled
+
+commit 4fc0f9dd456bb4ad1f47e1733b02a3b491f425ed
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Sat Aug 1 02:20:12 2009 +0300
+
+    HACK: updated test to better cover new neon optimizations
+
+commit 67769ad5bf15450d0fd0d83643e3533a9f563916
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Jul 22 01:29:51 2009 +0300
+
+    Test program for stressing the use of different formats and operators
+    
+    The code and overall method is mostly based on scaling-test. This one
+    focuses on trying to stress as many different color formats and types
+    of composition operations as possible.
+    
+    This is an initial implementation which may need more tuning. Also
+    not all color format and operator combinations are actually used.
+    
+    When cpu specific optimizations are disabled, this test provides
+    identical deterministic results on x86, PPC and ARM.
+    
+    Script blitters-test-bisect.rb now works in non-stop mode, until
+    it finds any problem. This allows to run it for example overnight
+    in order to test a lot more variants of pixman calls and increase
+    chances of detecting problems in pixman. Just like with scaling-test,
+    running blitters-test binary alone with no command line arguments
+    runs a small predefined number of tests and compares checksum
+    with a reference value for quick verification.
+
+commit 51f597ad3258dd85b4620ac2bf0df8ca2e0ed182
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 12:00:07 2009 -0400
+
+    Delete commented out code in pixman-vmx.c
+
+commit a590eabead0a0c405a7293d8689b9992de5a689b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 11:53:50 2009 -0400
+
+    Misc formatting fixes for pixman-vmx.c
+
+commit 0ebb587e2460024fb306597799ae4974441511ec
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 11:48:22 2009 -0400
+
+    In vmx_combine_atop_reverse_ca() extract alpha after inversing
+
+commit 3d2f00783f2972ba5311937057ea8d452f942a36
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 11:46:09 2009 -0400
+
+    Really fix vmx_combine_over_reverse_ca()
+    
+    The inverse destination alpha is just one component, not four.
+
+commit 2f62a4f46c1e99ddb1b7ca6d5db9410d12f32e63
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 11:40:42 2009 -0400
+
+    Fix vmx_combine_out_reverse_ca()
+    
+    The source alpha is just one component, not four.
+
+commit 7e58323385e442fb2cea207780db5e30be88be96
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 11:38:03 2009 -0400
+
+    Fix vmx_over_reverse_ca()
+    
+    Destination alpha must be extracted after inversing, otherwise we end
+    up with 0xFFs in the rgb channels.
+
+commit 2382bd9e2724944a05ce8a581e9ddc31e299a0c6
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 11:35:20 2009 -0400
+
+    Multiply with the alpha of dest, not inverse alpha
+
+commit 498df0f0bf2437130ed305fb757ae0fae90bebb7
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 11:32:31 2009 -0400
+
+    Fix vmx_combine_vmx_atop_ca()
+    
+    It didn't compute the mask correct before.
+
+commit 9650cd7432ef03c05895df04940e2ab6245f2618
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 11:26:23 2009 -0400
+
+    Fix vmx_combine_over_ca().
+    
+    In the non-vector code, the mask needs to be multiplied with source
+    alpha.
+
+commit 38b9589fe6b14c822a2a4000df364d132e390f7a
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 11:21:43 2009 -0400
+
+    In vmx_combine_out_ca() multiply with the alpha of the negated vdest.
+
+commit de180baba3a3e7eedeb09ff7d5f4d3eff3ffc6f4
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 11:16:31 2009 -0400
+
+    Fix vmx_combine_out_ca()
+    
+    It should multiply with just the destination alpha channel, not all
+    four channels.
+
+commit 5191421d1f143cca76afa1f4fbffa68f89a5d393
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 11:07:16 2009 -0400
+
+    Do the full four-component IN computation in vmx_combine_in_ca().
+
+commit 27fb8378fdae930475cf4528c539a78bfbd751c5
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 10:54:16 2009 -0400
+
+    Fix bug in vmx_combine_xor_ca()
+    
+    The destination needs to be inverted before the alpha channel is
+    extracted; otherwise, the RGB channels of da will be 0xff.
+
+commit c750667d7ac542dfa922a7970961b7095b44b8d3
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 01:07:01 2009 -0400
+
+    Make pix_multiply bit-exact
+
+commit 6243a0a015043f39531b98b9e8c4167f8bd47d82
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Aug 6 23:50:32 2009 -0400
+
+    Change the SSE2 versions of pix_add_multiply() to produce bit-exact results.
+
+commit 404f4a6f3e71de5e411cb3bb1107d8ffb7c52e62
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Aug 6 23:52:11 2009 -0400
+
+    Fix a couple of alpha==0 vs src==0 issues in pixman-sse2.c
+
+commit d9f80370a4d2ab54688e75256b3ea4267d8cc602
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Aug 6 23:05:36 2009 -0400
+
+    Rename mmx_composite_add_8888_8_8() to mmx_composite_add_n_8_8().
+
+commit 04619c3636697684fdd9ada9842845f6c8dd3914
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Aug 6 22:46:50 2009 -0400
+
+    Fix a couple more alpha==0 vs src==0 bugs in pixman-mmx.c
+
+commit a075a870fd7e1fa70ae176d5089c695011667388
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Aug 6 22:42:25 2009 -0400
+
+    Make pix_add_mul() in pixman-mmx.c produce exact results.
+    
+    Previously this routine would compute (x * a + y * b) / 255. Now it
+    computes (x * a) / 255 + (y * b) / 255, so that the results are
+    bitwise equivalent to the non-mmx versions.
+
+commit f7463ffafb8876c1f47ed9c527df33d45255e16c
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Aug 6 20:29:44 2009 -0400
+
+    Rewrite the two-component arithmetic macros.
+    
+    Previously they were not bit-for-bit equivalent to the one-component
+    versions. The new code is also simpler and easier to read because it
+    factors out some common sub-macros.
+    
+    The x * a + y * b macro now only uses four multiplications - the
+    previous version used eight.
+
+commit 04ae08992f6381a8ffb50d8cba37753fdb58e3bf
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Aug 6 20:41:04 2009 -0400
+
+    Fix a bunch of srca == 0 checks that should be src == 0 in pixman-mmx.c
+
+commit 8bb58a3ce83d6b9c1f6796ce8e62450bdaa52cf0
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Aug 5 21:24:50 2009 -0400
+
+    Don't run fast paths if the format requires wide compositing.
+    
+    This could happen because the wide formats would still be considered
+    solid if the image was 1x1 and repeating.
+
+commit d937b622389797a8c605b2cc50c24ca759dc57d2
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Aug 5 21:16:14 2009 -0400
+
+    Fix bug in combine_mask_alpha_ca()
+    
+    If the mask was 0xffffffff, the source would end up being shifted
+    twice by A_SHIFT.
+
+commit 0d576b965c34a6d89b00f7b93dba6a7b8737c731
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Aug 5 20:40:36 2009 -0400
+
+    Fix another case of changing the solid source.
+    
+    This time in fast_path_composite_n_8888_8888().
+
+commit 8b82cbb69197f9c367069a77ba992f3163d40230
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Aug 5 20:31:41 2009 -0400
+
+    Fix incorrect optimization in combine_over_ca().
+    
+    Previously the code assumed that an alpha of 0 meant that no change
+    would take place. This is incorrect because an alpha of 0 can happen
+    as the result of the source having alpha=0, but rgb != 0.
+
+commit ec8b36f01030fd2fa67595f2aef4ca568b060899
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Aug 5 18:18:37 2009 -0400
+
+    Don't change the constant source in fast_composite_over_n_8888_0565.
+
+commit de8fff746bfa80278f85859bef2dc0ab166f7a69
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Aug 5 16:17:52 2009 -0400
+
+    Fix bugs in combine_over_reverse_ca().
+    
+    The computation cannot be optimized away when alpha is 0 because that
+    can happen when the source has alpha zero and rgb non-zero.
+
+commit 7b1df41b6110424b8dca9fa655dbc8dd95a76882
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Jul 31 17:27:38 2009 -0400
+
+    Add a dirty bit to the image struct, and validate before using the image.
+    
+    This cuts down the number of property_changed calls significantly.
+
+commit 942c4ac28209381668208a39ccc9aec4f11bf63f
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Jul 31 10:39:41 2009 -0400
+
+    Add sse2 version of add_n_8888_8888()
+
+commit 23d38201165876c031d314f73e09a75afcac4f00
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Jul 31 10:26:10 2009 -0400
+
+    Add a fast path for the add_n_8888_8888() operation.
+    
+    It shows up on gnome-terminal traces.
+
+commit c606a05213d1fe5d73b39454407414a2a245da39
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Jul 31 07:29:31 2009 -0400
+
+    Move bounds checks for REPEAT_NONE to get_pixel()
+    
+    On a P4, this is a large speedup for the swfdec-fill-rate-2xaa trace:
+    
+    After:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [  0]    image        swfdec-fill-rate-2xaa   33.061   33.061   0.00%    1/1
+    
+    Before:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [  0]    image        swfdec-fill-rate-2xaa   40.342   40.342   0.00%    1/1
+    
+    Pixman 0.14.0 produces this:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [  0]    image        swfdec-fill-rate-2xaa   36.896   36.896   0.00%    1/1
+
+commit 1bec3e8395a307812b25fb195823ac7cf2915340
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jul 30 10:51:38 2009 -0400
+
+    Remove leftover 0xffffffff in repeat()
+
+commit 1b98166b016af5fa374ad534d53b772c7fd2c4a5
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jul 30 10:45:18 2009 -0400
+
+    Remove unused function
+
+commit 06836d35d26941e826e99fe35e06da50756da641
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jul 30 10:03:44 2009 -0400
+
+    Misc formatting
+
+commit 7c8959ea3b2ff3d3abf995b3feccc677e15b4e27
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Jul 30 09:58:12 2009 -0400
+
+    Change all the fetch_pixels() functions to only fetch one pixel.
+
+commit 31096446b6866de0a85ca6eb4fb68a45b21c4b49
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 28 09:43:12 2009 -0400
+
+    Add fetch_pixel_raw_32 and fetch_pixel_32 virtual functions.
+    
+    By default both are intialized to bits_image_fetch_pixel_raw(), but if
+    there is an alpha map, then fetch_pixel_32() is set to
+    bits_image_fetch_pixel_alpha().
+
+commit a233b332cd9408d35e57a400874cca6188347cc2
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 28 09:12:51 2009 -0400
+
+    Various renamings and clean-ups
+
+commit 073399b09f073c44dd10b027788c09eddfcdf2e0
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 28 08:58:41 2009 -0400
+
+    Change bits_image_fetch_alpha_pixels() to fetch just one pixel.
+
+commit 6d1dfc3945917b507d40f1f3c1b1cf07858d18dd
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 28 08:44:40 2009 -0400
+
+    Change bits_image_fetch_pixels_convolution() to fetch just one pixel.
+
+commit b3f849f74f848c407afda1be15b966e1d6eda745
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 28 08:33:28 2009 -0400
+
+    Change bits_image_fetch_bilinear_pixels() to fetch one pixel at a time.
+
+commit a37383a2c646ee10ebe36d03df6bd1c0f8a75052
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 28 08:03:44 2009 -0400
+
+    Make the repeat routine work on only one coordinate at a time.
+
+commit a4f3fd3b2592b1b4791075187016ad444c2d60d4
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 28 07:55:27 2009 -0400
+
+    Make bits_image_fetch_nearest() return one pixel.
+    
+    Previously it would work on a buffer of coordinates.
+
+commit f382865ebe5e1e8d4b5299b908dab9b719fcb8ec
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 28 07:42:34 2009 -0400
+
+    Change bits_image_fetch_transformed() to work one pixel at a time.
+    
+    Previously, it would generate a buffer of coordinates, then pass that
+    off to a pixel fetcher, but this caused a large performance regression
+    with the swfdec-fill-rate-2xfsaa cairo trace.
+    
+    This is the first step towards fixing that.
+
+commit 4ef2807c3a6697731ada43ddad2fa915ed7cfe11
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 7 00:11:20 2009 -0400
+
+    Only define PIXMAN_TIMERS if timers are actually enabled [bug 23169]
+
+commit 9dec2e352b24bdccaac4f570b8cf12e61a9194ee
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 28 09:58:52 2009 -0400
+
+    Various updates to the CODING_STYLE document
+
+commit 2abd56e9e3d012fcb0b7c6d459ed4831464c0f2f
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 28 04:05:26 2009 -0400
+
+    Add a CODING_STYLE document based on the one from cairo.
+
+commit fdd01bcbd473f7a46c66ce8538657e32400974ed
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Jul 22 04:51:08 2009 -0400
+
+    Remove a couple of unused variables
+
+commit 845910c200db3f279229da67fbd330d903776777
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Jul 22 04:32:07 2009 -0400
+
+    Rename source_pict_class_t to source_image_class_t
+
+commit edd476d5be8f248ea21d9d80cf1986d0ccdecc3b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Jul 22 04:28:08 2009 -0400
+
+    Replace a bunch of 'pict's with 'image'
+
+commit 11d888a2837b3fe309348126b4f7c56df559df4e
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Fri Jul 24 09:36:08 2009 +0100
+
+    Explain how we can simplify the radial gradient computation
+    
+    Soeren rightfully complained that I had removed all the comments from
+    André's patch, most importantly that explain why the transformation is
+    valid. So add a few details to show that B varies linearly across the
+    scanline and how we can therefore reduce the per-pixel cost of evaluating
+    B.
+
+commit 20d2df03059d6a5941464d80e81e8116ebf4dbfe
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Thu Jul 23 19:08:40 2009 +0100
+
+    Fix inversion of radial gradients when r2 > r1
+    
+    Fixes: Bug 22908 -- Invalid output of radial gradient
+    http://bugs.freedesktop.org/show_bug.cgi?id=22908
+    
+    We also include a modified patch by André Tupinambá <andrelrt@gmail.com>,
+    to pull constant expressions out of the inner radial gradient walker.
+
+commit 84b7df09394ac7237fb42fe25c0fbde77e065a16
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Thu Jul 23 09:54:49 2009 +0200
+
+    Don't warn for empty rectangles, only degenerate ones
+
+commit 1435c8aa3db3b6bde26216e260cc94baba225664
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Tue Jul 21 15:00:52 2009 +0200
+
+    Log errors for invalid rectangles passed to region code
+
+commit 1796e6bf17a5d20039e098c4e352cd2765ed444e
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Tue Jul 21 14:57:59 2009 +0200
+
+    Simplify code that logs errors
+
+commit 85d56f3f7cb9c90c5af52b28fb6f7c1b14f09f07
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Tue Jul 21 14:50:30 2009 +0200
+
+    Make the text when reporting a broken region more useful
+
+commit a77d4ffeb661d4d75109fc368bded26843662259
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jul 21 07:24:40 2009 -0400
+
+    Post-release version bump
+
 commit f3ac1368775542e09f3741d2ad7b72af20bd9663
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
 Date:   Tue Jul 21 07:20:57 2009 -0400

@@ -1,6 +1,6 @@
-pixman (0.15.18-1) UNRELEASED; urgency=low
+pixman (0.15.20-1) UNRELEASED; urgency=low
 
-  * New upstream beta release.
+  * New upstream release candidate.
   * Bump shlibs and update symbols file for
     pixman_disable_out_of_bounds_workaround and new formats.
 
