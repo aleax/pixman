@@ -1,4 +1,4 @@
-pixman (0.15.20-1) UNRELEASED; urgency=low
+pixman (0.15.20-1) experimental; urgency=low
 
   * New upstream release candidate.
   * Bump shlibs and update symbols file for
@@ -6,7 +6,7 @@ pixman (0.15.20-1) UNRELEASED; urgency=low
   * Add patch to disable use of env vars to force hwcap and platform on arm.
   * Add README.source with a pointer to the quilt package.
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 21 Jul 2009 16:22:58 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sun, 23 Aug 2009 12:44:59 +0200
 
 pixman (0.15.14-1) experimental; urgency=low
 
