@@ -1,5 +1,7 @@
 #!/usr/bin/make -f
 
+include /usr/share/quilt/quilt.make
+
 PACKAGE = libpixman-1-0
 SHLIBS_VERSION = 0.15.16
 
@@ -24,7 +26,7 @@ else
 endif
 
 autogen: autogen-stamp
-autogen-stamp:
+autogen-stamp: $(QUILT_STAMPFN)
 	dh_testdir
 	autoreconf -vfi
 	touch $@
@@ -50,7 +52,7 @@ build-stamp: config-stamp
 	
 	touch $@
 
-clean:
+clean: unpatch
 	dh_testdir
 	dh_testroot
 	rm -f autogen-stamp config-stamp build-stamp install-stamp
