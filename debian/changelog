@@ -4,6 +4,7 @@ pixman (0.15.20-1) UNRELEASED; urgency=low
   * Bump shlibs and update symbols file for
     pixman_disable_out_of_bounds_workaround and new formats.
   * Add patch to disable use of env vars to force hwcap and platform on arm.
+  * Add README.source with a pointer to the quilt package.
 
  -- Julien Cristau <jcristau@debian.org>  Tue, 21 Jul 2009 16:22:58 +0200
 
