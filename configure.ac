@@ -54,7 +54,7 @@ AC_PREREQ([2.57])
 
 m4_define([pixman_major], 0)
 m4_define([pixman_minor], 15)
-m4_define([pixman_micro], 18)
+m4_define([pixman_micro], 20)
 
 m4_define([pixman_version],[pixman_major.pixman_minor.pixman_micro])
 
@@ -462,7 +462,9 @@ AC_ARG_ENABLE(timers,
 		   [enable TIMER_BEGIN and TIMER_END macros [default=no]])],
    [enable_timers=$enableval], [enable_timers=no])
 
-AC_DEFINE(PIXMAN_TIMERS, 1, [enable TIMER_BEGIN/TIMER_END macros])
+if test $enable_timers = yes ; then 
+   AC_DEFINE(PIXMAN_TIMERS, 1, [enable TIMER_BEGIN/TIMER_END macros])
+fi
 AC_SUBST(PIXMAN_TIMERS)
 
 dnl ===================================
