@@ -64,6 +64,12 @@ unpack0565 (uint16x8_t rgb)
     return res;
 }
 
+#ifdef USE_GCC_INLINE_ASM
+/* Some versions of gcc have problems with vshll_n_u8 intrinsic (Bug 23576) */
+#define vshll_n_u8(a, n) ({ uint16x8_t r; \
+    asm ("vshll.u8 %q0, %P1, %2\n" : "=w" (r) : "w" (a), "i" (n)); r; })
+#endif
+
 static force_inline uint16x8_t
 pack0565 (uint8x8x4_t s)
 {
@@ -835,7 +841,7 @@ neon_composite_over_n_8_0565 (pixman_implementation_t * impl,
 	    w = width;
 
 
-#ifndef USE_GCC_INLINE_ASM
+#if 1 /* #ifndef USE_GCC_INLINE_ASM */
 	    uint8x8_t alpha;
 	    uint16x8_t dval, temp;
 	    uint8x8x4_t sval8temp;
@@ -872,6 +878,7 @@ neon_composite_over_n_8_0565 (pixman_implementation_t * impl,
 	    if (w&4)
 		vst1q_lane_u64 ((void *)dst4, vreinterpretq_u64_u16 (temp),1);
 #else
+	    /* this code has some bug (does not pass blitters-test) */
 	    asm volatile (
 		"vdup.32      d0, %[src]\n\t"
 		"vdup.8       d1, d0[1]\n\t"
@@ -2760,8 +2767,8 @@ arm_neon_fill (pixman_implementation_t *imp,
 pixman_implementation_t *
 _pixman_implementation_create_arm_neon (void)
 {
-    pixman_implementation_t *simd = _pixman_implementation_create_arm_simd ();
-    pixman_implementation_t *imp = _pixman_implementation_create (simd);
+    pixman_implementation_t *general = _pixman_implementation_create_fast_path ();
+    pixman_implementation_t *imp = _pixman_implementation_create (general);
 
     imp->composite = arm_neon_composite;
 #if 0 /* this code has some bugs */

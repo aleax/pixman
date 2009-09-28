@@ -31,7 +31,7 @@ AC_PREREQ([2.57])
 #
 #   - Released development versions have an odd MINOR number
 #
-#   - Released stable versions have an event MINOR number
+#   - Released stable versions have an even MINOR number
 #
 #   - Versions that break ABI must have a new MAJOR number
 #
@@ -53,8 +53,8 @@ AC_PREREQ([2.57])
 #
 
 m4_define([pixman_major], 0)
-m4_define([pixman_minor], 15)
-m4_define([pixman_micro], 20)
+m4_define([pixman_minor], 16)
+m4_define([pixman_micro], 2)
 
 m4_define([pixman_version],[pixman_major.pixman_minor.pixman_micro])
 
@@ -65,6 +65,8 @@ AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST
 
+test_CFLAGS=${CFLAGS+set} # We may override autoconf default CFLAGS.
+
 AC_PROG_CC
 AC_PROG_LIBTOOL
 AC_CHECK_FUNCS([getisax])
@@ -74,6 +76,16 @@ AC_C_INLINE
 # Checks for Sun Studio compilers
 AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
 AC_CHECK_DECL([__amd64], [AMD64_ABI="yes"], [AMD64_ABI="no"])
+
+# Default CFLAGS to -O -g rather than just the -g from AC_PROG_CC
+# if we're using Sun Studio and neither the user nor a config.site
+# has set CFLAGS.
+if test $SUNCC = yes &&			\
+   test "$test_CFLAGS" == "" &&		\
+   test "$CFLAGS" = "-g"
+then
+  CFLAGS="-O -g"
+fi
 
 # 
 # We ignore pixman_major in the version here because the major version should
@@ -306,7 +318,7 @@ fi
 have_vmx_intrinsics=no
 AC_MSG_CHECKING(whether to use VMX/Altivec intrinsics)
 xserver_save_CFLAGS=$CFLAGS
-CFLAGS="$CFLAGS $VMX_CFLAGS"
+CFLAGS="$VMX_CFLAGS $CFLAGS"
 AC_COMPILE_IFELSE([
 #if defined(__GNUC__) && (__GNUC__ < 3 || (__GNUC__ == 3 && __GNUC_MINOR__ < 4))
 error "Need GCC >= 3.4 for sane altivec support"
@@ -350,7 +362,7 @@ ARM_SIMD_CFLAGS="-mcpu=arm1136j-s"
 have_arm_simd=no
 AC_MSG_CHECKING(whether to use ARM SIMD assembler)
 xserver_save_CFLAGS=$CFLAGS
-CFLAGS="$CFLAGS $ARM_SIMD_CFLAGS"
+CFLAGS="$ARM_SIMD_CFLAGS $CFLAGS"
 AC_COMPILE_IFELSE([
 int main () {
     asm("uqadd8 r1, r1, r2");
@@ -389,7 +401,7 @@ ARM_NEON_CFLAGS="-mfpu=neon -mcpu=cortex-a8"
 have_arm_neon=no
 AC_MSG_CHECKING(whether to use ARM NEON)
 xserver_save_CFLAGS=$CFLAGS
-CFLAGS="$CFLAGS $ARM_NEON_CFLAGS"
+CFLAGS="$ARM_NEON_CFLAGS $CFLAGS"
 AC_COMPILE_IFELSE([
 #include <arm_neon.h>
 int main () {
@@ -489,6 +501,14 @@ AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 AC_SUBST(DEP_CFLAGS)
 AC_SUBST(DEP_LIBS)
+
+dnl =====================================
+dnl posix_memalign 
+
+AC_CHECK_FUNC(posix_memalign, have_posix_memalign=yes, have_posix_memalign=no)
+if test x$have_posix_memalign = xyes; then
+   AC_DEFINE(HAVE_POSIX_MEMALIGN, 1, [Whether we have posix_memalign()])
+fi
 
 AC_OUTPUT([pixman-1.pc
            pixman-1-uninstalled.pc

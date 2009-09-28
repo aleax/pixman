@@ -24,7 +24,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <malloc.h>
+#include <config.h>
 #include "pixman.h"
 
 /* A primitive pseudorandom number generator, taken from POSIX.1-2001 example */
@@ -48,6 +48,20 @@ static inline uint32_t
 lcg_rand_n (int max)
 {
     return lcg_rand () % max;
+}
+
+static void *
+aligned_malloc (size_t align, size_t size)
+{
+    void *result;
+
+#ifdef HAVE_POSIX_MEMALIGN
+    posix_memalign (&result, align, size);
+#else
+    result = malloc (size);
+#endif
+
+    return result;
 }
 
 /*----------------------------------------------------------------------------*\
@@ -259,7 +273,7 @@ create_random_image (pixman_format_code_t *allowed_formats,
     stride = (stride + 3) & ~3;
 
     /* do the allocation */
-    buf = (uint32_t *)memalign (64, stride * height);
+    buf = aligned_malloc (64, stride * height);
 
     /* initialize image with random data */
     for (i = 0; i < stride * height; i++)
@@ -299,6 +313,9 @@ free_random_image (uint32_t initcrc,
 	    int i;
 	    uint32_t *data = pixman_image_get_data (img);
 	    uint32_t mask = (1 << PIXMAN_FORMAT_DEPTH (fmt)) - 1;
+
+	    if (PIXMAN_FORMAT_TYPE (fmt) == PIXMAN_TYPE_BGRA)
+		mask <<= (PIXMAN_FORMAT_BPP (fmt) - PIXMAN_FORMAT_DEPTH (fmt));
 
 	    for (i = 0; i < 32; i++)
 		mask |= mask << (i * PIXMAN_FORMAT_BPP (fmt));
@@ -623,7 +640,7 @@ main (int argc, char *argv[])
 	    /* Predefined value for running with all the fastpath functions
 	       disabled. It needs to be updated every time when changes are
 	       introduced to this program or behavior of pixman changes! */
-	    if (crc == 0xFE1244BF)
+	    if (crc == 0x06D8EDB6)
 	    {
 		printf ("blitters test passed\n");
 	    }
