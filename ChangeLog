@@ -1,3 +1,237 @@
+commit 601e4dc6fd78984701a231e48fabd1e1e3e23d38
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Sep 28 09:20:13 2009 -0400
+
+    Pre-release version bump
+
+commit b765dcb554e4328c8502433474a28af30c0bb7f3
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Sep 28 08:59:11 2009 -0400
+
+    Update CRC in blitters-test for the changes in 10bpc alpha handling
+
+commit 66f7581ccf8157777c9bfc0116858adb140ee4ca
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 26 13:12:14 2009 -0400
+
+    Fix fetch-test for big-endian systems.
+    
+    Data narrower than 32bpp should be stored in the correct
+    endian. Reported by Andrea Canciani.
+
+commit 485c1f54b4abb2e1677627b713e086b45ca63eea
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Sep 18 08:16:56 2009 -0400
+
+    Fix bug in blitters-test with BGRA formats.
+    
+    When masking out the x bits, blitter-test would make the incorrect
+    assumption that the they were always in the topmost position. This is
+    not correct for formats of type PIXMAN_TYPE_BGRA.
+
+commit 8f5cca82aca953ee4d87a7d576ff67ddcab85b6a
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Sep 18 09:11:04 2009 -0400
+
+    Fix alpha handling for 10 bpc formats.
+    
+    These generally extracted the 2 bits of alpha, then shifted them 62
+    bits and replicated across 16 bits. Then they were shifted another 48
+    bits, making the resulting alpha channel 0.
+
+commit 09a71a0dc0937264f456c246dc98830f942a6479
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Sep 24 05:22:33 2009 -0400
+
+    Return result from pixman_image_set_transform().
+    
+    Previously it would always return TRUE, even when malloc() had failed.
+
+commit 8138f908aa10e5581f83ebfb5f53d81ad39437bd
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Sep 15 07:43:23 2009 -0400
+
+    Revert "Enable component alpha on solid masks."
+    
+    For consistency we will probably want to allow component alpha to be
+    set on all masks at some point, but not in the stable branch, and this
+    commit only enabled it for solid images anyway.
+    
+    This reverts commit 29e22cf38e8abc54b9dddbdeb3909d02866a82a0.
+
+commit 77627554bcc81f4aa3cb81f8158075aa6f20eca1
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Sep 10 21:33:24 2009 -0400
+
+    Fix off-by-one error in source_image_needs_out_of_bounds_workaround()
+    
+    If extents->x2/y2 are equal to image->width/height, then the clip is
+    still inside the drawable, so no workaround is necessary.
+
+commit c31cd73a09616cdec9bd91800d9410ba1f8adf09
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Sep 14 18:48:32 2009 -0400
+
+    Remove optimization for 0xffffffff and 0xff the add_n_8888_8888_ca fast path
+    
+    This is an ADD operation, not an OVER. Fixes bug 23934, reported by
+    Siarhei Siamashka.
+
+commit 8035df8bcb01c2df42b8adf8b96c7ac796f384cc
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Sun Aug 16 12:16:46 2009 +0100
+
+    Remove duplicated declaration
+    
+    The pixman_tranform_pixman_f_transform() declaration is repeated 4 lines
+    down.
+
+commit 29e22cf38e8abc54b9dddbdeb3909d02866a82a0
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Sun Sep 13 16:26:29 2009 +0100
+
+    Enable component alpha on solid masks.
+
+commit 9fe2628702785e8db45593709c0aec54043a50e7
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Sun Sep 13 16:26:52 2009 +0100
+
+    [sse2] Bit-reversing typo: src != dst
+
+commit 2186bc89486f9f11161b0db280a869c6849c867e
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Sep 4 14:14:00 2009 +0300
+
+    Change CFLAGS order for PPC and ARM configure tests
+    
+    CFLAGS are always appended to the end of gcc options when compiling
+    sources in autotools based projects. Configure tests should do the
+    same. Otherwise build fails on PPC when using CFLAGS="-O2 -mno-altivec"
+    for example. Similar problem affects ARM.
+
+commit 15304e3cddd6568ba6d5d1d3030568c3db7b05cc
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Sep 2 19:46:47 2009 +0300
+
+    ARM: Remove fallback to ARMv6 implementation from NEON delegate chain
+    
+    This can help to fix build problems with '-mthumb' gcc option in CFLAGS.
+    ARMv6 optimized code can't be compiled for thumb (because of its inline
+    assembly) and gets automatically disabled in configure. Reference
+    to it from NEON optimized code resulted in linking problems.
+    
+    Every ARMv6 optimized fast path function also has a better NEON
+    counterpart, so there is no need to fallback to ARMv6. Shorter
+    delegate chain should additionally result in a bit better performance.
+
+commit 61b616067c3e8b2ff84fbf57f479a90cc9fa5344
+Author: M Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
+Date:   Mon Aug 31 23:02:53 2009 +0100
+
+    Default to optimised builds when using a Sun Studio compiler.
+    
+    Autoconf's AC_PROG_CC sets the default CFLAGS to -O2 -g for
+    gcc and -g for every other compiler.  This patch defaults
+    CFLAGS to the equivalent -O -g when we're using Sun Studio's cc
+    if the user or site admin hasn't already set CFLAGS.
+
+commit 20acda6fde8441e18aab33980a33b099a16063eb
+Author: M Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
+Date:   Mon Aug 31 20:27:32 2009 +0100
+
+    Work around a Sun Studio 12 code generation bug involving _mm_set_epi32().
+    
+    Calling a static function wrapper around _mm_set_epi32() when not
+    using optimisation causes Sun Studio 12's cc to emit a spurious
+    floating point load which confuses the assembler.  Using a macro wrapper
+    rather than a function steps around the problem.
+
+commit e30c0037d44bf76a26182080be24c7037d7be5b5
+Author: M Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
+Date:   Mon Aug 31 20:24:04 2009 +0100
+
+    Work around differing _mm_prefetch() prototypes on Solaris.
+    
+    Sun Studio 12 expects the address to prefetch to be
+    a const char pointer rather than a __m128i pointer or
+    void pointer.
+
+commit 698b686d58c510e1b8a9183750d00cbd9ed504b2
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Aug 28 22:34:21 2009 +0300
+
+    ARM: workaround for gcc bug in vshll_n_u8 intrinsic
+    
+    Some versions of gcc (cs2009q1, 4.4.1) incorrectly reject
+    shift operand having value >= 8, claiming that it is out of
+    range. So inline assembly is used as a workaround.
+
+commit b02b644d7017f794be2296c6354e44fd119d2477
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Sep 2 16:09:32 2009 -0400
+
+    Set version number to 0.16.1
+
+commit d465f854b3d5f2ffcc122aebfbead2d64cca7169
+Author: Makoto Kato <m_kato@ga2.so-net.ne.jp>
+Date:   Tue Sep 1 10:59:05 2009 +0900
+
+    Add CPU detection for VC++ x64
+    
+    VC++ x64 has no inline assembler and x64 mode supports SSE2.
+    So, it is unnecessary to call cpuid.
+
+commit 57812465bf975e943e78d59dabbd5e6bb2ad87ef
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 28 07:55:30 2009 -0400
+
+    Pre-release version bump
+
+commit 9e1a34a0d177e8c2381f419b0a04310da8cdde2b
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Fri Aug 28 06:31:06 2009 -0400
+
+    _pixman_run_fast_path: typo
+    
+    This is one example of a compiler warning that was lost amit the build
+    noise.
+    
+    The error here is that in a list of required conditions we used ';'
+    instead of '&&' with the result of continuing to use the fast-path
+    even if we had a wide mask.
+    
+    Another error is that it was testing src, not mask as it should.
+
+commit 83d607cbf1d3852f91b52a427bee30fffc3029e7
+Author: Makoto Kato <m_kato@ga2.so-net.ne.jp>
+Date:   Fri Aug 28 04:09:15 2009 -0400
+
+    Remove spurious spaces in pixman-x64-mmx-emulation.h
+
+commit ce966f4d8e8aa9a4465e2ab28666bae891194a72
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Aug 12 14:08:58 2009 -0400
+
+    Check if we have posix_memalign() in configure.ac. [23260, 23261]
+    
+    Fall back to malloc() in blitters-test.c if we don't.
+
+commit 29c2ae4a0cf924cb011467687a4c43237fb2316c
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Aug 12 20:22:24 2009 +0300
+
+    ARM: a fix to pass blitters-test for 'neon_composite_over_n_8_0565'
+    
+    Inline assembly for handling <8 pixels width did not pass blitters-test.
+    Fortunately gcc has no problems compiling alternative implementation
+    which is using RVCT style intrinsics, so it can be used instead.
+
+commit ed4598f08a359346d14fe5b2bbb7b74c40332b18
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Aug 11 14:03:24 2009 -0400
+
+    Post-release version bump
+
 commit bfdae053eaff528aa869bc05a0520ab22d540a08
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
 Date:   Tue Aug 11 13:56:16 2009 -0400
