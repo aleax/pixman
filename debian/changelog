@@ -1,9 +1,9 @@
-pixman (0.16.2-1) UNRELEASED; urgency=low
+pixman (0.16.2-1) unstable; urgency=low
 
   * New upstream release (closes: #546849).
   * Upload to unstable.
 
- -- Julien Cristau <jcristau@debian.org>  Mon, 28 Sep 2009 18:07:07 +0200
+ -- Julien Cristau <jcristau@debian.org>  Mon, 28 Sep 2009 18:12:47 +0200
 
 pixman (0.15.20-1) experimental; urgency=low
 
