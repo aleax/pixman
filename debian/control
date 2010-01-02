@@ -11,7 +11,9 @@ Vcs-Browser: http://git.debian.org/?p=pkg-xorg/lib/pixman.git
 Package: libpixman-1-0
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
 Description: pixel-manipulation library for X and cairo
  A library for manipulating pixel regions -- a set of Y-X banded
  rectangles, image compositing using the Porter/Duff model
@@ -22,7 +24,9 @@ Package: libpixman-1-0-udeb
 Section: debian-installer
 XC-Package-Type: udeb
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
 Description: pixel-manipulation library for X and cairo
  This package contains a minimal set of libraries needed for the Debian
  installer.  Do not install it on a normal system.
@@ -31,7 +35,9 @@ Package: libpixman-1-0-dbg
 Section: debug
 Priority: extra
 Architecture: any
-Depends: libpixman-1-0 (= ${binary:Version})
+Depends:
+ libpixman-1-0 (= ${binary:Version}),
+ ${misc:Depends},
 Description: pixel-manipulation library for X and cairo (debugging symbols)
  Debugging symbols for the Cairo/X pixel manipulation library.  This is
  needed to debug programs linked against libpixman0.
@@ -39,7 +45,9 @@ Description: pixel-manipulation library for X and cairo (debugging symbols)
 Package: libpixman-1-dev
 Section: libdevel
 Architecture: any
-Depends: libpixman-1-0 (= ${binary:Version})
+Depends:
+ libpixman-1-0 (= ${binary:Version}),
+ ${misc:Depends},
 Conflicts: libpixman1-dev
 Description: pixel-manipulation library for X and cairo (development files)
  Development libraries, header files and documentation needed by
