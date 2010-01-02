@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
 Uploaders: Julien Cristau <jcristau@debian.org>, David Nusinow <dnusinow@debian.org>
 Build-Depends: debhelper (>= 5), automake, autoconf, libtool, pkg-config, quilt
-Standards-Version: 3.8.2
+Standards-Version: 3.8.3
 Vcs-Git: git://git.debian.org/git/pkg-xorg/lib/pixman
 Vcs-Browser: http://git.debian.org/?p=pkg-xorg/lib/pixman.git
 
