@@ -1,3 +1,42 @@
+commit 92865d4decd4607086c22187b8892af9c74fe2f0
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Dec 15 11:09:33 2009 -0500
+
+    Pre-release version bump
+
+commit ec6de472d042bec05aaa53f9d14bfbe23edbe01e
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Dec 11 11:14:19 2009 -0500
+
+    region: Enable or disable fatal errors and selfchecks based on version number
+    
+    There is a couple of bugs in bugzilla where bugs in the X server
+    triggered asserts in the pixman region code. It is probably better to
+    let the X server survive this. (In fact, I thought I had disabled them
+    for 0.16.0, but apparently not).
+    
+    The patch below uses these rules:
+    
+        - In _stable_ pixman releases, assertions and selfchecks are turned
+          off. Assertions, so that the X server doesn't die. Selfchecks,
+          for performance reasons.
+    
+        - In _unstable_ pixman releases, both assertions and selfcheck are
+          turned on. These releases are what get added to development
+          distributions such as rawhide, so we want as much self-checking
+          as possible.
+    
+        - In _random git checkouts_, assertions are enabled, so that bugs
+          are caught, but selfchecks are disabled so that you can use them
+          for performance work without having to fiddle with turning
+          selfchecks off.
+
+commit f1ecbaba0c5886dd1c099de3496d595ad1513a49
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Sep 28 09:31:25 2009 -0400
+
+    Post-release version bump
+
 commit 601e4dc6fd78984701a231e48fabd1e1e3e23d38
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
 Date:   Mon Sep 28 09:20:13 2009 -0400
