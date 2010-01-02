@@ -1,10 +1,10 @@
-pixman (0.16.4-1) UNRELEASED; urgency=low
+pixman (0.16.4-1) unstable; urgency=low
 
   * New upstream release.
   * Add dependencies on ${misc:Depends} (lintian).
   * Bump Standards-Version to 3.8.3.
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 02 Jan 2010 11:18:11 +0000
+ -- Julien Cristau <jcristau@debian.org>  Sat, 02 Jan 2010 11:26:29 +0000
 
 pixman (0.16.2-1) unstable; urgency=low
 
