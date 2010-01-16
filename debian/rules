@@ -34,8 +34,8 @@ autogen-stamp: $(QUILT_STAMPFN)
 config: config-stamp
 config-stamp: autogen-stamp
 	dh_testdir
-	test -d obj-$(DEB_BUILD_GNU_TYPE) || mkdir obj-$(DEB_BUILD_GNU_TYPE)
-	cd obj-$(DEB_BUILD_GNU_TYPE) && \
+	test -d build || mkdir build
+	cd build && \
 	../configure \
 	  --prefix=/usr \
 	  --mandir=\$${prefix}/share/man \
@@ -48,7 +48,7 @@ config-stamp: autogen-stamp
 build: build-stamp
 build-stamp: config-stamp
 	dh_testdir
-	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE)
+	cd build && $(MAKE)
 	
 	touch $@
 
@@ -61,7 +61,7 @@ clean: unpatch
 	rm -f */config.cache */config.log */config.status
 	rm -f conftest* */conftest*
 	rm -rf autom4te.cache */autom4te.cache
-	rm -rf obj-*
+	rm -rf build
 	rm -f $$(find -name Makefile.in)
 	rm -f compile config.guess config.sub configure depcomp install-sh
 	rm -f ltmain.sh missing INSTALL aclocal.m4 config.h.in
@@ -75,7 +75,7 @@ install-stamp: build-stamp
 	dh_clean -k
 	dh_installdirs
 
-	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
+	cd build && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
 	touch $@
 
 # Install architecture-dependent files here.
