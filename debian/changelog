@@ -5,6 +5,7 @@ pixman (0.18.0-1) UNRELEASED; urgency=low
   * Remove myself from Uploaders
   * New upstream release.
   * Update symbols file for new API, bump shlibs.
+  * Drop pixman-arm-don-t-use-env-vars-to-get-hwcap-platform.patch, obsolete.
 
  -- Julien Cristau <jcristau@debian.org>  Sat, 08 May 2010 17:06:36 +0200
 
