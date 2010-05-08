@@ -3,7 +3,7 @@ pixman (0.18.0-1) UNRELEASED; urgency=low
   * Rename the build directory to not include DEB_BUILD_GNU_TYPE for no
     good reason.  Thanks, Colin Watson!
   * Remove myself from Uploaders
-  * New upstream release.
+  * New upstream release (closes: #579014).
   * Update symbols file for new API, bump shlibs.
   * Drop pixman-arm-don-t-use-env-vars-to-get-hwcap-platform.patch, obsolete.
 
