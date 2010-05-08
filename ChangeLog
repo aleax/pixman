@@ -1,10 +1,1208 @@
-commit 92865d4decd4607086c22187b8892af9c74fe2f0
+commit e9dc568d6f585a153c47e970168a9c71d3e45fde
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Apr 1 05:23:31 2010 -0400
+
+    Pre-release version bump to 0.18.0
+
+commit efd41c62875d97c5127233cb6a4c353b4d495531
+Author: Matthias Hopf <mhopf@suse.de>
+Date:   Wed Mar 24 18:54:29 2010 +0100
+
+    Revert "Improve PIXREGION_NIL to return true on degenerated regions."
+    
+    This reverts commit ebba1493136a5a0dd7667073165b2115de203eda.
+    Scheduled for re-discussion after stable 0.18 has been released.
+
+commit ebba1493136a5a0dd7667073165b2115de203eda
+Author: Matthias Hopf <mhopf@suse.de>
+Date:   Wed Mar 24 12:00:21 2010 +0100
+
+    Improve PIXREGION_NIL to return true on degenerated regions.
+    
+    Fixes Novell bug 568811.
+
+commit c0f8d417b512b7d526fb6127954a50d14214f420
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Mar 23 17:25:54 2010 -0400
+
+    Post-release version bump to 0.17.15
+
+commit b35f0b0158cd7aac388ba4c72c6c8aada77d2e22
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Mar 23 16:52:02 2010 -0400
+
+    Pre-release version bump to 0.17.14
+
+commit 27a9f0468bdfa257e70270bf9addd5ad064f918b
+Merge: 69f1ec9 3ef2033
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Mar 23 11:00:04 2010 -0400
+
+    Merge remote branch 'ssvb/arm-fixes'
+
+commit 3ef203331f124bf137c6e0c8d5516b1209c92dd9
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Mar 22 21:56:17 2010 +0200
+
+    ARM: SIMD optimizations moved to a separate .S file
+    
+    This should be the last step in providing full armv4t compatibility
+    with CPU features runtime autodetection in pixman.
+
+commit 0a0591c2f7abde8880f4aebd510c27517a414450
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Mar 22 19:51:00 2010 +0200
+
+    ARM: SIMD optimizations updated to use common assembly calling conventions
+
+commit c1e8d4533aea3aa10c49465cf5e9a44d946f70bb
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Mar 22 18:51:54 2010 +0200
+
+    ARM: Helper ARM NEON assembly binding macros moved into a separate header
+    
+    This is needed for future reuse of the same macros for the other
+    ARM assembly optimizations (armv4t, armv6)
+
+commit 5791026e45f79d8f5168e302a498455870363ac6
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Sun Dec 27 00:27:53 2009 +0200
+
+    ARM: Workaround for a NEON bug in assembler from binutils 2.18
+    
+    The problem was reported as bug 25534 against pixman in
+    freedesktop.org bugzila. Link to a patch for binutils:
+    http://sourceware.org/ml/binutils/2008-03/msg00260.html
+    
+    For pixman the impact is a build failure when using
+    binutils 2.18. Versions 2.19 and higer are fine. Still
+    some distros may be using older versions of binutils and
+    this is causing problems.
+    
+    This patch workarounds the problem by replacing a problematic
+    "vmov a, b" instruction with equivalent "vorr a, b, b". Actually
+    they even map to the same instruction opcode in the generated
+    code, so the resulting binary is identical with and without patch.
+
+commit 68d8d83223b5a35e25d379c2ee9e2e3a1d242323
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Mar 22 11:54:51 2010 +0200
+
+    ARM: Use '.object_arch' directive in NEON assembly file
+    
+    This can be used to override the architecture recorded in the EABI object
+    attribute section. We set a minimum arch to 'armv4'. Binutils documentation
+    recommends to use this directive with the code performing runtime detection
+    of CPU features.
+    
+    Additionally NEON/VFP EABI attributes are suppressed. And the instruction
+    set to use is explicitly set to '.arm'.
+    
+    Configure test for NEON support is also updated to include a bunch of
+    these new directives (if any of these is unsupported by the assembler,
+    it is better to fail configure test than to fail library build).
+    
+    All these changes are required to fix SIGILL problem on armv4t, reported in
+    http://lists.freedesktop.org/archives/pixman/2010-March/000123.html
+
+commit 69f1ec9a7827aeb522fcae99846237ef0f896e7b
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Wed Mar 17 21:07:06 2010 +0000
+
+    Avoid a potential division-by-zero exeception in window-test
+    
+    Avoid a division-by-zero exception if the first number returned by
+    rand() is a multiple of 500, causing us to create a zero width pixmap,
+    and then attempt to use get_rand(0) when generating a random stride...
+    
+    Fixes https://bugs.freedesktop.org/attachment.cgi?id=34162
+
+commit 50713d9d0d9241597724551315f05d958ce7a283
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Mar 17 15:12:06 2010 -0400
+
+    Post-release version bump to 0.17.13
+
+commit fb68d6c14dd76121af009213df46e37ee17e38d7
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Mar 17 13:46:44 2010 -0400
+
+    Pre-release version bump to 0.17.12
+
+commit 265ea1fb4d05a920323f23a02f9dc379312bbdae
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Mar 17 10:50:42 2010 -0400
+
+    Specialize the fast_composite_scaled_nearest_* scalers to positive x units
+    
+    This avoids a test in the inner loop, which improves performance
+    especially for tiled sources.
+    
+    On x86-32, I get these results:
+    
+    Before:
+    op=1, src_fmt=20028888, dst_fmt=20028888, speed=306.96 MPix/s (73.18 FPS)
+    op=1, src_fmt=20028888, dst_fmt=10020565, speed=102.67 MPix/s (24.48 FPS)
+    op=1, src_fmt=10020565, dst_fmt=10020565, speed=324.85 MPix/s (77.45 FPS)
+    
+    After:
+    op=1, src_fmt=20028888, dst_fmt=20028888, speed=332.19 MPix/s (79.20 FPS)
+    op=1, src_fmt=20028888, dst_fmt=10020565, speed=110.41 MPix/s (26.32 FPS)
+    op=1, src_fmt=10020565, dst_fmt=10020565, speed=363.28 MPix/s (86.61 FPS)
+
+commit 9cd1051523493e0926b146f05cdde34158391602
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Mar 17 10:35:34 2010 -0400
+
+    Add a FAST_PATH_X_UNIT_POSITIVE flag
+    
+    This is the common case for a lot of transformed images. If the unit
+    were negative, the transformation would be a reflection which is
+    fairly rare.
+
+commit a5b51bb03c5c1258d7558efa13eca6c570e34ce6
+Author: Alexander Larsson <alexl@redhat.com>
+Date:   Wed Mar 17 11:58:05 2010 +0100
+
+    Use the right format for the OVER_8888_565 fast path
+
+commit 3b92b711d031a7752e06d0a5f688f4c54f50a1e6
+Author: Alexander Larsson <alexl@redhat.com>
+Date:   Fri Mar 12 15:45:04 2010 +0100
+
+    Add specialized fast nearest scalers
+    
+    This is a macroized version of SRC/OVER repeat normal/unneeded nearest
+    neighbour scaling instantiated for some common 8888 and 565 formats.
+    
+    Based on work by Siarhei Siamashka
+
+commit 5750408e48259f42373a5233231104d9bd3eb35a
+Author: Alexander Larsson <alexl@redhat.com>
+Date:   Fri Mar 12 15:41:01 2010 +0100
+
+    Add FAST_PATH_SAMPLES_COVER_CLIP and FAST_PATH_16BIT_SAFE
+    
+    FAST_PATH_SAMPLES_COVER_CLIP:
+    
+    This is set of the source sample grid, unrepeated but transformed
+    completely completely covers the clip destination. If this is set
+    you can use a simple scaled that doesn't have to care about the repeat
+    mode.
+    
+    FAST_PATH_16BIT_SAFE:
+    
+    This signifies two things:
+    1) The size of the src/mask fits in a 16.16 fixed point, so something like:
+    
+        max_vx = src_image->bits.width << 16;
+    
+        Is allowed and is guaranteed to not overflow max_vx
+    
+    2) When stepping the source space we're guaranteed to never overflow
+       a 16.16 bit fix point variable, even if we step one extra step
+       in the destination space. This means that a loop doing:
+    
+       x = vx >> 16;
+       vx += unit_x;								   d = src_row[x];
+    
+       will never overflow vx causing x to be negative.
+    
+       And additionally, if you track vx like above and apply NORMAL repeat
+       after the vx addition with something like:
+    
+       while (vx >= max_vx) vx -= max_vx;
+    
+       This will never overflow the vx even on the final increment that
+       takes vx one past the end of where we will read, which makes the
+       repeat loop safe.
+
+commit cba6fbbddce5edfd8e28ef570c493b044761f870
+Author: Alexander Larsson <alexl@redhat.com>
+Date:   Fri Mar 12 15:40:07 2010 +0100
+
+    Add FAST_PATH_NO_NONE_REPEAT flag
+
+commit 7ec023ede155b9dacf574c4323740ef981802aa9
+Author: Alexander Larsson <alexl@redhat.com>
+Date:   Tue Mar 16 14:18:29 2010 +0100
+
+    Add CONVERT_8888_TO_8888 and CONVERT_0565_TO_0565 macros
+    
+    These are useful for macroization
+
+commit c903d03052e1c34478556964338959b34928a388
+Author: Alexander Larsson <alexl@redhat.com>
+Date:   Fri Mar 12 16:23:42 2010 +0100
+
+    Add CONVERT_0565_TO_8888 macro
+    
+    This lets us simplify some fast paths since we get a consistent
+    naming that always has 8888 and gets some value for alpha.
+
+commit de27f45ddd46fc48ec9598f2f177155328d55580
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Mar 15 11:51:09 2010 -0400
+
+    Ensure that only the low 4 bit of 4 bit pixels are stored.
+    
+    In some cases we end up trying to use the STORE_4 macro with an 8 bit
+    values, which resulted in other pixels getting overwritten. Fix this
+    by always masking off the low 4 bits.
+    
+    This fixes blitters-test on big-endian machines.
+
+commit 6532f8488abffb89501cb76de7d80b8ab2d49aed
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Mar 16 08:17:10 2010 -0400
+
+    Fix contact address in configure.ac
+
+commit 7c9f121efe7ee6afafad8b294974f5498054559b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Mar 16 12:23:50 2010 -0400
+
+    Add PIXMAN_DEFINE_THREAD_LOCAL() and PIXMAN_GET_THREAD_LOCAL() macros
+    
+    These macros hide the various types of thread local support. On Linux
+    and Unix, they expand to just __thread. On Microsoft Visual C++, they
+    expand to __declspec(thread).
+    
+    On OS X and other systems that don't have __thread, they expand to a
+    complicated concoction that uses pthread_once() and
+    pthread_get/set_specific() to get thread local variables.
+
+commit 6b9c54820015f69e667ed54441e83042c9a84cc1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Mar 16 11:01:08 2010 -0400
+
+    Add checks for various types of thread local storage.
+    
+    OS X does not support __thread, so we have to check for it before
+    using it.  It does however support pthread_get/setspecific(), so if we
+    don't have __thread, check if those are available.
+
+commit 313353f1fb9d40d0c3aaf7cfb99ca978b29003a4
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Mon Mar 15 15:20:05 2010 -0700
+
+    Add Sun cc to thread-local support checks in pixman-compiler.h
+    
+    Clears '#warning: "unknown compiler"' messages when building
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+
+commit b67f784a5dc51f41e40bb1a165411f5259ea0ee4
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Mon Mar 15 10:52:17 2010 -0700
+
+    Make .s target asm flag selection more portable
+    
+    The previous code worked in GNU make, but caused a syntax error in Solaris
+    make ( https://bugs.freedesktop.org/show_bug.cgi?id=27062 ) - this seems to
+    work in both, and should hopefully not cause syntax errors in any versions
+    of make not supporting the macro-substitution-in-macro-name feature, just
+    cause the macro to expand to nothing.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+
+commit 7a5dc747852d46fa382ef885bb6299723ef6ed00
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Mar 15 07:40:46 2010 -0400
+
+    Fix typo: WORDS_BIG_ENDIAN => WORDS_BIGENDIAN in pixman-edge.c
+    
+    Pointed out by Andreas Falkenhahn on the cairo mailing list.
+
+commit ff30a5cbb941a9559082c6a6052ef761c7de949c
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
-Date:   Tue Dec 15 11:09:33 2009 -0500
+Date:   Wed Mar 3 13:24:13 2010 -0500
+
+    test: Add support for indexed formats to blitters-test
+    
+    These formats work fine, they just need to have a palette set.
+
+commit 2b5f7be6c05ce3643b7d29e7237f91bfaedd80e5
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Mar 1 10:32:39 2010 -0500
+
+    pixman.h: Only define stdint types when PIXMAN_DONT_DEFINE_STDINT is undefined
+    
+    In SPICE, with Microsoft Visual C++, pixman.h is included after
+    another file that defines these types, which causes warnings and
+    errors.
+    
+    This patch allows such code to just define PIXMAN_DONT_DEFINE_STDINT
+    to use its own version of those types.
+
+commit f4da05c9f988133079cac2b8d54589386f46398f
+Merge: a12d868 f534509
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Mar 14 12:12:05 2010 -0400
+
+    Merge branch 'operator-table'
+
+commit a12d868df8b673df2b563f309563954e2b3f977d
+Merge: 18f0de4 54e39e0
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Mar 14 12:12:00 2010 -0400
+
+    Merge branch 'fast-path-cache'
+
+commit f534509d007de40592dedc574e7eb78445453ec0
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Jan 30 11:37:25 2010 -0500
+
+    Change operator table to be an array of arrays of four bytes.
+    
+    This makes gcc generate slightly better code for optimize_operator.
+
+commit 94d75ebd2167b44c142a6202b2d7bbe238dfd830
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 19 02:40:56 2009 -0400
+
+    Strength reduce certain conjoint/disjoint to their normal counterparts.
+    
+    This allows us to not test for them later on.
+
+commit 58be9c71d2b1d0ed9d8feed1db0581b250d0a7d2
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 19 02:32:28 2009 -0400
+
+    Store the operator table more compactly.
+    
+    The four cases for each operator:
+    
+        none-are-opaque, src-is-opaque, dest-is-opaque, both-are-opaque
+    
+    are packed into one uint32_t per operator. The relevant strength
+    reduced operator can then be found by packing the source-is-opaque and
+    dest-is-opaque into two bits and shifting that number of bytes.
+    
+    Chris Wilson pointed out a bug in the original version of this commit:
+    dest_is_opaque and source_is_opaque were used as booleans, but their
+    actual values were the results of a logical AND with the
+    FAST_PATH_OPAQUE flag, so the shift value was wildly wrong.
+    
+    The only reason it actually passed the test suite (on x86) was that
+    the compiler computed the shift amount in the cl register, and the low
+    byte of FAST_PATH_OPAQUE happens to be 0, so no shifting actually took
+    place, and the original operator was returned.
+
+commit 7fe35f0e6b660f5667ff653f3b753bc3e5d07901
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Sep 18 14:10:31 2009 -0400
+
+    Make the operator strength reduction constant time.
+    
+    By extending the operator information table to cover all operators we
+    can replace the loop with a table look-up. At the same time, base the
+    operator optimization on the computed flags rather than the ones in
+    the image struct.
+    
+    Finally, as an extra optimization, we no longer ignore the case where
+    there is a mask. Instead we consider the source opaque if both source
+    and mask are opaque, or if the source is opaque and the mask is
+    missing.
+
+commit 18f0de452dc7e12e4cb544d761a626d5c6031663
+Author: Loïc Minier <loic.minier@ubuntu.com>
+Date:   Tue Mar 9 20:57:34 2010 +0100
+
+    ARM: SIMD: Try without any CFLAGS before forcing -mcpu=
+    
+    http://bugs.launchpad.net/bugs/535183
+
+commit 933540861383da27402680593edefe8d61e6fb02
+Author: Egor Starkov <starkov.egor@gmail.com>
+Date:   Fri Mar 12 09:47:59 2010 -0500
+
+    Eliminate trailing comma in enum
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=27050
+    
+    Pixman is not compiling with c++ compiler. During compilation it gives
+    the following error:
+    
+    /usr/include/pixman-1/pixman.h:335: error: comma at end of enumerator list
+    
+    Signed-off-by: Søren Sandmann Pedersen <ssp@redhat.com>
+
+commit 54e39e00386fd2fd0eb76ead6396ddb93f1cf6c2
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Sep 17 03:16:27 2009 -0400
+
+    Add a fast path cache
+    
+    This patch adds a cache in front of the fast path tables to reduce the
+    overhead of pixman_composite(). It is fixed size with move-to-front to
+    make sure the most popular fast paths are at the beginning of the cache.
+    
+    The cache is thread local to avoid locking.
+
+commit 84b009ae9f128c838d0e046e07947f8f9b2ce879
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Mar 5 20:40:41 2010 -0500
+
+    Post-release version bump to 0.17.11
+
+commit 14fd287efb63c1f31d37053ebbbf500d0841c053
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Mar 5 20:06:08 2010 -0500
+
+    Pre-release version bump to 0.17.10
+
+commit bd9934551f72f4993016cab1d7be3b1e545629b1
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Feb 26 14:15:22 2010 -0500
+
+    Move __force_align_arg_pointer workaround before composite32()
+    
+    Since otherwise the workaround won't take effect when you call
+    pixman_image_composite32() directly.
+
+commit 14bb054d9695abb284e22a1de31337e0e41bb4e3
+Merge: 9a8e404 3db76b9
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Mar 4 02:30:22 2010 -0500
+
+    Merge branch 'more-flags'
+
+commit 9a8e404d44b6ed9817d088966cec324a38e60897
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Feb 27 00:37:19 2010 -0500
+
+    test: Remove obsolete comment
+
+commit 182e4c2635fdb90c50b2e86253738b7e9c8ea282
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Feb 24 04:14:45 2010 +0200
+
+    ARM: added 'neon_composite_over_reverse_n_8888' fast path
+    
+    This fast path function improves performance of 'poppler' cairo-perf trace.
+    
+    Benchmark from ARM Cortex-A8 @720MHz
+    
+    before:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [  0]    image                      poppler   38.986   39.158   0.23%    6/6
+    
+    after:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [  0]    image                      poppler   24.981   25.136   0.28%    6/6
+
+commit 072a7d31a8c872666787b69a6bd1b537565c5b96
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Feb 24 02:26:57 2010 +0200
+
+    ARM: added 'neon_composite_src_x888_8888' fast path
+    
+    This fast path function improves performance of 'gnome-system-monitor'
+    cairo-perf trace.
+    
+    Benchmark from ARM Cortex-A8 @720MHz
+    
+    before:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [  0]    image         gnome-system-monitor   68.838   68.899   0.05%    5/6
+    
+    after:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [  0]    image         gnome-system-monitor   53.336   53.384   0.09%    6/6
+
+commit 2ed7c13922f83404bd9976c00d00738d0314693f
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Feb 24 01:44:00 2010 +0200
+
+    ARM: added 'neon_composite_over_n_8888_8888_ca' fast path
+    
+    This fast path function improves performance of 'firefox-talos-gfx'
+    cairo-perf trace.
+    
+    Benchmark from ARM Cortex-A8 @720MHz
+    
+    before:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [  0]    image            firefox-talos-gfx  139.969  141.176   0.35%    6/6
+    
+    after:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [  0]    image            firefox-talos-gfx  111.810  112.196   0.23%    6/6
+
+commit 3db76b90049f23723a0519d572b9cda7c672f7d5
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Feb 14 19:18:35 2010 -0500
+
+    Restructure the flags computation in compute_image_info().
+    
+    Restructure the code to use switches instead of ifs. This saves a few
+    comparisons and make the code slightly easier to follow. Also add some
+    comments.
+
+commit ac44db334066f68a837914a52d8d1368c85161ad
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Feb 14 19:14:44 2010 -0500
+
+    Move workaround code to pixman-image.c
+    
+    It is more natural to put it where all the other flags are computed.
+
+commit 35af45d5e3d3f893ccaa4ab2f947100eb9d840ac
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Feb 22 06:06:22 2010 -0500
+
+    Turn need_workaround into another flag.
+    
+    Instead of storing it as a boolean in the image struct, just use
+    another flag for it.
+
+commit f27f17ce22b6d0ac587600930c3657180066aac8
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Sep 18 11:54:21 2009 -0400
+
+    Eliminate _pixman_image_is_opaque() in favor of a new FAST_PATH_IS_OPAQUE flag
+    
+    The new FAST_PATH_IS_OPAQUE flag is computed along with the others in
+    _pixman_image_validate().
+
+commit 2a6ba862abd8859014d11a742247fa1f1225729b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Sep 18 04:17:57 2009 -0400
+
+    Eliminate _pixman_image_is_solid()
+    
+    Instead of calling this function in compute_image_info(), just do the
+    relevant checks when the extended format is computed.
+    
+    Move computation of solidness to validate
+
+commit 45006e5e648b85df65b922f893c9802c9ecce38e
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Sep 18 04:06:30 2009 -0400
+
+    Move computation of extended format code to validate.
+    
+    Instead of computing the extended format on every composite, just
+    compute it once and store it in the image.
+
+commit fb0096a282c5b6e7ca9eb59a05d9ff738dccfd4b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Feb 22 05:16:27 2010 -0500
+
+    Add new FAST_PATH_SIMPLE_REPEAT flag
+    
+    This flags indicates that the image is untransformed an
+    repeating. Such images can be composited quickly by simply repeating
+    the composite operation.
+
+commit a7ad9c7c9dcb78e0c5ad00145b119dfe929eb307
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Sep 18 03:54:36 2009 -0400
+
+    Compute the image flags at validation time instead of composite time
+    
+    Instead of computing all the image flags at composite time, we compute
+    them once in _pixman_image_validate() and cache them in the image.
+
+commit 7bc4cd42c3549f3f2354f50a7cf21ce9ccc8de7b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Feb 24 22:09:41 2010 -0500
+
+    RELEASING: Update the release instructions.
+
+commit 7392a350f2808146842be0924ca289c5df6c8922
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Feb 24 22:02:13 2010 -0500
+
+    Post-release version bump
+
+commit 4d1c216af3d6fc58829c2f5ea434e97ff8012493
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Feb 24 21:52:30 2010 -0500
 
     Pre-release version bump
 
-commit ec6de472d042bec05aaa53f9d14bfbe23edbe01e
+commit e0f1d8410715083498a35284ea7e5bb71fabe090
+Merge: 16ef3ab 282f5cf
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Feb 24 21:01:29 2010 -0500
+
+    Merge branch 'trap-fixes'
+
+commit 16ef3ab230047221f813905d390bf762a3d8508a
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Feb 24 20:51:25 2010 -0500
+
+    Add a1-trap-test
+    
+    When a trapezoid sample point is exactly on a polygon edge, the rule
+    is that it is considered inside the trapezoid if the edge is a top or
+    left edge, but outside for bottom and right edges.
+    
+    This program tests that for a1 trapezoids.
+
+commit ad5cbba4c05f8521004c6aa1afd5aa74040afad0
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Feb 21 02:01:16 2010 -0500
+
+    Hide the C++ extern "C" declarations behind macros.
+    
+    That way they don't confuse the indenting algorithm in editors such as
+    Emacs.
+
+commit 14f201dc47ba76fcf677936f4f809249054fd6ad
+Merge: 94f5859 6b2da68
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Feb 20 13:09:01 2010 -0500
+
+    Merge branch 'eliminate-composite'
+    
+    Conflicts:
+    	pixman/pixman-sse2.c
+
+commit 94f585916a2385146ee5c803f7850b21149d728b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Feb 13 20:08:13 2010 -0500
+
+    Move all code to do debugging spew into pixman-private.
+    
+    Rather than the region code having its own little debug system, move
+    all of it into pixman-private where there is already return_if_fail()
+    macros etc. These macros are now enabled in development snapshots and
+    nowhere else. Previously they were never enabled unless you modified
+    the code.
+    
+    At the same time, remove all the asserts from the region code since we
+    can never turn them on anyway, and replace them with
+    critical_if_fail() macros that will print spew to standard error when
+    DEBUG is defined.
+    
+    Finally, also change the debugging spew in pixman-bits-image.c to use
+    return_val_if_fail() instead of its own fprintf().
+
+commit f32d585069e77f09f84de42eda8ed8f6849aab57
+Author: Alexander Larsson <alexl@redhat.com>
+Date:   Fri Feb 19 11:22:52 2010 +0100
+
+    Test pixman_region32_init_from_image in region-test
+
+commit 48ef4befd88e06e83a583a70f0172f1a08a65cda
+Author: Alexander Larsson <alexl@redhat.com>
+Date:   Mon Feb 15 09:40:50 2010 +0100
+
+    Add pixman_region{32}_init_from_image
+    
+    This creates a region from an image in PIXMAN_a1 format.
+
+commit 5dee05fcab16dbd3e2c5e4d85b9edf26cf523e3f
+Author: Alexander Larsson <alexl@redhat.com>
+Date:   Mon Feb 15 09:39:59 2010 +0100
+
+    Move SCREEN_SHIFT_LEFT/RIGHT to pixman-private.h
+    
+    This is needed for later use in other code.
+
+commit 61f4ed9c7a3ff6afbbb42d3f3b8dc3b9331bdcbd
+Author: Makoto Kato <m_kato@ga2.so-net.ne.jp>
+Date:   Thu Feb 18 14:30:01 2010 +0900
+
+    Compile by USE_SSE2 only without USE_MMX
+    
+    Although we added MMX emulation for Microsoft Visual C++ compiler for x64,
+    USE_SSE2 still requires USE_MMX.  So we remove dependency of USE_MMX
+    for Windows x64.
+    
+    Signed-off-by: Makoto Kato <m_kato@ga2.so-net.ne.jp>
+
+commit 6b2da683debd1b3fc1862752cb26e6799b644e05
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Sep 16 07:29:08 2009 -0400
+
+    Move NULL check out of get_image_info()
+    
+    The NULL check is only necessary for masks, so there is no reason to
+    do it for destinations and sources.
+
+commit 1dd8744f40f4b754fb3aa26a3c7f4fbe54c27155
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Sep 16 06:54:43 2009 -0400
+
+    Add a fast path for non-repeating sources in walk_region_internal().
+    
+    In the common case where there is no repeating, the loop in
+    walk_region_internal() reduces to just walking of the boxes involved
+    and calling the composite function.
+
+commit 362a9f564a9a58c48ab0129ca3ac997d0cb84bab
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Sep 15 01:34:33 2009 -0400
+
+    Move more things out of the inner loop in do_composite().
+    
+    Specifically,
+    
+    - the src_ and mask_repeat computations
+    
+    - the check for whether the involved images cover the composite
+      region.
+
+commit 129d9c187146a060863598d154e6770394547afd
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Sep 15 01:16:40 2009 -0400
+
+    Move region computation out of the loop in do_composite()
+    
+    We only need to compute the composite region once, not on every
+    iteration.
+
+commit 4c185503d26374915942d1f64c02134e4a2c5a99
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Sep 15 01:14:41 2009 -0400
+
+    Move get_image_info() out of the loop in do_composite
+    
+    The computation of image formats and flags is invariant to the loop,
+    so it can all be moved out.
+
+commit 81b7d7b18050c770f272fd10aa7f5cf85ddc25cc
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Sep 15 01:13:36 2009 -0400
+
+    Manually inline _pixman_run_fast_path()
+    
+    Move all of the code into do_composite().
+
+commit e914cccb24c1391aa25eca8df87a08bd935cd870
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Sep 15 01:11:04 2009 -0400
+
+    Move compositing functionality from pixman-utils.c into pixman.c
+    
+    _pixman_run_fast_path() and pixman_compute_composite_region() are both
+    moved to pixman-image, since at this point that's the only place they
+    are being called from.
+
+commit 0eeb197599cca78a645f8a5498b0124ef170c523
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Nov 7 15:13:03 2009 -0500
+
+    Move compositing to its own function, do_composite()
+
+commit f831552bce70f2619ea8db00983d80dd1abd0003
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Sep 15 00:58:51 2009 -0400
+
+    Optimize for the common case wrt. the workaround.
+    
+    In the common case no images need the workaround, so we check for that
+    first, and only if an image does need a workaround do we check which
+    one of the images actually need it.
+
+commit fa4df6225d4fa0b740c0ce69361e2f7cee1686f9
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Sep 15 00:48:12 2009 -0400
+
+    Eliminate all the composite methods.
+    
+    They are no longer necessary because we will just walk the fast path
+    tables, and the general composite path is treated as another fast
+    path.
+    
+    This unfortunately means that sse2_composite() can no longer be
+    responsible for realigning the stack to 16 bytes, so we have to move
+    that to pixman_image_composite().
+
+commit c3d7b5125585a7d974ccd904100777a0e18d425f
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Sep 15 00:23:11 2009 -0400
+
+    Delete unused _pixman_walk_composite_region() function
+
+commit 488480301c7ca9cb4e41c8d0f489fb56e5d9efdd
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Nov 7 15:28:57 2009 -0500
+
+    Don't call _pixman_implementation_composite() anymore.
+    
+    Instead just call _pixman_run_fast_path(). Since we view
+    general_composite() as a fast path now, we know that it will find
+    *some* compositing routine.
+
+commit 06ae5ed5971fe616b96bb97a63abf6cc27c5b669
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Sep 14 23:58:40 2009 -0400
+
+    Delete unused sources_cover() function
+
+commit 543a04a3bbd2c622842739ab923ff8761c05ed83
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Sep 14 23:47:39 2009 -0400
+
+    Store a pointer to the array of fast paths in the implementation struct.
+    
+    Also add an empty fast path table to the vmx implementation, so that
+    we can assume sure the pointer is never NULL.
+
+commit 376f2a3f853f829c78983a51bffc1bacb9bec9a3
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Sep 15 00:20:22 2009 -0400
+
+    Make fast_composite_scaled_nearest() another fast path.
+    
+    This requires another couple of flags
+    
+         FAST_PATH_SCALE_TRANSFORM
+         FAST_PATH_NEAREST_FILTER
+
+commit 87430cfc35c6e51bb1a947795e0ddb198c460253
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Sep 13 05:29:48 2009 -0400
+
+    Make general_composite_rect() just another fast path.
+    
+    We introduce a new PIXMAN_OP_any fake operator and a PIXMAN_any fake
+    format that match anything. Then general_composite_rect() can be used
+    as another fast path.
+    
+    Because general_composite_rect() does not require the sources to cover
+    the clip region, we add a new flag FAST_PATH_COVERS_CLIP which is part
+    of the set of standard flags for fast paths.
+    
+    Because this flag cannot be computed until after the clip region is
+    available, we have to call pixman_compute_composite_region32() before
+    checking for fast paths. This will resolve itself when we get to the
+    point where _pixman_run_fast_path() is only called once per composite
+    operation.
+
+commit d7e281e0a1f7b1aecd245070736e03d2953b0911
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Feb 13 18:23:34 2010 -0500
+
+    Post-release version bump
+
+commit 9bcadc340866c49dab1cb40ff79c683972e8a37d
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Feb 13 18:12:32 2010 -0500
+
+    Pre-release version bump
+
+commit 97a12457394b36b5b052927af65ac3944ceccf09
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun May 31 15:06:33 2009 -0400
+
+    Once unrolled version of fast_path_composite_nearest_scaled()
+    
+    Separate out the fetching and combining code in two inline
+    functions. Then do two pixels per iteration.
+
+commit e5972110750b32929a474c35362f4639dbbd1222
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat May 30 02:50:38 2009 -0400
+
+    Generalize and optimize fast_composite_src_scaled_nearest()
+    
+    - Make it work for PIXMAN_OP_OVER
+    
+    - Split repeat computation for x and y, and only the x part in the
+      inner loop.
+    
+    - Move stride multiplication outside of inner loop
+
+commit 337e916473069a76a44757b3664f8d49da350773
+Merge: bdc4a6a 8e85059
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Feb 13 12:26:09 2010 -0500
+
+    Merge branch 'bitmasks'
+
+commit bdc4a6afe0bcea6dfb0df221006f4fe188324678
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Feb 13 11:18:13 2010 -0500
+
+    Makefile.am: Remove 'check' from release-check
+    
+    It's already included in distcheck.
+
+commit edee4be052cf0d466922759efd2613e5a2be9e2b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Feb 13 09:40:33 2010 -0500
+
+    Turn off asserts in development snapshots (bug 26314).
+    
+    There is not much real benefit in having asserts turned on in
+    snapshots because it doesn't lead to any new bug reports, just to
+    people not installing development snapshots since they case X server
+    crashes. So just turn them off.
+    
+    While we are at it, limit the number of messages to stderr to 5
+    instead of 50.
+
+commit cf1f034fef34478c528bedf1e59be443fa72429c
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Sun Feb 7 07:33:52 2010 +0200
+
+    ARM: Remove any use of environment variables for cpu features detection
+    
+    Old code assumed that all ARMv7 processors support NEON instructions
+    unless overrided by environment variable ARM_TRUST_HWCAP. This causes
+    X server to die with SIGILL if NEON support is disabled in the kernel
+    configuration. Additionally, ARMv7 processors lacking NEON unit are
+    going to become available eventually.
+    
+    The problem was reported by user bearsh at irc.freenode.net #gentoo-embedded
+
+commit 865c37d57421f6888151486ae1a2ec986a7cd9d2
+Author: Alexander Larsson <alexl@redhat.com>
+Date:   Tue Feb 9 15:57:18 2010 +0100
+
+    Add pixman_image_get_destroy_data()
+    
+    This way you can get back user data that was set using
+    pixman_image_set_destroy_function().
+
+commit cca1cef3f29d244f0a57bd3ed8b09e2892f8934a
+Author: Alexander Larsson <alexl@redhat.com>
+Date:   Tue Feb 9 13:22:38 2010 +0100
+
+    Add extern "C" guards for c++
+
+commit 8e8505943651ac46e0ad5a2dd0b9e85704095cc1
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Sep 13 04:28:20 2009 -0400
+
+    Move checks for src/mask repeat right before walking the region.
+    
+    Also add a couple of additional checks to the src/mask repeat check.
+
+commit eea58eab93aefd4430544754f8a0f5460b4a30aa
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Sep 13 03:43:16 2009 -0400
+
+    Compute src, mask, dest flags and base fast path decisions on them.
+    
+    This makes sets the stage for caching the information by image instead
+    of computing it on each composite invocation.
+    
+    This patch also computes format codes for images such as PIXMAN_solid,
+    so that we can no longer end up in the situation that a fast path is
+    selected for a 1x1 solid image, when that fast path doesn't actually
+    understand repeating.
+
+commit 6197db91a32da7ea281fd87b59f5bb74b989361b
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Sep 13 02:34:32 2009 -0400
+
+    Add src_, mask_, and dest_flags fields to fast path arrays
+    
+    Update all the fast path tables to match using a new
+    PIXMAN_STD_FAST_PATH macro.
+    
+    For now, use 0 for the flags fields.
+
+commit ff6eaac50eaa8778ba15fd0f796e94cc751dea0a
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 12 05:26:50 2009 -0400
+
+    Move calls to source_is_fastpathable() into get_source_format()
+
+commit 171dc4875644f72d65ff2e31533edacc781069ec
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 12 05:09:53 2009 -0400
+
+    Fold get_fast_path() into _pixman_run_fast_path()
+    
+    Also factor out the source format code computation to its own
+    function.
+
+commit 459c7a52f67c9628e94107599e3abbc6463cbd0f
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 12 04:30:22 2009 -0400
+
+    Consolidate the source and mask sanity checks in a function
+
+commit 27a4fb4747426ee935d2149cca2197a369c4556d
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 12 04:10:30 2009 -0400
+
+    Move pixbuf checks after src_format and mask_format have been computed.
+
+commit 2def1a8867a1ab0ccab720d1cc3f3c7b61c74619
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 12 04:03:25 2009 -0400
+
+    Move the sanity checks for src, mask and destination into get_fast_path()
+
+commit d76aab4d03d9e700c3c431b077a4b506a5e53df1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jan 27 07:11:11 2010 -0500
+
+    Turn some uint16_t variables to int32_t in the fast paths.
+    
+    This is necessary now that we have a 32 bit version of
+    pixman_image_composite().
+
+commit 15d07d6c2ac4ed5d41dc80b476e09e8d7dd6a84a
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Jan 21 13:43:53 2010 -0500
+
+    Implement get_scanline_64() correctly for solid fill images.
+    
+    Previously they would be evaluated at 8 bits and then expanded.
+
+commit 0e8550798f69ef69dbde59eda6341ab4e0801069
+Author: Benjamin Otte <otte@redhat.com>
+Date:   Tue Jan 26 19:37:34 2010 +0100
+
+    Make pixman_image_fill_rectangles() call pixman_image_fill_boxes()
+    
+    Avoids duplication of code
+
+commit d0d284da0a8810e7435b8e932ac5de352793a39a
+Author: Benjamin Otte <otte@redhat.com>
+Date:   Tue Jan 26 19:03:38 2010 +0100
+
+    Add pixman_image_fill_boxes() API
+    
+    It's basically the 32bit version of pixman_image_fill_rectangles(), just
+    with a saner data type.
+
+commit e841c556d59ca0aa6d86eaf6dbf061ae0f4287de
+Author: Benjamin Otte <otte@redhat.com>
+Date:   Tue Jan 26 18:52:27 2010 +0100
+
+    Add pixman_image_composite32()
+    
+    This is equal to pixman_image_composite(), just with 32bit parameters.
+    pixman_image_composite() now just calls pixman_image_composite32()
+
+commit 78b6c470789eb226708a5d98bb06a962d2ae0b0d
+Author: Benjamin Otte <otte@redhat.com>
+Date:   Tue Jan 26 19:09:56 2010 +0100
+
+    Make region argument to pixman_region(32)_init_rects() const
+    
+    No indenting of the header to keep git blame working
+
+commit b194bb78c8a32b7252cccaebdc085cd8e759427d
+Author: Benjamin Otte <otte@redhat.com>
+Date:   Tue Jan 26 19:08:29 2010 +0100
+
+    Fix typo
+
+commit c066c347aeaa779b7a3c9e3cde45413277370f0f
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Jan 19 14:23:57 2010 -0500
+
+    Fix some warnings
+
+commit 8fce7b18f3033aa1423b96b9847f6ae3133fad7a
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jan 17 19:34:27 2010 -0500
+
+    Post-release version bump
+
+commit 23e1ba3c062711fe256612ca7f39478e048a6708
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jan 17 18:56:11 2010 -0500
+
+    Pre-release version bump
+
+commit 8dabd1fdd8f0030086cfe70f0baba7c502a0e1b8
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jan 17 16:45:23 2010 -0500
+
+    bits: Print an error if someone tries to create an image with bpp < depth
+    
+    Something in the X server apparently does this.
+
+commit 2c3cbc83c4018173d9deae3f24c457b3ca16dbcd
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jan 16 10:31:22 2010 -0500
+
+    When fetching from an alpha map, replace the alpha channel of the image
+    
+    Previously it would be multiplied onto the image pixel, but the Render
+    specification is pretty clear that the alpha map should be used
+    *instead* of any alpha channel within the image.
+    
+    This makes the assumption that the pixels in the image are already
+    premultiplied with the alpha channel from the alpha map. If we don't
+    make this assumption and the image has an alpha channel of its own, we
+    would have to first unpremultiply that pixel, and then premultiply the
+    alpha value onto the color channels, and then replace the alpha
+    channel.
+
+commit 0df6098f3d941608f945d02e2af65b70ac499e0a
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jan 16 10:09:25 2010 -0500
+
+    pixman_image_validate() needs to also validate the alpha map.
+    
+    This is the other half of bug 25950.
+
+commit 7f00dc62e4aa4b2b417ca1c86813a6b4c7f78673
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jan 16 10:07:48 2010 -0500
+
+    When fetching from an alpha map, use the alpha map's fetch function.
+    
+    Don't use the one from the image. This is the first half of bug 25950.
+
+commit 042f978b04aefe56ec912c88ec879e668153a287
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jan 16 09:48:45 2010 -0500
+
+    test: Add new alphamap test program.
+    
+    This program demonstrates three bugs relating to alpha maps:
+    
+    - When fetching from an alpha map into 32 bit intermediates, we use
+      the fetcher from the image, and not the one from the alpha map.
+    
+    - For 64 bit intermediates we call fetch_pixel_generic_lossy_32()
+      which then calls fetch_pixel_raw_64, which is NULL because alpha
+      images are never validated.
+    
+    - The alpha map should be used *in place* of any existing alpha
+      channel, but we are actually multiplying it onto the image.
+
+commit 05c38141b4861348bf61235341d634019e39e8a9
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Jan 16 07:40:07 2010 -0500
+
+    fetch-test: Fix spelling error (pallete -> palette)
+
+commit c46a87e45afc6eb53ae93f9ca3c1545bd26d18f5
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Jan 14 09:42:34 2010 -0800
+
+    Update Sun license notices to current X.Org standard form
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+
+commit 3df6cb34315ebaeb2ce3f341160355650d856518
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Jan 10 09:15:24 2010 -0500
+
+    fetch-test: Various formatting fixes
+
+commit 7862f9b96e8e8456cc60852790c7f244a5e3425e
+Author: Pierre-Loup A. Griffais <pgriffais@nvidia.com>
+Date:   Wed Jan 6 01:26:07 2010 +0200
+
+    Interpret the angle of a conical gradient in degrees.
+    
+    The conical gradient angle's fixed point degrees to
+    radians conversion code is missing a factor of pi.
+
+commit 54f51c4a7595d685397838006ba67473eee47e7d
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
 Date:   Fri Dec 11 11:14:19 2009 -0500
 
@@ -31,25 +1229,768 @@ Date:   Fri Dec 11 11:14:19 2009 -0500
           for performance work without having to fiddle with turning
           selfchecks off.
 
-commit f1ecbaba0c5886dd1c099de3496d595ad1513a49
+commit 91ec7fecc9b16ec1d18c46d08698e6128baaba1d
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
-Date:   Mon Sep 28 09:31:25 2009 -0400
+Date:   Sat Sep 12 03:27:44 2009 -0400
+
+    Some minor formatting fixes.
+
+commit 97cf4d494cb6fc0a75eec7d6f06f81ba7644d820
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Dec 16 17:54:41 2009 -0500
+
+    arm-simd: Whitespace fixes
+
+commit 28778c997e60af35d26df61fd82860748deb6fab
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Dec 16 17:49:44 2009 -0500
+
+    mmx: Eliminate trailing whitespace.
+
+commit c6c43c65f76aa84c57a94155117487199bc0323e
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Dec 16 15:23:50 2009 -0500
+
+    Add 'check' to release-check make target
+
+commit b3afacf9c970fa7de5ffdebebbd8526a55d3e7d8
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Wed Dec 16 15:15:17 2009 -0500
+
+    Reorder tests so that they fastest ones run first.
+
+commit bbc5108bf8cfcb1f2334e51a8e904b5be48376e1
+Author: Marvin Schmidt <marv@exherbo.org>
+Date:   Sun Nov 15 16:04:09 2009 +0100
+
+    Build tests and run non-GTK+ ones on `make check`
+    
+    Setting TESTS will run the tests on `make check`
+    
+    Bug 25131
+
+commit 44768320709183a341d219f97c03c5b592a69355
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Thu Dec 10 00:25:58 2009 +0200
+
+    ARM: added 'neon_combine_add_u' function
+
+commit f2c7a04c41440b15a5ce1db7ab87dd5bd8c088da
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Thu Dec 10 00:22:12 2009 +0200
+
+    ARM: added 'neon_combine_over_u' function
+
+commit 24cd286af6f4507eb9937ced6d9998d296c77a0a
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Dec 9 23:49:04 2009 +0200
+
+    ARM: macro template for single scanline compositing functions
+    
+    Existing template already supports 2D images processing,
+    but pixman also needs some NEON optimized functions for
+    improving performance when compositing is decoupled
+    into "fetch -> process -> store" stages and done via
+    temporary scanline buffer. That's why a new simplified
+    template which deals only with the generation of single
+    scanline processing functions is handy.
+
+commit ae8d9df6248445170702c244cd60f894aa761267
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Dec 14 19:14:36 2009 +0200
+
+    Use canonical pixman license notice for recently added ARM NEON assembly files
+
+commit ce78288d7783a27700223c39e23880f4f425f70b
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Nov 6 02:25:47 2009 +0200
+
+    ARM: added 'neon_composite_src_pixbuf_8888' fast path
+    
+    This is ARM NEON optimized conversion of native RGBA format used by
+    GTK/GDK into native 32bpp RGBA format used by cairo/pixman.
+
+commit a732d3baeb0697b91a713fd6b51b68ee7ca68e03
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Thu Nov 5 20:27:38 2009 +0200
+
+    ARM: added 'neon_composite_src_0888_0565_rev' fast path
+    
+    This is ARM NEON optimized conversion of native RGB format used by
+    GTK/GDK into r5g6b5 format.
+
+commit a1386a1ceb0c50d2e23cf30be30ea165d2d2ea7c
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Thu Nov 5 19:43:09 2009 +0200
+
+    ARM: added 'neon_src_0888_8888_rev' fast path
+    
+    This is ARM NEON optimized conversion of native RGB format used by
+    GTK/GDK into native 32bpp RGB format used by cairo/pixman.
+
+commit 78a60047ac0f85423e0474ef54930e1f537f646b
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Dec 9 11:29:13 2009 +0200
+
+    ARM: added 'neon_composite_over_n_8888' fast path
+
+commit 96fd17488f0966d2df53623195810dc640bf5ca6
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Dec 9 11:02:04 2009 +0200
+
+    ARM: added 'neon_composite_over_n_0565' fast path
+
+commit 2d332c7a569803107e11b41c7b2c020b4050e26e
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Dec 9 10:33:01 2009 +0200
+
+    ARM: added 'neon_composite_src_0565_8888' fast path
+
+commit 062da411d81c7d970a302dd2c283ef5327b867da
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Dec 8 15:04:41 2009 +0200
+
+    ARM: added 'neon_composite_add_8888_8888_8888' fast path
+
+commit 3d0eedb5d9af97fed68e2da03d6aee40197e2a76
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Dec 8 14:39:41 2009 +0200
+
+    ARM: added 'neon_composite_add_8888_8888' fast path
+
+commit 86b54c6701666d087f0234047128fbf0fd6468b6
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Dec 7 22:53:30 2009 +0200
+
+    ARM: added 'neon_composite_over_8888_8_8888' fast path
+
+commit aec1524e773758369ab627553dc5c23d18619a85
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Dec 7 22:42:17 2009 +0200
+
+    ARM: added 'neon_composite_over_8888_8888_8888' fast path
+
+commit ba59d53d0b61effc422c4004a9f0e6cf848598d8
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Dec 8 14:13:12 2009 +0200
+
+    ARM: minor source formatting changes
+    
+    Now it's a bit harder to exceed 80 characters line limit
+    when binding assembly functions.
+
+commit a47b5167c4c1b55b2f51e29ab0782c2659bec312
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Dec 8 08:52:34 2009 +0200
+
+    ARM: added '.arch armv7a' directive to NEON assembly file
+    
+    This fix prevents build failure due to not accepting PLD instruction when
+    compiling for armv4 cpu with the relevant -mcpu/-march options set in CFLAGS.
+
+commit 3fba7dc6fa52bbf01cfc5c4aab1ab06d49a117b2
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Sat Nov 28 11:38:43 2009 +0100
+
+    Make test program not throw warnings about undefined variables
+
+commit 10ab592d57bbeefb3e3297c4a905e5cec233a006
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Fri Nov 27 22:02:54 2009 +0100
+
+    Fix bug that prevented pixman_fill MMX and SSE paths for 16 and 8bpp
+
+commit 7c7b6f5de75a998deaab5d00baf69a895ceba795
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 18 04:26:18 2009 +0200
+
+    ARM: NEON optimized pixman_blt
+    
+    NEON unit has fast access to L1/L2 caches and even simple
+    copy of memory buffers using NEON provides more than 1.5x
+    performance improvement on ARM Cortex-A8.
+
+commit dce6e1bd6840ce0646d8738aaa0927c003dbb361
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Thu Nov 5 23:15:27 2009 +0200
+
+    test: support for testing pixbuf fast path functions in blitters-test
+
+commit 0901ef41fbca2b8fb504c64a2b694bd764770292
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Sun Nov 22 04:34:01 2009 +0100
+
+    Remove nonexistant function from header
+
+commit c97b1e803fc214e9880eaeff98410c8fa37f9ddc
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Nov 20 12:02:50 2009 +0100
 
     Post-release version bump
 
-commit 601e4dc6fd78984701a231e48fabd1e1e3e23d38
+commit 5a7597f81862ecf7b098ed254fb8e4197ccae3a8
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
-Date:   Mon Sep 28 09:20:13 2009 -0400
+Date:   Fri Nov 20 11:55:40 2009 +0100
 
     Pre-release version bump
 
-commit b765dcb554e4328c8502433474a28af30c0bb7f3
+commit 95a08dece37080e199e436fa6f2dc02e60d346dd
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
-Date:   Mon Sep 28 08:59:11 2009 -0400
+Date:   Fri Nov 20 09:35:48 2009 +0100
 
-    Update CRC in blitters-test for the changes in 10bpc alpha handling
+    Remove stray semicolon from blitters-test.c
+    
+    Pointed out by scottmc2@gmail.com in bug 25137.
 
-commit 66f7581ccf8157777c9bfc0116858adb140ee4ca
+commit 6e2c7d54c6786b52ae7dc683d2dbb4c7c033bb09
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Nov 9 14:10:00 2009 +0200
+
+    C fast path function for 'over_n_1_0565'
+    
+    This function is needed to improve performance of xfce4 terminal when
+    using bitmap fonts and running with 16bpp desktop. Some other applications
+    may potentially benefit too.
+    
+    After applying this patch, top functions from Xorg process in
+    oprofile log change from
+    
+    samples  %        image name               symbol name
+    13296    29.1528  libpixman-1.so.0.17.1    combine_over_u
+    6452     14.1466  libpixman-1.so.0.17.1    fetch_scanline_r5g6b5
+    5516     12.0944  libpixman-1.so.0.17.1    fetch_scanline_a1
+    2273      4.9838  libpixman-1.so.0.17.1    store_scanline_r5g6b5
+    1741      3.8173  libpixman-1.so.0.17.1    fast_composite_add_1000_1000
+    1718      3.7669  libc-2.9.so              memcpy
+    
+    to
+    
+    samples  %        image name               symbol name
+    5594     14.7033  libpixman-1.so.0.17.1    fast_composite_over_n_1_0565
+    4323     11.3626  libc-2.9.so              memcpy
+    3695      9.7119  libpixman-1.so.0.17.1    fast_composite_add_1000_1000
+    
+    when scrolling text in terminal (reading man page).
+
+commit 282f5cf8b821a34bab1e32957913ef8d9f9ee43c
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Nov 12 17:54:40 2009 -0500
+
+    Round horizontal sampling points towards northwest.
+    
+    This is a similar change as the top/bottom one, but in this case the
+    rounding is simpler because it's just always rounding down.
+    
+    Based on a patch by M Joonas Pihlaja.
+
+commit f44431986f667eb49571e9365960524361f833c5
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Nov 12 17:20:32 2009 -0500
+
+    Fix rounding of top and bottom coordinates.
+    
+    The rules for trap rasterization is that coordinates are rounded
+    towards north-west.
+    
+    The pixman_sample_ceil() function is used to compute the first
+    (top-most) sample row included in the trap, so when the input
+    coordinate is already exactly on a sample row, no rounding should take
+    place.
+    
+    On the other hand, pixman_sample_floor() is used to compute the final
+    (bottom-most) sample row, so if the input is precisely on a sample
+    row, it needs to be rounded down to the previous row.
+    
+    This commit fixes the rounding computation. The idea of the
+    computation is like this:
+    
+    Floor operation that rounds exact matches down: First subtract
+    pixman_fixed_e to make sure input already on a sample row gets rounded
+    down. Then find out how many small steps are between the input and the
+    first fraction. Then add those small steps to the first fraction.
+    
+    The ceil operation first adds (small_step + pixman_e), then runs a
+    floor. This ensures that exact matches are not rounded off.
+    
+    Based on a patch by M Joonas Pihlaja.
+
+commit 3bea18e3ea587c84423e9f7bafff21150c37d287
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Nov 12 17:03:53 2009 -0500
+
+    Fix slightly skewed sampling grid for antialiased traps
+    
+    The sampling grid is slightly skewed in the antialiased case. Consider
+    the case where we have n = 8 bits of alpha.
+    
+    The small step is
+    
+         small_step = fixed_1 / 15 = 65536 / 15 = 4369
+    
+    The first fraction is then
+    
+         frac_first = (small_step / 2) = (65536 - 15) / 2 = 2184
+    
+    and the last fraction becomes
+    
+         frac_last
+              = frac_first + (15 - 1) * small_step = 2184 + 14 * 4369 = 63350
+    
+    which means the size of the last bit of the pixel is
+    
+         65536 - 63350 = 2186
+    
+    which is 2 bigger than the first fraction. This is not the end of the
+    world, but it would be more correct to have 2185 and 2185, and we can
+    accomplish that simply by making the first fraction half the *big*
+    step instead of half the small step.
+    
+    If we ever move to coordinates with 8 fractional bits, the
+    corresponding values become 8 and 10 out of 256, where 9 and 9 would
+    be better.
+    
+    Similarly in the X direction.
+
+commit 98bb0a509f401563b8e6e15f4ee26947e9c3d419
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 12 04:24:04 2009 -0400
+
+    Delete the flags field from fast_path_info_t
+
+commit b7fb7e6c700891a12300aaf5c8a4c4b2584a194f
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 12 02:47:39 2009 -0400
+
+    Eliminate NEED_PIXBUF flag.
+    
+    Instead introduce two new fake formats
+    
+    	PIXMAN_pixbuf
+    	PIXMAN_rpixbuf
+    
+    and compute whether the source and mask have them in
+    find_fast_path(). This lead to some duplicate entries in the fast path
+    tables that could then be removed.
+
+commit 542b79c30d88788028d391285aa8cd038e96f2b3
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 12 02:11:12 2009 -0400
+
+    Compute src_format outside the fast path loop.
+    
+    Inside the loop all we have to do is check that the formats match.
+
+commit 12108ecbe488d1b65e6787585e1caa57af17a008
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 12 01:53:54 2009 -0400
+
+    Eliminate the NEED_COMPONENT_ALPHA flag.
+    
+    Instead introduce two new fake formats
+    
+    	PIXMAN_a8r8g8b8_ca
+    	PIXMAN_a8b8g8r8_ca
+    
+    that are used in the fast path tables for this case.
+
+commit 4686d1f53b09b5dd12df6f10f8c0403b2a1e2427
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 12 01:35:56 2009 -0400
+
+    Eliminate the NEED_SOLID_MASK flag
+    
+    This flag was used to indicate that the mask was solid while still
+    allowing a specific format to be required. However, there is not
+    actually any need for this because the fast paths all used
+    _pixman_image_get_solid() which already allowed arbitrary formats.
+    
+    The one thing that had to be dealt with was component alpha. In
+    addition to interpreting the presence of the NEED_COMPONENT_ALPHA
+    flag, we now also interprete the *absence* of this flag as a
+    requirement that the mask does *not* have component alpha.
+    
+    Siarhei Siamashka pointed out that the first version of this commit
+    had a bug, in which a NEED_SOLID_MASK was accidentally not turned into
+    a PIXMAN_solid in the ARM NEON implementation.
+
+commit 2ef8b394d72d6c13f96347626b09613f805d9f8c
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Sep 19 06:14:38 2009 -0400
+
+    Use the destination buffer directly in more cases instead of fetching.
+    
+    When the destination buffer is either a8r8g8b8 or x8r8g8b8, we can use
+    it directly instead of fetching into a temporary buffer. When the
+    format is x8r8g8b8, we require the operator to not make use of
+    destination alpha, but when it is a8r8g8b8, there are no restrictions.
+    
+    This is approximately a 5% speedup on the poppler cairo benchmark:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    
+    Before:
+    [  0]    image                      poppler    6.661    6.709   0.59%    6/6
+    
+    After:
+    [  0]    image                      poppler    6.307    6.320   0.12%    5/6
+
+commit 13f4e02b1429d62b08487beebd8697887a5a9608
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Nov 10 15:48:36 2009 -0500
+
+    test: Move image_endian_swap() from blitters-test.c to utils.[ch]
+
+commit 24e203a8a8394edb3a89f3d6be1bdcab41fbe7f9
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Nov 10 15:45:17 2009 -0500
+
+    test: Move random number generator from blitters/scaling-test to utils.[ch]
+
+commit cc34554652bf9a402127fa06a03105b49a425895
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Nov 10 15:32:12 2009 -0500
+
+    test: In scaling-test use the crc32 from utils.c
+
+commit b465b8b79dc008f4f4dcddf45754fef260e51619
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Nov 10 15:29:20 2009 -0500
+
+    test: Move CRC32 code from blitters-test to new files utils.[ch]
+
+commit 56bd91340102e915a239d2afa1db223109cf6639
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Nov 10 14:58:19 2009 -0500
+
+    test: Rename utils.[ch] to gtk-utils.[ch]
+
+commit 7be529f3bd6455259e24163a27a0a5a761ee0cc3
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Sep 20 17:37:36 2009 -0400
+
+    sse2: Add a fast path for OVER 8888 x 8 x 8888
+    
+    This is a small speedup on the swfdec-youtube benchmark:
+    
+    Before:
+    [  0]    image               swfdec-youtube    5.789    5.806   0.20%    6/6
+    
+    After:
+    [  0]    image               swfdec-youtube    5.489    5.524   0.27%    6/6
+    
+    Ie., approximately 5% faster.
+
+commit abefe68ae2a422fecf315f17430c0cda5561be66
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 17:14:14 2009 +0200
+
+    ARM: enabled 'neon_composite_add_8000_8000' fast path
+
+commit 635f389ff477a0afe82c6038a835e262d5034d99
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 17:13:31 2009 +0200
+
+    ARM: enabled 'neon_composite_add_8_8_8' fast path
+
+commit 7e1bfed6767774a43c288ab780f62a20eccff805
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 17:12:56 2009 +0200
+
+    ARM: enabled 'neon_composite_add_n_8_8' fast path
+
+commit deeb67b13a0f9267b59d9755e7a0102da29a6747
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 17:12:14 2009 +0200
+
+    ARM: enabled 'neon_composite_over_8888_8888' fast path
+
+commit f449364849b2cc75a48cc3b35d2a373d38b71c09
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 17:11:32 2009 +0200
+
+    ARM: enabled 'neon_composite_over_8888_0565' fast path
+
+commit 2dfbf6c4a520da4647bb480a124dfe5cbece225b
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 17:10:55 2009 +0200
+
+    ARM: enabled 'neon_composite_over_8888_n_8888' fast path
+
+commit 43824f98f1fc41d923dd8ddd97e74942c01aadf8
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 17:10:09 2009 +0200
+
+    ARM: enabled 'neon_composite_over_n_8_8888' fast path
+
+commit 189d0d783cc62aa3b739218689042c9235c04fa1
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 17:09:31 2009 +0200
+
+    ARM: enabled 'neon_composite_over_n_8_0565' fast path
+
+commit cccfc87f4f597f99b74691af172126a2346f9239
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 17:08:48 2009 +0200
+
+    ARM: enabled 'neon_composite_src_0888_0888' fast path
+
+commit e89b4f8105beaa27b6098a5dc7dfec62879ebd1d
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 17:08:09 2009 +0200
+
+    ARM: enabled 'neon_composite_src_8888_0565' fast path
+
+commit 2d54ed46fb7428aa1d9f114450554fc33acff2c4
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 17:07:36 2009 +0200
+
+    ARM: enabled 'neon_composite_src_0565_0565' fast path
+
+commit 5d695cb86eaad151c9402ead5dfb7e867ff58d29
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 17:05:46 2009 +0200
+
+    ARM: added 'bindings' for NEON assembly optimized functions
+    
+    These functions serve as 'adaptors', converting standard internal
+    pixman fast path function arguments into arguments expected
+    by assembly functions.
+
+commit dcfade3df96559ce942df5d16b7915c94f7d9e57
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 15:29:27 2009 +0200
+
+    ARM: enabled new implementation for pixman_fill_neon
+
+commit bcb4bc79321659635d706bade25851cddf563856
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 15:18:38 2009 +0200
+
+    ARM: introduction of the new framework for NEON fast path optimizations
+    
+    GNU assembler and its macro preprocessor is now used to generate
+    NEON optimized functions from a common template. This automatically
+    takes care of nuisances like ensuring optimal alignment, dealing with
+    leading/trailing pixels, doing prefetch, etc.
+    
+    Implementations for a lot of compositing functions are also added,
+    but not enabled.
+
+commit 1eff0ab487efe4720451b8bd92c8423b9772a69a
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 4 14:25:27 2009 +0200
+
+    ARM: removed old ARM NEON optimizations
+
+commit b8898d77d0e7cc1c50321fcb216af3ba6c634959
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sat Nov 7 14:47:22 2009 -0500
+
+    Define PIXMAN_USE_INTERNAL_API in pixman-private.h
+    
+    Instead of mucking around with CFLAGS in configure.ac, preventing
+    users from setting their own CFLAGS, just define the
+    PIXMAN_USE_INTERNAL_API and PIXMAN_DISABLE_DEPRECATED in
+    pixman-private.h
+
+commit 67bf739187cd43b5fff754b25693f76bb788d1fa
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Oct 27 09:11:28 2009 -0400
+
+    Include <inttypes.h> when compiled with HP's C compiler.
+    
+    Fixes bug 23169.
+
+commit 384fb88b905823e62c1f1733a20073bfea15d411
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Oct 27 12:25:13 2009 +0200
+
+    C fast path function for 'over_n_1_8888'
+    
+    This function is needed to improve performance of xfce4 terminal.
+    Some other applications may potentially benefit too.
+
+commit a2985da94704af050b4422dca70fd2dd770faba4
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Oct 27 12:11:05 2009 +0200
+
+    C fast path function for 'add_1000_1000'
+    
+    This function is needed to improve performance of xfce4 terminal.
+    Some other applications may potentially benefit too.
+
+commit 5f429e45106d79c48ee102987ef84be54fd421d8
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Oct 23 20:56:30 2009 +0300
+
+    blitters-test updated to also randomly generate mask_x/mask_y
+
+commit 0d5562747ce25ecac06f4c44e935662eb6ee328a
+Author: André Tupinambá <andrelrt@gmail.com>
+Date:   Sat Sep 19 23:01:50 2009 -0400
+
+    Add fast path scaled, bilinear fetcher.
+    
+    This adds a bilinear fetcher for the case where the image has a scaled
+    transformation, does not repeat, and the format {ax}8r8g8b8.
+    
+    Results for the swfdec-youtube benchmark
+    
+    Before:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [  0]    image               swfdec-youtube    7.841    7.915   0.72%    6/6
+    
+    After:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [  0]    image               swfdec-youtube    6.677    6.780   0.94%    6/6
+    
+    These results were measured on a faster machine than the ones in the
+    previous commit, so the numbers are not comparable.
+    
+    Signed-off-by: Søren Sandmann Pedersen <sandmann@redhat.com>
+
+commit 88323c5abe68906472049537b54b0e7eea343f43
+Author: André Tupinambá <andrelrt@gmail.com>
+Date:   Sat Sep 19 09:32:37 2009 -0400
+
+    Speed up bilinear interpolation.
+    
+    Speed up bilinear interpolation by processing more than one component
+    at a time on 64 bit architectures, and by precomputing the dist{ixiy}
+    products on 32 bit architectures.
+    
+    Previously bilinear interpolation for one pixel would take 24
+    multiplications. With this improvement it takes 12 on 64 bit, and 20
+    on 32 bit.
+    
+    This is a small but consistent speedup on the swfdec-youtube
+    benchmark:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    Before:
+    [  0]    image               swfdec-youtube   18.010   18.020   0.09%    4/5
+    
+    After:
+    [  0]    image               swfdec-youtube   17.488   17.584   0.22%    5/6
+    
+    Signed-off-by: Søren Sandmann Pedersen <sandmann@redhat.com>
+
+commit f0c157f888185279681bad305973f246dca2e535
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Sep 27 09:41:25 2009 -0400
+
+    Extend scaling-test to also test bilinear filtering.
+
+commit eab882ef38509bfc9719fcee6020d882ee030694
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Oct 21 12:47:27 2009 -0700
+
+    This is not a GNU project, so declare it foreign.
+    
+    On Wed, 2009-10-21 at 13:36 +1000, Peter Hutterer wrote:
+    > On Tue, Oct 20, 2009 at 08:23:55PM -0700, Jeremy Huddleston wrote:
+    > > I noticed an INSTALL file in xlsclients and libXvMC today, and it
+    > > was quite annoying to work around since 'autoreconf -fvi' replaces
+    > > it and git wants to commit it.  Should these files even be in git?
+    > > Can I nuke them for the betterment of humanity and since they get
+    > > created by autoreconf anyways?
+    >
+    > See https://bugs.freedesktop.org/show_bug.cgi?id=24206
+    
+    As an interim measure, replace AM_INIT_AUTOMAKE([dist-bzip2]) with
+    AM_INIT_AUTOMAKE([foreign dist-bzip2]). This will prevent the generation
+    of the INSTALL file. It is also part of the 24206 solution.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@freedesktop.org>
+
+commit dc46ad274a47d351bacf3c2167c359d23dbaf8b3
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Oct 19 20:32:37 2009 -0400
+
+    Make walk_region_internal() use 32 bit dimensions
+
+commit bb3698d47925db77925810c3128be1641f455c60
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Oct 19 20:31:54 2009 -0400
+
+    Make pixman_compute_composite_region32() use 32 bit dimensions
+
+commit 895c281c4094844f9f955621e4ac1e4394d865f0
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Oct 19 20:30:22 2009 -0400
+
+    Change prototype of _pixman_walk_composite_region from int16_t to int32_t
+
+commit 9cd470665b1bb7e0cb810f2457d3788f7c981072
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Oct 19 20:27:36 2009 -0400
+
+    Remove unused color_table and color_table_size fields
+
+commit 8186937637f25088e61c22a3ce1740a56f5d6e13
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Oct 18 03:02:28 2009 -0400
+
+    Remove BOUNDS() macro.
+    
+    It was bounding the clip region to INT16_MIN, INT16_MAX, but this was
+    a relic from the X server. We don't need it since we are already
+    restricting the clip region to the geometry of the destination.
+
+commit 9bcfc0ac547277d3a3f4e5ff0922450566ad8be8
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Wed Sep 30 08:02:39 2009 +0200
+
+    --enable-maintainer-mode is gone from configure, so remove it
+
+commit fa49ef81f7b39d32b626ed235958448835e2d2c2
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Thu Sep 17 13:19:04 2009 +0200
+
+    Add default cases for all switch statements
+    
+    Fixes compilation with -Wswitch-default. Compilation with -Wswitch-enums
+    works fine as is.
+
+commit 5c3ef4e9798f3395c55fe7b57df32f77c0de2c71
+Author: Benjamin Otte <otte@gnome.org>
+Date:   Thu Sep 17 13:18:22 2009 +0200
+
+    Fix compile warnings
+
+commit ad484078854572cf640d7ffbb66f1e99328e79b8
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Jul 27 01:21:26 2009 +0300
+
+    ARM: Removal of unused/broken NEON code
+
+commit 358f96d20219b4460bfd8ecf88e69ff10044b577
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Oct 8 13:01:27 2009 -0400
+
+    Fix double semicolon; pointed out by Travis Griggs
+
+commit 93acc10617c88fbf933120c6980ae8ef80cf94f0
+Author: Gerdus van Zyl <gerdusvanzyl@gmail.com>
+Date:   Tue Sep 29 12:28:03 2009 +0200
+
+    Fix build with Visual Studio 2008
+    
+    moved __m64 ms declaration in sse2_composite_over_x888_8_8888 to top
+    of function so it compiles with visual studio 2008
+
+commit f135f74ff3a4f55262b611b452566daff5e936ce
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Sun Sep 27 11:40:52 2009 +0200
+
+    Fix composite on big-endian systems.
+    
+    Data narrower than 32bpp is padded to an unsigned long and on
+    big-endian systems this shifts the value by the padding bits.
+
+commit 15c14691a71daa29c86cce40ac0b4a14acf8f2fc
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
 Date:   Sat Sep 26 13:12:14 2009 -0400
 
@@ -58,7 +1999,37 @@ Date:   Sat Sep 26 13:12:14 2009 -0400
     Data narrower than 32bpp should be stored in the correct
     endian. Reported by Andrea Canciani.
 
-commit 485c1f54b4abb2e1677627b713e086b45ca63eea
+commit 02d70998885065bcea55cb2a8bfa75473083bc17
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Sep 24 08:57:26 2009 -0400
+
+    Add missing break in composite.c
+
+commit 8ce004af3670a183c78fc7c61fbfcfd8c7f17e54
+Author: Guillem Jover <guillem@hadrons.org>
+Date:   Tue Sep 22 19:51:13 2009 +0200
+
+    pixman: Update .gitignore
+    
+    Generalize to catch all .pc files. Add more tests.
+    
+    Signed-off-by: Guillem Jover <guillem@hadrons.org>
+
+commit 59e877cffe6497d865031d79e9a742414407d544
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Sep 24 08:10:00 2009 -0400
+
+    In the compositing test, Don't try to use component alpha with solid fills.
+    
+    It's not supported yet.
+
+commit 16adb09c8a003936a1ef17042776a725c9aa6813
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Sep 18 11:33:18 2009 -0400
+
+    Update CRC value in blitters-test for the new bug fixes
+
+commit e156964d3e005be3dbc9ff80580d98c6dd617afd
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
 Date:   Fri Sep 18 08:16:56 2009 -0400
 
@@ -68,7 +2039,62 @@ Date:   Fri Sep 18 08:16:56 2009 -0400
     assumption that the they were always in the topmost position. This is
     not correct for formats of type PIXMAN_TYPE_BGRA.
 
-commit 8f5cca82aca953ee4d87a7d576ff67ddcab85b6a
+commit eb72bfb97d10283964c070f0a0e26f0520a22ff3
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Sep 18 09:43:14 2009 -0400
+
+    Fix bugs in fetch_*_b2g3r3().
+    
+    The red channel should only be shifted five positions, not six.
+
+commit b4f6113cb975110c33f607aa39d19290f58be398
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Sep 24 07:48:46 2009 -0400
+
+    Fix bugs in a1b2g1r1.
+    
+    The first bug is that it is treating the input as if it were a1r1g1b1;
+    the second one is that the red channel should only be shifted two
+    bits, not three.
+
+commit efdf15e677d506c2049a34e92eb2172712101afa
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Sep 18 08:48:04 2009 -0400
+
+    Fix shift bug in fetch_scanline/pixel_a2b2g2r2()
+    
+    0x30 * 0x55 is 0xff0, so the red channel should be shifted four bits,
+    not six.
+
+commit 679c2dabda094491599ce770ddba11611d08efc8
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Sep 18 08:13:46 2009 -0400
+
+    Fix four bit formats.
+    
+    The original Render code used to index pixels with their position in
+    bits in the image. When the scanline code was introduced pixels were
+    indexed in bytes, but the FETCH/STORE_4/8 macros still assumed bits.
+    
+    This commit fixes that by making the FETCH/STORE_4 macros first
+    convert the index to bit position.
+
+commit 3d1714cd1f8ae7d47ad5f01a1140133ae71a00e2
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Sun Sep 20 16:50:37 2009 -0400
+
+    Hide PIXMAN_OP_NONE and PIXMAN_N_OPERATORS behind PIXMAN_INTERNAL_API.
+    
+    These cannot sanely be used by applications since they may change in
+    new versions.
+
+commit 0683f34c418bc5fb2fa5e2a41bdc102195edbe67
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Sep 18 08:06:32 2009 -0400
+
+    Add a few notes about testing to TODO
+
+commit 48ba7d946146ea7b0e33e963942bedde22a3b806
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
 Date:   Fri Sep 18 09:11:04 2009 -0400
 
@@ -78,7 +2104,7 @@ Date:   Fri Sep 18 09:11:04 2009 -0400
     bits and replicated across 16 bits. Then they were shifted another 48
     bits, making the resulting alpha channel 0.
 
-commit 09a71a0dc0937264f456c246dc98830f942a6479
+commit c673c83e070ed2392c00716fe20a80a798588b39
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
 Date:   Thu Sep 24 05:22:33 2009 -0400
 
@@ -86,28 +2112,25 @@ Date:   Thu Sep 24 05:22:33 2009 -0400
     
     Previously it would always return TRUE, even when malloc() had failed.
 
-commit 8138f908aa10e5581f83ebfb5f53d81ad39437bd
+commit eb16d171882d200a390345ec8a3db1b931e9676a
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
 Date:   Tue Sep 15 07:43:23 2009 -0400
 
     Revert "Enable component alpha on solid masks."
     
     For consistency we will probably want to allow component alpha to be
-    set on all masks at some point, but not in the stable branch, and this
-    commit only enabled it for solid images anyway.
+    set on all masks at some point, but this commit only enabled it for
+    solid images.
     
     This reverts commit 29e22cf38e8abc54b9dddbdeb3909d02866a82a0.
 
-commit 77627554bcc81f4aa3cb81f8158075aa6f20eca1
-Author: Søren Sandmann Pedersen <sandmann@redhat.com>
-Date:   Thu Sep 10 21:33:24 2009 -0400
+commit b96e37f8d0f5c94f5d117e1622d7cae7246d6345
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Tue Sep 15 13:16:17 2009 +0100
 
-    Fix off-by-one error in source_image_needs_out_of_bounds_workaround()
-    
-    If extents->x2/y2 are equal to image->width/height, then the clip is
-    still inside the drawable, so no workaround is necessary.
+    [Makefile] Set the SIMD specific CFLAGS for inspecting asm.
 
-commit c31cd73a09616cdec9bd91800d9410ba1f8adf09
+commit 273e89750b3ce901fa6769a835fa441ee986d508
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
 Date:   Mon Sep 14 18:48:32 2009 -0400
 
@@ -115,6 +2138,73 @@ Date:   Mon Sep 14 18:48:32 2009 -0400
     
     This is an ADD operation, not an OVER. Fixes bug 23934, reported by
     Siarhei Siamashka.
+
+commit ec7c1affcc66c12af1fc29fd000f9885a5d48320
+Author: M Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
+Date:   Mon Sep 14 22:52:29 2009 +0300
+
+    Don't prefetch from NULL in the SSE2 fast paths.
+    
+    On an Athlon64 box prefetch from NULL slows down
+    the rgba OVER rgba fast for predominantly solid sources
+    by up to 3.5x in the one-rounded-rectangle test case
+    when run using a tiling polygon renderer.  This patch
+    conditionalises the prefetches of the mask everywhere
+    where the mask pointer may be NULL in a fast path.
+
+commit 1b5269a585d8dcdb8f5ff9f71113bcf2d5efab26
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Sep 14 06:58:03 2009 -0400
+
+    Reformat test/composite.c to follow the standard coding style.
+
+commit 0431a0af6c566c8990c88dc22fd0dc76fdd72cf2
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Sun Sep 13 18:02:10 2009 +0100
+
+    [test] Exercise repeating patterns for composite.
+
+commit c28e39f17a87cdaa7ce43ec99f2f764cc935f484
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Sun Sep 13 15:04:30 2009 +0100
+
+    [build] Add rule to generate asm for inspection.
+
+commit 823bb1a9430bc0c4735ffefbbe19efe45887e32c
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Sun Sep 13 15:04:54 2009 +0100
+
+    [sse2] Don't emit prefetch 0 for an absent mask
+
+commit 8f2daa7ca25de754522abfb9ed1158d090f00780
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Sun Sep 13 15:07:08 2009 +0100
+
+    [test] Add composite test from rendercheck
+    
+    Iterate over all destination formats for dst, src and composite and
+    compare the result of all oprators with a selection of colours.
+
+commit cda0ee5165812b86a052ceb01830a1d42d02a03b
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Thu Aug 27 09:19:14 2009 +0100
+
+    build: Suppress verbose compile lines
+    
+    Compile warnings are being lost in the sea of noise. Automake-1.11 finally
+    introduced AM_SILENT_RULES to suppress the echoing of the compile line for
+    every object. Enable this to bring sanity to the pixman build.
+
+commit 56cc06f89b7db733e5036a00df7aea27cf8d0951
+Merge: 8aff99e 8035df8
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Sun Sep 13 16:32:27 2009 +0100
+
+    Merge branch '0.16'
+    
+    Conflicts:
+    	configure.ac
+    	pixman/pixman-sse2.c
 
 commit 8035df8bcb01c2df42b8adf8b96c7ac796f384cc
 Author: Chris Wilson <chris@chris-wilson.co.uk>
@@ -137,6 +2227,21 @@ Date:   Sun Sep 13 16:26:52 2009 +0100
 
     [sse2] Bit-reversing typo: src != dst
 
+commit 8aff99e231dcb83fa6c08e760711b0a1e979d012
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Thu Sep 10 21:33:24 2009 -0400
+
+    Fix off-by-one error in source_image_needs_out_of_bounds_workaround()
+    
+    If extents->x2/y2 are equal to image->width/height, then the clip is
+    still inside the drawable, so no workaround is necessary.
+
+commit fefe2a5d24591846281bb9bf0e85d42822e1716e
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Tue Sep 8 20:06:19 2009 -0400
+
+    Remove unused generated libcomp.pc #23801
+
 commit 2186bc89486f9f11161b0db280a869c6849c867e
 Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
 Date:   Fri Sep 4 14:14:00 2009 +0300
@@ -149,6 +2254,32 @@ Date:   Fri Sep 4 14:14:00 2009 +0300
     for example. Similar problem affects ARM.
 
 commit 15304e3cddd6568ba6d5d1d3030568c3db7b05cc
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Sep 2 19:46:47 2009 +0300
+
+    ARM: Remove fallback to ARMv6 implementation from NEON delegate chain
+    
+    This can help to fix build problems with '-mthumb' gcc option in CFLAGS.
+    ARMv6 optimized code can't be compiled for thumb (because of its inline
+    assembly) and gets automatically disabled in configure. Reference
+    to it from NEON optimized code resulted in linking problems.
+    
+    Every ARMv6 optimized fast path function also has a better NEON
+    counterpart, so there is no need to fallback to ARMv6. Shorter
+    delegate chain should additionally result in a bit better performance.
+
+commit 2679d93e22b4f3922a39bc53680f1aab6ea7c73c
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Sep 4 14:14:00 2009 +0300
+
+    Change CFLAGS order for PPC and ARM configure tests
+    
+    CFLAGS are always appended to the end of gcc options when compiling
+    sources in autotools based projects. Configure tests should do the
+    same. Otherwise build fails on PPC when using CFLAGS="-O2 -mno-altivec"
+    for example. Similar problem affects ARM.
+
+commit 91232ee40d8499cb91ad27717f751f15c805b4a6
 Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
 Date:   Wed Sep 2 19:46:47 2009 +0300
 
@@ -195,6 +2326,38 @@ Date:   Mon Aug 31 20:24:04 2009 +0100
     a const char pointer rather than a __m128i pointer or
     void pointer.
 
+commit 29e7d6063f7b93dd4fde3d42a2931ec0f55158c3
+Author: M Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
+Date:   Mon Aug 31 23:02:53 2009 +0100
+
+    Default to optimised builds when using a Sun Studio compiler.
+    
+    Autoconf's AC_PROG_CC sets the default CFLAGS to -O2 -g for
+    gcc and -g for every other compiler.  This patch defaults
+    CFLAGS to the equivalent -O -g when we're using Sun Studio's cc
+    if the user or site admin hasn't already set CFLAGS.
+
+commit e7018685f0618640221ebc61446ee98ea3056bbb
+Author: M Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
+Date:   Mon Aug 31 20:27:32 2009 +0100
+
+    Work around a Sun Studio 12 code generation bug involving _mm_set_epi32().
+    
+    Calling a static function wrapper around _mm_set_epi32() when not
+    using optimisation causes Sun Studio 12's cc to emit a spurious
+    floating point load which confuses the assembler.  Using a macro wrapper
+    rather than a function steps around the problem.
+
+commit 04ade7b68c620a62daff6212eee4d1b96bfbc3c9
+Author: M Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
+Date:   Mon Aug 31 20:24:04 2009 +0100
+
+    Work around differing _mm_prefetch() prototypes on Solaris.
+    
+    Sun Studio 12 expects the address to prefetch to be
+    a const char pointer rather than a __m128i pointer or
+    void pointer.
+
 commit 698b686d58c510e1b8a9183750d00cbd9ed504b2
 Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
 Date:   Fri Aug 28 22:34:21 2009 +0300
@@ -204,6 +2367,22 @@ Date:   Fri Aug 28 22:34:21 2009 +0300
     Some versions of gcc (cs2009q1, 4.4.1) incorrectly reject
     shift operand having value >= 8, claiming that it is out of
     range. So inline assembly is used as a workaround.
+
+commit 3e228377f9e7159a52a3716d8e4930c5a9dbb1af
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Aug 28 22:34:21 2009 +0300
+
+    ARM: workaround for gcc bug in vshll_n_u8 intrinsic
+    
+    Some versions of gcc (cs2009q1, 4.4.1) incorrectly reject
+    shift operand having value >= 8, claiming that it is out of
+    range. So inline assembly is used as a workaround.
+
+commit 632125d4108f9a53d625a6b997832fa45a295807
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Jun 2 08:27:33 2009 -0400
+
+    Enable the x888_8_8888 sse2 fast path.
 
 commit b02b644d7017f794be2296c6354e44fd119d2477
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
@@ -219,6 +2398,29 @@ Date:   Tue Sep 1 10:59:05 2009 +0900
     
     VC++ x64 has no inline assembler and x64 mode supports SSE2.
     So, it is unnecessary to call cpuid.
+
+commit 097342a65d81fb957dfc17486f615f887540e146
+Author: Makoto Kato <m_kato@ga2.so-net.ne.jp>
+Date:   Tue Sep 1 10:59:05 2009 +0900
+
+    Add CPU detection for VC++ x64
+    
+    VC++ x64 has no inline assembler and x64 mode supports SSE2.
+    So, it is unnecessary to call cpuid.
+
+commit 64085c91b6a1deca4007b18d63b707b896653ee9
+Author: Søren Sandmann Pedersen <ssp@dhcp-100-3-19.bos.redhat.com>
+Date:   Tue Sep 1 08:23:23 2009 -0400
+
+    Change names of add_8888_8_8 fast paths to add_n_8_8
+    
+    The source is solid in those.
+
+commit 7af985a69a9147e54dd5946a8062dbc2e534b735
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Fri Aug 28 08:14:04 2009 -0400
+
+    Post-release version bump
 
 commit 57812465bf975e943e78d59dabbd5e6bb2ad87ef
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
