@@ -1,4 +1,4 @@
-pixman (0.18.0-1) UNRELEASED; urgency=low
+pixman (0.18.0-1) experimental; urgency=low
 
   * Rename the build directory to not include DEB_BUILD_GNU_TYPE for no
     good reason.  Thanks, Colin Watson!
@@ -7,7 +7,7 @@ pixman (0.18.0-1) UNRELEASED; urgency=low
   * Update symbols file for new API, bump shlibs.
   * Drop pixman-arm-don-t-use-env-vars-to-get-hwcap-platform.patch, obsolete.
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 08 May 2010 17:06:36 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 11 May 2010 14:16:09 +0200
 
 pixman (0.16.4-1) unstable; urgency=low
 
