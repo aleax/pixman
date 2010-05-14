@@ -1,3 +1,118 @@
+commit b48d8b5201ab010f75f36bccd101cf60510d4ef2
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed May 12 16:27:02 2010 -0400
+
+    Pre-release version bump to 0.18.2
+
+commit 970c183c339b32975b499e90dbc54617da6cf4cf
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Apr 24 18:43:38 2010 -0400
+
+    Add macros for thread local storage on MinGW 32
+    
+    These macros are identical to the ones that Tor Lillqvist posted here:
+    
+        http://lists.freedesktop.org/archives/pixman/2010-April/000160.html
+    
+    with one exception: the variable is allocated with calloc() and not
+    malloc().
+    
+    Cc: tml@iki.fi
+
+commit 61ff1a32146b4db1f7391f0ad6fbdcfda8001581
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Apr 23 12:34:19 2010 -0400
+
+    Don't use __thread on MinGW.
+    
+    It is apparently broken. See this:
+    
+    http://mingw-users.1079350.n2.nabble.com/gcc-4-4-multi-threaded-exception-handling-thread-specifier-not-working-td3440749.html
+    
+    We'll need to support thread local storage on MinGW32 some other way.
+    
+    Cc: tml@iki.fi
+
+commit f973be464d631f886ad812210cd26d3a989dc3bd
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Apr 24 15:15:05 2010 -0400
+
+    Don't consider indexed formats opaque.
+    
+    The indexed formats have 0 bits of alpha, but can't be considered
+    opaque because there may be non-opaque colors in the palette.
+
+commit 34fb38554f290c690be8b9f3f873538aa1945c57
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Tue Apr 27 15:23:20 2010 -0400
+
+    Add missing HAVE_CONFIG_H guards for config.h inclusion
+
+commit 38928afaa119326b85eea099a71bc8c96a251164
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Apr 18 16:24:39 2010 -0400
+
+    Update README to mention the pixman mailing list
+
+commit 664984206daae8ac2de16b54ae6c66c926058c86
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Apr 7 19:34:41 2010 -0400
+
+    [mmx] Fix mask creation bugs
+    
+    This line:
+    
+        mask = mask | mask >> 8 | mask >> 16 | mask >> 24;
+    
+    only works when mask has 0s in the lower 24 bits, so add
+    
+         mask &= 0xff000000;
+    
+    before.
+    
+    Reported by Todd Rinaldo on the #cairo IRC channel.
+
+commit d197dc5e8d341fb4f252cde31ed62e2fef573475
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Apr 7 01:44:12 2010 -0400
+
+    Fixes for pthread thread local storage.
+    
+    The tls_name_key variable is passed to tls_name_get(), and the first
+    time this happens it isn't initialized. tls_name_get() then passes it
+    on to tls_name_alloc() which passes it on to pthread_setspecific()
+    leading to undefined behavior.
+    
+    None of this is actually necessary at all because there is only one
+    such variable per thread local variable, so it doesn't need to passed
+    as a parameter at all.
+    
+    All of this was pointed out by Tor Lillqvist on the cairo mailing
+    list.
+
+commit 9babaab40471bee35af6da581cb5bf83a2517aff
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Apr 7 01:39:14 2010 -0400
+
+    Fix uninitialized cache when pthreads are used
+    
+    The thread local cache is allocated with malloc(), but we rely on it
+    being initialized to zero, so allocate it with calloc() instead.
+
+commit 4fe0a40e75895d5d1a55810be2e1349810cba90e
+Author: Siddharth Agarwal <sid.bugzilla@gmail.com>
+Date:   Tue Apr 13 10:15:29 2010 -0400
+
+    Visual Studio 2010 includes stdint.h
+    
+    Use the builtin version instead of defining the types ourselves.
+
+commit 9a46eddc92ecaa2bf178e7dd5061f4d92163285d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed May 12 16:15:24 2010 -0400
+
+    Post-release version bump to 0.18.1
+
 commit e9dc568d6f585a153c47e970168a9c71d3e45fde
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Thu Apr 1 05:23:31 2010 -0400

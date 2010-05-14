@@ -1,3 +1,20 @@
+pixman (0.18.2-1) UNRELEASED; urgency=low
+
+  * New upstream stable release. Changes since 0.18.0:
+    - b48d8b5... Pre-release version bump to 0.18.2
+    - 970c183... Add macros for thread local storage on MinGW 32
+    - 61ff1a3... Don't use __thread on MinGW.
+    - f973be4... Don't consider indexed formats opaque.
+    - 34fb385... Add missing HAVE_CONFIG_H guards for config.h inclusion
+    - 38928af... Update README to mention the pixman mailing list
+    - 6649842... [mmx] Fix mask creation bugs
+    - d197dc5... Fixes for pthread thread local storage.
+    - 9babaab... Fix uninitialized cache when pthreads are used
+    - 4fe0a40... Visual Studio 2010 includes stdint.h
+    - 9a46edd... Post-release version bump to 0.18.1
+
+ -- Robert Hooker <sarvatt@ubuntu.com>  Fri, 14 May 2010 12:49:51 -0400
+
 pixman (0.18.0-1) experimental; urgency=low
 
   * Rename the build directory to not include DEB_BUILD_GNU_TYPE for no
