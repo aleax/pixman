@@ -1,4 +1,4 @@
-pixman (0.18.2-1) UNRELEASED; urgency=low
+pixman (0.18.2-1) experimental; urgency=low
 
   * New upstream stable release. Changes since 0.18.0:
     - b48d8b5... Pre-release version bump to 0.18.2
@@ -13,7 +13,7 @@ pixman (0.18.2-1) UNRELEASED; urgency=low
     - 4fe0a40... Visual Studio 2010 includes stdint.h
     - 9a46edd... Post-release version bump to 0.18.1
 
- -- Robert Hooker <sarvatt@ubuntu.com>  Fri, 14 May 2010 12:49:51 -0400
+ -- Robert Hooker <sarvatt@ubuntu.com>  Fri, 14 May 2010 13:03:42 -0400
 
 pixman (0.18.0-1) experimental; urgency=low
 
