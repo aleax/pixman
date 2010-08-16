@@ -1,3 +1,48 @@
+commit 97336fad32acf802003855cd8bd6477fa49a12e3
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Aug 16 06:34:53 2010 -0400
+
+    Pre-release version bump to 0.18.4
+
+commit 32509aa4da83565a1283375c7043348c63ac3d3a
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jul 12 15:13:49 2010 -0400
+
+    Check for read accessors before taking the bilinear fast path
+    
+    The bilinear fast path accesses pixels directly, so if the image has a
+    read accessor, then it can't be used.
+
+commit 052c5b819cfcdc5e63adb5b9117db939674ca5c2
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jul 28 03:17:35 2010 -0400
+
+    If we bail out of do_composite, make sure to undo any workarounds.
+    
+    The workaround for an old X bug has to be undone if we bail from
+    do_composite, so we can't just return.
+
+commit 91cb1421770a7d654555069946f9e998999a5813
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun May 30 16:52:09 2010 -0400
+
+    When storing a g1 pixel, store the lowest bit, rather than comparing with 0.
+
+commit a9a084c85cc0da15bfdf15a0a8363dd24c77f023
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jun 30 02:31:10 2010 -0400
+
+    Fix memory leak in the pthreads thread local storage code
+    
+    When a thread exits, we leak whatever is stored in thread local
+    variables, so install a destructor to free it.
+
+commit 872c915dcb6cf74130ea87e1b46d6a38535d98b0
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed May 12 16:33:35 2010 -0400
+
+    Post-release version bump to 0.18.3
+
 commit b48d8b5201ab010f75f36bccd101cf60510d4ef2
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Wed May 12 16:27:02 2010 -0400

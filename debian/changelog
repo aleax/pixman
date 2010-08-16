@@ -1,3 +1,9 @@
+pixman (0.18.4-1) UNRELEASED; urgency=low
+
+  * New upstream stable release.
+
+ -- Robert Hooker <sarvatt@ubuntu.com>  Mon, 16 Aug 2010 10:16:39 -0400
+
 pixman (0.18.2-1) experimental; urgency=low
 
   * New upstream stable release. Changes since 0.18.0:
