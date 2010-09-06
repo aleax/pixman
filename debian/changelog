@@ -1,8 +1,9 @@
-pixman (0.18.4-1) UNRELEASED; urgency=low
+pixman (0.18.4-1) experimental; urgency=low
 
+  [ Robert Hooker ]
   * New upstream stable release.
 
- -- Robert Hooker <sarvatt@ubuntu.com>  Mon, 16 Aug 2010 10:16:39 -0400
+ -- Julien Cristau <jcristau@debian.org>  Mon, 06 Sep 2010 21:15:07 +0200
 
 pixman (0.18.2-1) experimental; urgency=low
 
