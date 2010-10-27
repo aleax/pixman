@@ -1,6 +1,7 @@
 pixman (0.19.6-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * Bump SHLIBS_VERSION from 0.18.0 to 0.19.4 for newly-added functions.
   * Update symbols file with newly-added functions.
   * Add -c4 to the dh_makeshlibs call, to ensure the build breaks if
     unexpected symbol-related changes happened.
