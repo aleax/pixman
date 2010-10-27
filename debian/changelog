@@ -5,6 +5,9 @@ pixman (0.19.6-1) UNRELEASED; urgency=low
   * Update symbols file with newly-added functions.
   * Add -c4 to the dh_makeshlibs call, to ensure the build breaks if
     unexpected symbol-related changes happened.
+  * As of pixman-0.19.2-5-g5b99710, Gtk+ is auto-detected, make sure not
+    to pick it accidentally, by passing --disable-gtk. (That's only for
+    test purposes, but would require pixman-1 itself.)
 
  -- Cyril Brulebois <kibi@debian.org>  Wed, 27 Oct 2010 22:11:26 +0200
 

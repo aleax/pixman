@@ -5,6 +5,9 @@ include /usr/share/quilt/quilt.make
 PACKAGE = libpixman-1-0
 SHLIBS_VERSION = 0.19.4
 
+# Disable Gtk+ autodetection:
+confflags = --disable-gtk
+
 CFLAGS = -Wall -g
 ifneq (,$(filter noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
