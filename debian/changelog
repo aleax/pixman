@@ -1,4 +1,4 @@
-pixman (0.19.6-1) UNRELEASED; urgency=low
+pixman (0.19.6-1) experimental; urgency=low
 
   * New upstream release.
   * Bump SHLIBS_VERSION from 0.18.0 to 0.19.4 for newly-added functions.
@@ -11,7 +11,7 @@ pixman (0.19.6-1) UNRELEASED; urgency=low
   * Enable the testsuite.
   * Add myself to Uploaders.
 
- -- Cyril Brulebois <kibi@debian.org>  Wed, 27 Oct 2010 22:11:26 +0200
+ -- Cyril Brulebois <kibi@debian.org>  Wed, 27 Oct 2010 23:14:00 +0200
 
 pixman (0.18.4-1) experimental; urgency=low
 
