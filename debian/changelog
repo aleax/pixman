@@ -9,6 +9,7 @@ pixman (0.19.6-1) UNRELEASED; urgency=low
     to pick it accidentally, by passing --disable-gtk. (That's only for
     test purposes, but would require pixman-1 itself.)
   * Enable the testsuite.
+  * Add myself to Uploaders.
 
  -- Cyril Brulebois <kibi@debian.org>  Wed, 27 Oct 2010 22:11:26 +0200
 

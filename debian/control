@@ -2,7 +2,7 @@ Source: pixman
 Section: devel
 Priority: optional
 Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
-Uploaders: David Nusinow <dnusinow@debian.org>
+Uploaders: David Nusinow <dnusinow@debian.org>, Cyril Brulebois <kibi@debian.org>
 Build-Depends: debhelper (>= 5), automake, autoconf, libtool, pkg-config, quilt
 Standards-Version: 3.8.3
 Vcs-Git: git://git.debian.org/git/pkg-xorg/lib/pixman
