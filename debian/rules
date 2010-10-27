@@ -49,14 +49,14 @@ build: build-stamp
 build-stamp: config-stamp
 	dh_testdir
 	cd build && $(MAKE)
-	
+
 	touch $@
 
 clean: unpatch
 	dh_testdir
 	dh_testroot
 	rm -f autogen-stamp config-stamp build-stamp install-stamp
-	
+
 	rm -f config.cache config.log config.status
 	rm -f */config.cache */config.log */config.status
 	rm -f conftest* */conftest*
@@ -65,7 +65,7 @@ clean: unpatch
 	find -name Makefile.in -delete
 	rm -f compile config.guess config.sub configure depcomp install-sh
 	rm -f ltmain.sh missing INSTALL aclocal.m4 config.h.in
-	
+
 	dh_clean
 
 install: install-stamp
