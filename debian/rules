@@ -52,6 +52,7 @@ build: build-stamp
 build-stamp: config-stamp
 	dh_testdir
 	cd build && $(MAKE)
+	cd build && $(MAKE) check
 
 	touch $@
 
