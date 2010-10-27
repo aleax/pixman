@@ -1,6 +1,7 @@
 pixman (0.19.6-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * Update symbols file with newly-added functions.
 
  -- Cyril Brulebois <kibi@debian.org>  Wed, 27 Oct 2010 22:11:26 +0200
 
