@@ -1,11 +1,32 @@
-commit 3193481ee64ab0cc9feb64c96d92bf034d44e1f4
-Merge: d105134 97336fa
-Author: Cyril Brulebois <kibi@debian.org>
-Date:   Wed Oct 27 20:55:24 2010 +0200
+commit c5e048d46c32c43172fb8d1c067e82587f916953
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Oct 27 16:51:40 2010 -0400
 
-    Merge remote branch 'origin/upstream-experimental' into upstream-experimental
+    Pre-release version bump to 0.20.0
+
+commit 6a6d9758af478e9f5eae48ccf15f1cbea2cf30ed
+Author: Scott McCreary <scottmc2@gmail.com>
+Date:   Wed Oct 27 12:31:27 2010 -0700
+
+    Added check to find pthread on Haiku.
+
+commit 00fdb3d8e8d5c04d01c352315b6a8e2e2dfe53ae
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Sun Oct 24 15:58:39 2010 +0100
+
+    Plug another leak in alphamap test
     
-    Use -s ours to move to upstream's pixman-0.19.6 tag.
+    Even after commit e46be417cebac984a858da05e61d924889695c9e alphamap
+    test is still leaking the alphamap pixmap, leading to mmap() failures
+    on cygwin
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 1c23142efa056124c594c72022e7f383e839d3b1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Oct 20 16:31:57 2010 -0400
+
+    Post-release version bump to 0.19.7
 
 commit d1051340155a099a523e71377b1d889eec8b972e
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
@@ -1042,12 +1063,6 @@ Date:   Mon Aug 16 07:24:48 2010 -0400
     use of image->bits.{width,height} which lead to uninitialized memory
     accesses when the image wasn't of type BITS.
 
-commit 97336fad32acf802003855cd8bd6477fa49a12e3
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Mon Aug 16 06:34:53 2010 -0400
-
-    Pre-release version bump to 0.18.4
-
 commit da6f33a798bf2ea10df610ccf1d9506d63d1a28c
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Mon Aug 9 20:54:49 2010 -0400
@@ -1058,39 +1073,6 @@ Date:   Mon Aug 9 20:54:49 2010 -0400
     alpha channel. Together with FAST_PATH_SAMPLES_COVER_CLIP it implies
     that the image effectively is opaque, so we can do operator reductions
     such as OVER->SRC.
-
-commit 32509aa4da83565a1283375c7043348c63ac3d3a
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Mon Jul 12 15:13:49 2010 -0400
-
-    Check for read accessors before taking the bilinear fast path
-    
-    The bilinear fast path accesses pixels directly, so if the image has a
-    read accessor, then it can't be used.
-
-commit 052c5b819cfcdc5e63adb5b9117db939674ca5c2
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Wed Jul 28 03:17:35 2010 -0400
-
-    If we bail out of do_composite, make sure to undo any workarounds.
-    
-    The workaround for an old X bug has to be undone if we bail from
-    do_composite, so we can't just return.
-
-commit 91cb1421770a7d654555069946f9e998999a5813
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Sun May 30 16:52:09 2010 -0400
-
-    When storing a g1 pixel, store the lowest bit, rather than comparing with 0.
-
-commit a9a084c85cc0da15bfdf15a0a8363dd24c77f023
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Wed Jun 30 02:31:10 2010 -0400
-
-    Fix memory leak in the pthreads thread local storage code
-    
-    When a thread exits, we leak whatever is stored in thread local
-    variables, so install a destructor to free it.
 
 commit 4e5d6f00bf409259ff6f5d5c3ef4b016146bcbb3
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
@@ -1754,127 +1736,6 @@ Date:   Tue May 11 22:46:47 2010 +0300
     code). Return values may be crc32, some other hash or even just zero on
     success and non-zero on error (in this case, the expected result of the
     whole test run should be 0).
-
-commit 872c915dcb6cf74130ea87e1b46d6a38535d98b0
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Wed May 12 16:33:35 2010 -0400
-
-    Post-release version bump to 0.18.3
-
-commit b48d8b5201ab010f75f36bccd101cf60510d4ef2
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Wed May 12 16:27:02 2010 -0400
-
-    Pre-release version bump to 0.18.2
-
-commit 970c183c339b32975b499e90dbc54617da6cf4cf
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Sat Apr 24 18:43:38 2010 -0400
-
-    Add macros for thread local storage on MinGW 32
-    
-    These macros are identical to the ones that Tor Lillqvist posted here:
-    
-        http://lists.freedesktop.org/archives/pixman/2010-April/000160.html
-    
-    with one exception: the variable is allocated with calloc() and not
-    malloc().
-    
-    Cc: tml@iki.fi
-
-commit 61ff1a32146b4db1f7391f0ad6fbdcfda8001581
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Fri Apr 23 12:34:19 2010 -0400
-
-    Don't use __thread on MinGW.
-    
-    It is apparently broken. See this:
-    
-    http://mingw-users.1079350.n2.nabble.com/gcc-4-4-multi-threaded-exception-handling-thread-specifier-not-working-td3440749.html
-    
-    We'll need to support thread local storage on MinGW32 some other way.
-    
-    Cc: tml@iki.fi
-
-commit f973be464d631f886ad812210cd26d3a989dc3bd
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Sat Apr 24 15:15:05 2010 -0400
-
-    Don't consider indexed formats opaque.
-    
-    The indexed formats have 0 bits of alpha, but can't be considered
-    opaque because there may be non-opaque colors in the palette.
-
-commit 34fb38554f290c690be8b9f3f873538aa1945c57
-Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
-Date:   Tue Apr 27 15:23:20 2010 -0400
-
-    Add missing HAVE_CONFIG_H guards for config.h inclusion
-
-commit 38928afaa119326b85eea099a71bc8c96a251164
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Sun Apr 18 16:24:39 2010 -0400
-
-    Update README to mention the pixman mailing list
-
-commit 664984206daae8ac2de16b54ae6c66c926058c86
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Wed Apr 7 19:34:41 2010 -0400
-
-    [mmx] Fix mask creation bugs
-    
-    This line:
-    
-        mask = mask | mask >> 8 | mask >> 16 | mask >> 24;
-    
-    only works when mask has 0s in the lower 24 bits, so add
-    
-         mask &= 0xff000000;
-    
-    before.
-    
-    Reported by Todd Rinaldo on the #cairo IRC channel.
-
-commit d197dc5e8d341fb4f252cde31ed62e2fef573475
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Wed Apr 7 01:44:12 2010 -0400
-
-    Fixes for pthread thread local storage.
-    
-    The tls_name_key variable is passed to tls_name_get(), and the first
-    time this happens it isn't initialized. tls_name_get() then passes it
-    on to tls_name_alloc() which passes it on to pthread_setspecific()
-    leading to undefined behavior.
-    
-    None of this is actually necessary at all because there is only one
-    such variable per thread local variable, so it doesn't need to passed
-    as a parameter at all.
-    
-    All of this was pointed out by Tor Lillqvist on the cairo mailing
-    list.
-
-commit 9babaab40471bee35af6da581cb5bf83a2517aff
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Wed Apr 7 01:39:14 2010 -0400
-
-    Fix uninitialized cache when pthreads are used
-    
-    The thread local cache is allocated with malloc(), but we rely on it
-    being initialized to zero, so allocate it with calloc() instead.
-
-commit 4fe0a40e75895d5d1a55810be2e1349810cba90e
-Author: Siddharth Agarwal <sid.bugzilla@gmail.com>
-Date:   Tue Apr 13 10:15:29 2010 -0400
-
-    Visual Studio 2010 includes stdint.h
-    
-    Use the builtin version instead of defining the types ourselves.
-
-commit 9a46eddc92ecaa2bf178e7dd5061f4d92163285d
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Wed May 12 16:15:24 2010 -0400
-
-    Post-release version bump to 0.18.1
 
 commit 164fe215f2c904cf74537caf9d76b7f9ce2667ec
 Merge: e1594f2 5158d67
