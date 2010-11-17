@@ -1,3 +1,326 @@
+commit 4646c238589986499834b28ed903c366b5ba15ed
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Nov 16 16:43:26 2010 -0500
+
+    Pre-release version bump
+
+commit 536cf4dd3bd144ad1c65fc05f4883a31247a0f5d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Nov 2 23:38:10 2010 -0400
+
+    Generate {a,x}8r8g8b8, a8, 565 fetchers for nearest/affine images
+    
+    There are versions for all combinations of x8r8g8b8/a8r8g8b8 and
+    pad/repeat/none/normal repeat modes. The bulk of each function is an
+    inline function that takes a format and a repeat mode as parameters.
+
+commit da0176e8534e5b027818f6b695343d3e04130a93
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Tue Nov 2 17:04:35 2010 +0100
+
+    Improve conical gradients opacity check
+    
+    Conical gradients are completely opaque if all of their stops are
+    opaque and the repeat mode is not 'none'.
+
+commit 151f2554fc9c098ff86b0fdc0d785aa3ff496328
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Tue Nov 2 17:02:01 2010 +0100
+
+    Fix opacity check
+    
+    Radial gradients are "conical", thus they can have some non-opaque
+    parts even if all of their stops are completely opaque.
+    
+    To guarantee that a radial gradient is actually opaque, it needs to
+    also have one of the two circles containing the other one. In this
+    case when extrapolating, the whole plane is completely covered (as
+    explained in the comment in pixman-radial-gradient.c).
+
+commit 19ed415b74521ad5dcc7b6e3ed4bb644711c7bef
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Sun Oct 31 16:59:45 2010 +0100
+
+    Remove unused stop_range field
+
+commit d8fe87a6262ee661af8fb0d46bab223e4ab3d88e
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Oct 4 01:56:59 2010 +0300
+
+    ARM: optimization for scaled src_0565_0565 with nearest filter
+    
+    The performance improvement is only in the ballpark of 5% when
+    compared against C code built with a reasonably good compiler
+    (gcc 4.5.1). But gcc 4.4 produces approximately 30% slower code
+    here, so assembly optimization makes sense to avoid dependency
+    on the compiler quality and/or optimization options.
+    
+    Benchmark from ARM11:
+        == before ==
+        op=1, src_fmt=10020565, dst_fmt=10020565, speed=34.86 MPix/s
+    
+        == after ==
+        op=1, src_fmt=10020565, dst_fmt=10020565, speed=36.62 MPix/s
+    
+    Benchmark from ARM Cortex-A8:
+        == before ==
+        op=1, src_fmt=10020565, dst_fmt=10020565, speed=89.55 MPix/s
+    
+        == after ==
+        op=1, src_fmt=10020565, dst_fmt=10020565, speed=94.91 MPix/s
+
+commit b8007d042354fd9bd15711d9921e6f1ebb1c3c22
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Nov 2 16:12:42 2010 +0200
+
+    ARM: NEON optimization for scaled src_0565_8888 with nearest filter
+    
+    Benchmark from ARM Cortex-A8 @720MHz:
+        == before ==
+        op=1, src_fmt=10020565, dst_fmt=20028888, speed=8.99 MPix/s
+    
+        == after ==
+        op=1, src_fmt=10020565, dst_fmt=20028888, speed=76.98 MPix/s
+    
+        == unscaled ==
+        op=1, src_fmt=10020565, dst_fmt=20028888, speed=137.78 MPix/s
+
+commit 2e855a2b4a2bb7b3d2ed1826cb4426d14080ca67
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Nov 2 15:25:51 2010 +0200
+
+    ARM: NEON optimization for scaled src_8888_0565 with nearest filter
+    
+    Benchmark from ARM Cortex-A8 @720MHz:
+        == before ==
+        op=1, src_fmt=20028888, dst_fmt=10020565, speed=42.51 MPix/s
+    
+        == after ==
+        op=1, src_fmt=20028888, dst_fmt=10020565, speed=55.61 MPix/s
+    
+        == unscaled ==
+        op=1, src_fmt=20028888, dst_fmt=10020565, speed=117.99 MPix/s
+
+commit 4a09e472b8fbfae3e67d05a26ecc9c8a17225053
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Nov 2 14:39:02 2010 +0200
+
+    ARM: NEON optimization for scaled over_8888_0565 with nearest filter
+    
+    Benchmark from ARM Cortex-A8 @720MHz:
+        == before ==
+        op=3, src_fmt=20028888, dst_fmt=10020565, speed=10.29 MPix/s
+    
+        == after ==
+        op=3, src_fmt=20028888, dst_fmt=10020565, speed=36.36 MPix/s
+    
+        == unscaled ==
+        op=3, src_fmt=20028888, dst_fmt=10020565, speed=79.40 MPix/s
+
+commit 67a4991f3341d38bc3477c8f99f2ef581cd609e3
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Nov 2 14:29:57 2010 +0200
+
+    ARM: NEON optimization for scaled over_8888_8888 with nearest filter
+    
+    Benchmark from ARM Cortex-A8 @720MHz:
+        == before ==
+        op=3, src_fmt=20028888, dst_fmt=20028888, speed=12.73 MPix/s
+    
+        == after ==
+        op=3, src_fmt=20028888, dst_fmt=20028888, speed=28.75 MPix/s
+    
+        == unscaled ==
+        op=3, src_fmt=20028888, dst_fmt=20028888, speed=53.03 MPix/s
+
+commit 0b56244ac81f2bb2402629f8720c7e22893a24df
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Nov 2 19:16:46 2010 +0200
+
+    ARM: performance tuning of NEON nearest scaled pixel fetcher
+    
+    Interleaving the use of NEON registers helps to avoid some stalls
+    in NEON pipeline and provides a small performance improvement.
+
+commit 6e76af0d4b60ab74b309994926f28c532c5af155
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Nov 2 14:26:13 2010 +0200
+
+    ARM: macro template in C code to simplify using scaled fast paths
+    
+    This template can be used to instantiate scaled fast path functions
+    by providing main loop code and calling NEON assembly optimized
+    scanline processing functions from it. Another macro can be used
+    to simplify adding entries to fast path tables.
+
+commit 88014a0e6ffaa22b3ac363c2c73b72530cdba0cc
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Nov 1 10:03:59 2010 +0200
+
+    ARM: nearest scaling support for NEON scanline compositing functions
+    
+    Now it is possible to generate scanline processing functions
+    for the case when the source image is scaled with NEAREST filter.
+    
+    Only 16bpp and 32bpp pixel formats are supported for now. But the
+    others can be also added later when needed. All the existing NEON
+    fast path functions should be quite easy to reuse for implementing
+    fast paths which can work with scaled source images.
+
+commit 324712e48cf04df3cfcfc463fb221fcdf96e020a
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Nov 1 05:10:34 2010 +0200
+
+    ARM: NEON: source image pixel fetcher can be overrided now
+    
+    Added a special macro 'pixld_src' which is now responsible for fetching
+    pixels from the source image. Right now it just passes all its arguments
+    directly to 'pixld' macro, but it can be used in the future to provide
+    a special pixel fetcher for implementing nearest scaling.
+    
+    The 'pixld_src' has a lot of arguments which define its behavior. But
+    for each particular fast path implementation, we already know NEON
+    registers allocation and how many pixels are processed in a single block.
+    That's why a higher level macro 'fetch_src_pixblock' is also introduced
+    (it's easier to use because it has no arguments) and used everywhere
+    in 'pixman-arm-neon-asm.S' instead of VLD instructions.
+    
+    This patch does not introduce any functional changes and the resulting code
+    in the compiled object file is exactly the same.
+
+commit cb3f1830257a56f56abf7d50a8b34e215c616aec
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Nov 2 22:53:55 2010 +0200
+
+    ARM: fix 'vld1.8'->'vld1.32' typo in add_8888_8888 NEON fast path
+    
+    This was mostly harmless and had no effect on little endian systems.
+    But wrong vector element size is at least inconsistent and also
+    can theoretically cause problems on big endian ARM systems.
+
+commit fed4a2fde540916fc182917762b85b38052c04de
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Sep 24 16:36:16 2010 +0300
+
+    Do CPU features detection from 'constructor' function when compiled with gcc
+    
+    There is attribute 'constructor' supported since gcc 2.7 which allows
+    to have a constructor function for library initialization. This eliminates
+    an extra branch for each composite operation and also helps to avoid
+    complains from race condition detection tools like helgrind.
+    
+    The other compilers may or may not support this attribute properly.
+    Ideally, the compilers should fail to compile the code with unknown
+    attribute, so the configure check should do the right job. But in
+    reality the problems are surely possible. Fortunately such problems
+    should be quite easy to find because NULL pointer dereference should
+    happen almost immediately if the constructor fails to run.
+    
+    clang 2.7:
+      supports __attribute__((constructor)) properly and pretends to be gcc
+    
+    tcc 0.9.25:
+      ignores __attribute__((constructor)), but does not pretend to be gcc
+
+commit 99699771cd82e108fbace655bf44013bdccde3bf
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Oct 31 01:40:57 2010 -0400
+
+    Delete the source_image_t struct.
+    
+    It serves no purpose anymore now that the source_class_t field is gone.
+
+commit f405b4079872ecc312f9514fdadc5287e8f20b08
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Oct 30 17:20:22 2010 -0400
+
+    [mmx] Mark some of the output variables as early-clobber.
+    
+    GCC assumes that input variables in inline assembly are fully consumed
+    before any output variable is written. This means it may allocate the
+    variables in the same register unless the output variables are marked
+    as early-clobber.
+    
+    From Jeremy Huddleston:
+    
+        I noticed a problem building pixman with clang and reported it to
+        the clang developers.  They responded back with a comment about
+        the inline asm in pixman-mmx.c and suggested a fix:
+    
+        """
+        Incidentally, Jeremy, in the asm that reads
+        __asm__ (
+        "movq %7, %0\n"
+        "movq %7, %1\n"
+        "movq %7, %2\n"
+        "movq %7, %3\n"
+        "movq %7, %4\n"
+        "movq %7, %5\n"
+        "movq %7, %6\n"
+        : "=y" (v1), "=y" (v2), "=y" (v3),
+          "=y" (v4), "=y" (v5), "=y" (v6), "=y" (v7)
+        : "y" (vfill));
+    
+        all the output operands except the last one should be marked as
+        earlyclobber ("=&y"). This is working by accident with gcc.
+        """
+    
+    Cc: jeremyhu@apple.com
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+
+commit 9c19a85b0037d48fdd180a2c59ef05bdc4f46680
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Oct 28 20:14:03 2010 -0400
+
+    Remove workaround for a bug in the 1.6 X server.
+    
+    There used to be a bug in the X server where it would rely on
+    out-of-bounds accesses when it was asked to composite with a
+    window as the source. It would create a pixman image pointing
+    to some bogus position in memory, but then set a clip region
+    to the position where the actual bits were.
+    
+    Due to a bug in old versions of pixman, where it would not clip
+    against the image bounds when a clip region was set, this would
+    actually work. So when the pixman bug was fixed, a workaround was
+    added to allow certain out-of-bound accesses.
+    
+    However, the 1.6 X server is so old now that we can remove this
+    workaround. This does mean that if you update pixman to 0.22 or later,
+    you will need to use a 1.7 X server or later.
+
+commit 56748ea9a698daec8f445d2bebbbaed5515380af
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Sat Oct 30 15:51:30 2010 +0300
+
+    Fixed broken configure check for __thread support
+    
+    Somehow the patch from [1] was not applied correctly, fixing that.
+    
+    1. http://lists.cairographics.org/archives/cairo/2010-September/020826.html
+
+commit ecc3612995d5d699a3dd49016a7e9ed40f0a4564
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Nov 1 17:52:29 2010 -0400
+
+    COPYING: Stop saying that a modification is currently under discussion.
+    
+    Also put the copyright text into a C comment for easier cut and paste.
+
+commit c993cd9614a47657228e3125bdcedc0bd0e34164
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Oct 27 17:21:06 2010 -0400
+
+    Version bump 0.21.1.
+    
+    The previous bump to 0.20.1 was a mistake; it belongs on the 0.20 branch.
+
+commit d890b684f68905ea5e242360f20e2a70251c89fd
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Oct 27 16:58:29 2010 -0400
+
+    Post-release version bump to 0.20.1
+
 commit c5e048d46c32c43172fb8d1c067e82587f916953
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Wed Oct 27 16:51:40 2010 -0400
