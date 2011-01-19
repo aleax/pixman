@@ -1,6 +1,7 @@
 pixman (0.21.4-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * Update debian/copyright from upstream's COPYING.
 
  -- Cyril Brulebois <kibi@debian.org>  Wed, 19 Jan 2011 20:24:29 +0100
 
