@@ -1,3 +1,662 @@
+commit 4e56cec5649b7e122ccfc815b4ff45611953afce
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jan 19 07:38:24 2011 -0500
+
+    Pre-release version bump to 0.21.4
+
+commit 1d7195dd6c68eab73d063f37de3a9331446111d4
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jan 17 14:12:20 2011 -0500
+
+    Fix dangling-pointer bug in bits_image_fetch_bilinear_no_repeat_8888().
+    
+    The mask_bits variable is only declared in a limited scope, so the
+    pointer to it becomes invalid instantly. Somehow this didn't actually
+    trigger any bugs, but Brent Fulgham reported that Bounds Checker was
+    complaining about it.
+    
+    Fix the bug by moving mask_bits to the function scope.
+
+commit 2ac4ae1ae253f7c2efedab036a677dac2f9c9eed
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Wed Jan 12 17:43:40 2011 +0100
+
+    Add a test for radial gradients
+    
+    radial-test is a port of the radial-gradient test from the cairo test
+    suite. It has been modified so that some pixels have 0 in both the a
+    and b coefficients of the quadratic equation solved by the rasterizer,
+    to expose a division by zero in the original implementation.
+
+commit 7f4eabbeec92e55fd8f812c0e5d8568eacbb633d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Dec 12 07:34:42 2010 -0500
+
+    Fix destination fetching
+    
+    When fetching from destinations, we need to ignore transformations,
+    repeat and filtering. Currently we don't ignore them, which means all
+    kinds of bad things can happen.
+    
+    This bug fixes this problem by directly calling the scanline fetchers
+    for destinations instead of going through the full
+    get_scanline_32/64().
+
+commit 9489c2e04a5361fe19a89a0da9d7be28436c0a4b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Dec 12 09:19:13 2010 -0500
+
+    Turn on testing for destination transformation
+
+commit fffeda703e40ced90ec5ad6d6cd37a44294d3fe4
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Dec 11 08:10:04 2010 -0500
+
+    Skip fetching pixels when possible
+    
+    Add two new iterator flags, ITER_IGNORE_ALPHA and ITER_IGNORE_RGB that
+    are set when the alpha and rgb values are not needed. If both are set,
+    then we can skip fetching entirely and just use
+    _pixman_iter_get_scanline_noop.
+
+commit 3e635d6491d883304662aff3c72558dc9065f1f1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 10 16:55:55 2010 -0500
+
+    Add direct-write optimization back
+    
+    Introduce a new ITER_LOCALIZED_ALPHA flag that indicates that the
+    alpha value computed is used only for the alpha channel of the output;
+    it doesn't affect the RGB channels.
+    
+    Then in pixman-bits-image.c, if a destination is either a8r8g8b8 or
+    x8r8g8b8 with localized alpha, the iterator will return a pointer
+    directly into the image.
+
+commit 0f1a5c4a27d34dcf4525dc38fcb48c14f653e828
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 10 15:18:48 2010 -0500
+
+    Get rid of the classify methods
+    
+    They are not used anymore, and the linear gradient is now doing the
+    optimization in a different way.
+
+commit b66cabb88488413c4787845c7da67901dc988ee6
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 10 15:14:24 2010 -0500
+
+    Linear: Optimize for horizontal gradients
+    
+    If the gradient is horizontal, we can reuse the same scanline over and
+    over. Add support for this optimization to
+    _pixman_linear_gradient_iter_init().
+
+commit cf14189c6993e42ae71977a4a4061417941ffee8
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 10 14:59:20 2010 -0500
+
+    Consolidate the various get_scanline_32() into get_scanline_narrow()
+    
+    The separate get_scanline_32() functions in solid, linear, radial and
+    conical images are no longer necessary because all access to these
+    images now go through iterators.
+
+commit 0a6360a7ee0983dd52d368f5352d8c313fb0570b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 10 14:44:22 2010 -0500
+
+    Allow NULL property_changed function
+    
+    Initialize the field to NULL, and then delete the empty functions from
+    the solid, linear, radial, and conical images.
+
+commit 34b5633105e5e2838ac8deb32d26e3bbe73a3d1a
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 10 14:39:01 2010 -0500
+
+    Move get_scanline_32/64 to the bits part of the image struct
+    
+    At this point these functions are basically a cache that the bits
+    image uses for its fetchers, so they can be moved to the bits image.
+    
+    With the scanline getters only being initialized in the bits image,
+    the _pixman_image_get_scanline_generic_64 can be moved to
+    pixman-bits-image.c. That gets rid of the final user of
+    _pixman_image_get_scanline_32/64, so these can be deleted.
+
+commit d6b13f99b41eac535d961b89d4b53f616c910c1e
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 10 10:53:02 2010 -0500
+
+    Use an iterator in pixman_image_get_solid()
+    
+    This is a step towards getting rid of the
+    _pixman_image_get_scanline_32/64() functions.
+
+commit 51a5e949f394560b057911d46aab768f8e07bd54
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 10 13:26:53 2010 -0500
+
+    Virtualize iterator initialization
+    
+    Make src_iter_init() and dest_iter_init() virtual methods in the
+    implementation struct. This allows individual implementations to plug
+    in their own CPU specific scanline fetchers.
+
+commit 6503c6edccbc6b08ea8efe398da3265126efa896
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 10 12:40:26 2010 -0500
+
+    Move iterator initialization to the respective image files
+    
+    Instead of calling _pixman_image_get_scanline_32/64(), move the
+    iterator initialization into the respecive image implementations and
+    call the scanline generators directly.
+
+commit 23c6e1d2c007cc661b31e1bcdfd84604d7a9a560
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 10 12:31:29 2010 -0500
+
+    Eliminate the _pixman_image_store_scanline_32/64 functions
+    
+    They were only called from next_line_write_narrow/wide, so they could
+    simply be absorbed into those functions.
+
+commit b2c9eaa5020d08cfaac6c2296895e5a65c971ffd
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 10 12:19:50 2010 -0500
+
+    Move initialization of iterators for bits images to pixman-bits-image.c
+    
+    pixman_iter_t is now defined in pixman-private.h, and iterators for
+    bits images are being initialized in pixman-bits-image.c
+
+commit 15b1645c7b96498788c9376e3bb7d8a5e7b4e584
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 10 11:30:27 2010 -0500
+
+    Add iterators in the general implementation
+    
+    We add a new structure called a pixman_iter_t that encapsulates the
+    information required to read scanlines from an image. It contains two
+    functions, get_scanline() and write_back(). The get_scanline()
+    function will generate pixels for the current scanline. For iterators
+    for source images, it will also advance to the next scanline. The
+    write_back() function is only called for destination images. Its
+    function is to write back the modified pixels to the image and then
+    advance to the next scanline.
+    
+    When an iterator is initialized, it is passed this information:
+    
+       - The image to iterate
+    
+       - The rectangle to be iterated
+    
+       - A buffer that the iterator may (but is not required to) use. This
+         buffer is guaranteed to have space for at least width pixels.
+    
+       - A flag indicating whether a8r8g8b8 or a16r16g16b16 pixels should
+         be fetched
+    
+    There are a number of (eventual) benefits to the iterators:
+    
+       - The initialization of the iterator can be virtualized such that
+         implementations can plug in their own CPU specific get_scanline()
+         and write_back() functions.
+    
+       - If an image is horizontal, it can simply plug in an appropriate
+         get_scanline(). This way we can get rid of the annoying
+         classify() virtual function.
+    
+       - In general, iterators can remember what they did on the last
+         scanline, so for example a REPEAT_NONE image might reuse the same
+         data for all the empty scanlines generated by the zero-extension.
+    
+       - More detailed information can be passed to iterator, allowing
+         more specialized fetchers to be used.
+    
+       - We can fix the bug where destination filters and transformations
+         are not currently being ignored as they should be.
+    
+    However, this initial implementation is not optimized at all. We lose
+    several existing optimizations:
+    
+       - The ability to composite directly in the destination
+       - The ability to only fetch one scanline for horizontal images
+       - The ability to avoid fetching the src and mask for the CLEAR
+         operator
+    
+    Later patches will re-introduce these optimizations.
+
+commit 255d624e508e29b452e567c249ac75ae8d8e2abe
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Jan 11 14:36:24 2011 +0200
+
+    ARM: do /proc/self/auxv based cpu features detection only in linux
+    
+    This method is linux specific, but earlier it was tried for any platform
+    that did not have _MSC_VER macro defined.
+
+commit 2bbd553bd21dcc1b199eb11ec6cb78a5b9769d49
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Sep 13 04:21:33 2010 +0300
+
+    A new configure option --enable-static-testprogs
+    
+    This option can be used for building fully static binaries of the test
+    programs so that they can be easily run using qemu-user. With binfmt-misc
+    configured, 'make check' works fine for crosscompiled pixman builds.
+
+commit 55bbccf84e475b2e3c4536606cd08c946c041fd0
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Jan 10 18:29:33 2011 +0200
+
+    Make 'fast_composite_scaled_nearest_*' less suspicious
+    
+    Taking address of a variable and then using it as an array looks suspicious
+    to static code analyzers. So change it into an array with 1 element to make
+    them happy. Both old and new variants of this code are correct because 'vx'
+    and 'unit_x' arguments are set to 0 and it means that the called scanline
+    function can only access a single element of 'zero' buffer.
+
+commit ae70b38d40a587e29dc5e0dfe6250693598beca7
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Jan 10 18:09:16 2011 +0200
+
+    Bugfix for a corner case in 'pixman_transform_is_inverse'
+    
+    When 'pixman_transform_multiply' fails, the result of multiplication just
+    could not have been identity matrix (one of the values in the resulting
+    matrix can't be represented as 16.16 fixed point value). So it is safe
+    to return FALSE.
+
+commit ab3809f4da0d833944363c5c039c3a2e6a8389c5
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Jan 4 13:42:29 2011 +0200
+
+    Workaround for a preprocessor issue in old Sun Studio
+    
+    Patch from Peter O'Gorman with some modifications
+    
+    https://bugs.freedesktop.org//show_bug.cgi?id=32764
+
+commit f5c0a60ac8c32ac37aaf58f67048585af58f3141
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Jan 4 08:41:02 2011 +0200
+
+    Fix for "syntax error: empty declaration" Solaris Studio warnings
+
+commit c71e24c9fc312cf0b8ec56d2e657efe79d062d2f
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Jan 4 08:18:38 2011 +0200
+
+    Revert "Fix "syntax error: empty declaration" warnings."
+    
+    This reverts commit b924bb1f8191cc7c386d8211d9822aeeaadcab44.
+    
+    There is a better fix for these Solaris Studio warnings.
+
+commit 29439bd7724031504e965ffe5b366baaeeae07d8
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Tue Nov 23 11:37:54 2010 +0100
+
+    Improve handling of tangent circles
+    
+    When b is 0, avoid the division by zero and just return transparent
+    black.
+    
+    When the solution t would have an invalid radius (negative or outside
+    [0,1] for none-extended gradients), return transparent black.
+
+commit a484a9c49c98dfad0d74af4440039f61bef24d48
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Dec 20 16:11:48 2010 -0500
+
+    sse2: Skip src pixels that are zero in sse2_composite_over_8888_n_8888()
+    
+    This is a big speed-up in the SVG helicopter game:
+    
+       http://ie.microsoft.com/testdrive/Performance/Helicopter/Default.xhtml
+    
+    when rendered by Firefox 4 since it is compositing big images
+    consisting almost entirely of zeros.
+
+commit 2610323545cb5ee3dff0b7d7da505a1cd1e01b73
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Dec 18 06:06:39 2010 -0500
+
+    Fix divide-by-zero in set_lum().
+    
+    When (l - min) or (max - l) are zero, simply set all the channels to
+    the limit, 0 in the case of (l - min), and a in the case of (max - l).
+
+commit 3479050216a65e3ef6e966a8e801415145261216
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Dec 18 06:05:52 2010 -0500
+
+    Add a test compositing with the various PDF operators.
+    
+    The test has floating point exceptions enabled, and currently fails
+    with a divide-by-zero.
+
+commit 45a2d010773d05666e87b7a6502e8fcb25add4eb
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Sun Dec 19 19:37:26 2010 +0100
+
+    Fix linking issues when HAVE_FEENABLEEXCEPT is set.
+    
+    All objects using test/util.c fail to link:
+    |   CCLD   region-test
+    | /usr/bin/ld: utils.o: in function enable_fp_exceptions:utils.c(.text+0x939): error: undefined reference to 'feenableexcept'
+    
+    There's indeed no explicit dependency on -lm, and if HAVE_FEENABLEEXCEPT
+    happens to be set, test/util.c uses feenableexcept(), which is nowhere
+    to be found while linking.
+    
+    Fix this by adding -lm to TEST_LDADD, although two alternatives could be
+    thought of:
+     - Only specifying -lm for objects using util.c.
+     - Introducing a conditional to add -lm only when configure detects
+       have_feenableexcept=yes.
+    
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 303de045ff21bd5c9cb756d50a41fe4cb8bc97b8
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Sat Dec 18 18:32:39 2010 +0000
+
+    Remove stray #include <fenv.h>
+    
+    Remove a stray #include <fenv.h> added in commit 2444b2265abeaf6dcf3df1763bc2711684e63bb8
+    to fix compilation on platforms which don't have fenv.h
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit f914cf448630d4ba4af6603b827c621ae6705387
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Aug 23 21:55:02 2010 -0400
+
+    Add a stress-test program.
+    
+    This test program tries to use as many rarely-used features as
+    possible, including alpha maps, accessor functions, oddly-sized
+    images, strange transformations, conical gradients, etc.
+    
+    The hope is to provoke crashes or irregular behavior in pixman.
+
+commit 7d7b03c0911584f687a7fd57a3f5d5eed21080e0
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Oct 12 10:56:26 2010 -0400
+
+    Make the argument to fence_malloc() an int64_t
+    
+    That way we can detect if someone attempts to allocate a negative size
+    and abort instead of just returning NULL and segfaulting later.
+
+commit d41522113ec84e74f7915599fd7624f842be8862
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Aug 29 18:02:02 2010 -0400
+
+    test/utils.c: Initialize palette->rgba to 0.
+    
+    That way it can be used with palettes that are not statically
+    allocated, without causing valgrind issues.
+
+commit 337f0bff0d8965cb702175e0eedbf418b1e7f0b5
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Aug 23 21:02:02 2010 -0400
+
+    test: Move palette initialization to utils.[ch]
+
+commit 2444b2265abeaf6dcf3df1763bc2711684e63bb8
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Oct 20 13:12:37 2010 -0400
+
+    Extend gradient-crash-test
+    
+    Test the gradients with various transformations, and test cases where
+    the gradients are specified with two identical points.
+
+commit de2e51dacb1ccd312c0461088b942ef4e93e2731
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Oct 20 13:53:07 2010 -0400
+
+    Add enable_fp_exceptions() function in utils.[ch]
+    
+    This function enables floating point traps if possible.
+
+commit a2afcc9ba4ed5a2843fd133ca23704960846185b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Aug 23 20:56:11 2010 -0400
+
+    test: Make composite test use some existing macros instead of defining its own
+    
+    Also move the ARRAY_LENGTH macro into utils.h so it can be used elsewhere.
+
+commit 4d8d2fa47e457e3c8a5ab956b52cff4785aa45c3
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Dec 17 15:29:58 2010 +0200
+
+    COPYING: added Nokia to the list of copyright holders
+
+commit 3d094997b1820719d15cec7dc633ed37e1912bfc
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Nov 30 00:31:06 2010 +0200
+
+    Fix for potential unaligned memory accesses
+    
+    The temporary scanline buffer allocated on stack was declared
+    as uint8_t array. As a result, the compiler was free to select
+    any arbitrary alignment for it (even though there is typically
+    no reason to use really weird alignments here and the stack is
+    normally at least 4 bytes aligned on most platforms). Having
+    improper alignment is non-portable and can impact performance
+    or even make the code misbehave depending on the target platform.
+    
+    Using uint64_t type for this array should ensure that any possible
+    memory accesses done by pixman code are going to be handled correctly
+    (pixman-combine64.c can access this buffer via uint64_t * pointer).
+    
+    Some alignment related problem was reported in:
+    http://lists.freedesktop.org/archives/pixman/2010-November/000747.html
+
+commit 985e59a82fa5e644cb6516dc174ab3f79f1448df
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Thu Nov 25 02:28:29 2010 +0200
+
+    ARM: added 'neon_src_rpixbuf_8888' fast path
+    
+    With this optimization added, pixman assisted conversion from
+    non-premultiplied to premultiplied alpha format is now fully
+    NEON optimized (both with and without R/B color components
+    swapping in the process).
+
+commit 733f68912f4a44c24ad3973049a7e1d98f4c6ea8
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Nov 29 09:11:29 2010 +0200
+
+    ARM: added 'neon_composite_in_n_8' fast path
+
+commit af7a69d90ea2b43a4e850870727723d719f09a1c
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Nov 29 09:00:46 2010 +0200
+
+    ARM: added flags parameter to some asm fast path wrapper macros
+    
+    Not all types of operations can be skipped when having transparent
+    solid source or transparent solid mask. Add an extra flags parameter
+    for providing this information to the wrappers.
+
+commit f6843e3797eea7e4aed7614b1086f5cefc06c0f9
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Nov 29 03:31:32 2010 +0200
+
+    ARM: added 'neon_composite_add_8888_n_8888' fast path
+
+commit b066b520dfaf0a9f4d1bc9a73c789091e9ce7cc8
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Nov 29 02:38:52 2010 +0200
+
+    ARM: added 'neon_composite_add_n_8_8888' fast path
+
+commit 1fba7790367d7b726d05a33bbbcebe10b9280a31
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Nov 29 02:10:22 2010 +0200
+
+    ARM: better NEON instructions scheduling for add_8888_8888_8888
+    
+    Provides a minor performance improvement by using pipelining and hiding
+    instructions latencies. Also do not clobber d0-d3 registers (source
+    image pixels) while doing calculations in order to allow the use of
+    the same macro for add_n_8_8888 fast path later.
+    
+    Benchmark from ARM Cortex-A8 @500MHz:
+    
+    == before ==
+    
+      add_8888_8888_8888 = L1:  95.94  L2:  42.27  M: 25.60 (121.09%)
+                           HT:  14.54  VT:  13.13  R: 12.77  RT:  4.49 (48Kops/s)
+         add_8888_8_8888 = L1: 104.51  L2:  57.81  M: 36.06 (106.62%)
+                           HT:  19.24  VT:  16.45  R: 14.71  RT:  4.80 (51Kops/s)
+    
+    == after ==
+    
+      add_8888_8888_8888 = L1: 106.66  L2:  47.82  M: 27.32 (129.30%)
+                           HT:  15.44  VT:  13.96  R: 12.86  RT:  4.48 (48Kops/s)
+         add_8888_8_8888 = L1: 107.72  L2:  61.02  M: 38.26 (113.16%)
+                           HT:  19.48  VT:  16.72  R: 14.82  RT:  4.80 (51Kops/s)
+
+commit c3f48b6aa2f9354af02ffc8c938ec6753fdcbde3
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Sun Nov 28 22:05:53 2010 +0200
+
+    ARM: added 'neon_composite_add_8888_8_8888' fast path
+
+commit 6d2f7f981b52b41f4321071c325babcf792bd666
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Sat Nov 27 15:53:54 2010 +0200
+
+    ARM: added 'neon_composite_over_0565_n_0565' fast path
+
+commit 3990931bf6197eff1cec06cf24bce53ddf9a539a
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Sat Nov 27 04:47:39 2010 +0200
+
+    ARM: reuse common NEON code for over_{n_8|8888_n|8888_8}_0565
+    
+    Renamed suppementary macros from 'over_n_8_0565' to 'over_8888_8_0565',
+    because they can actually support all variants of this operation:
+    over_8888_8_0565/over_n_8_0565/over_8888_n_0565.
+    
+    Also 'over_8888_8_0565' now uses more optimized common code instead of its
+    own variant, improving performance a bit. Even though this operation is
+    still memory bandwidth limited, scaled variants of these fast paths may
+    put more stress on CPU later.
+    
+    Benchmarked on ARM Cortex-A8 @500MHz:
+    
+    == before ==
+    
+        over_8888_8_0565 =  L1:  67.10  L2:  53.82  M: 44.70 (105.17%)
+                            HT:  18.73  VT:  16.91  R: 14.25  RT:  4.80 (52Kops/s)
+    
+    == after ==
+    
+        over_8888_8_0565 =  L1:  77.83  L2:  58.14  M: 44.82 (105.52%)
+                            HT:  20.58  VT:  17.44  R: 15.05  RT:  4.88 (52Kops/s)
+
+commit a7c36681c0c1955ff9110b81f1789e56abb10a95
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Sat Nov 27 03:53:12 2010 +0200
+
+    ARM: added 'neon_composite_over_8888_n_0565' fast path
+
+commit e6814837a6ccd3e4db329e0131eaf2055d2c864b
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Nov 26 17:06:58 2010 +0200
+
+    ARM: better NEON instructions scheduling for over_n_8_0565
+    
+    Code rearranged to get better instructions scheduling for ARM Cortex-A8/A9.
+    Now it is ~30% faster for the pixel data in L1 cache and makes better use
+    of memory bandwidth when running at lower clock frequencies (ex. 500MHz).
+    Also register d24 (pixels from the mask image) is now not clobbered by
+    supplementary macros, which allows to reuse them for the other variants
+    of compositing operations later.
+    
+    Benchmark from ARM Cortex-A8 @500MHz:
+    
+    == before ==
+    
+        over_n_8_0565 =  L1:  63.90  L2:  63.15  M: 60.97 ( 73.53%)
+                         HT:  28.89  VT:  24.14  R: 21.33  RT:  6.78 (  67Kops/s)
+    
+    == after ==
+    
+        over_n_8_0565 =  L1:  82.64  L2:  75.19  M: 71.52 ( 84.14%)
+                         HT:  30.49  VT:  25.56  R: 22.36  RT:  6.89 (  68Kops/s)
+
+commit 3be86a92ccab240859062a541cdb871d81c9501a
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Sun Nov 28 21:45:06 2010 +0200
+
+    ARM: introduced 'fetch_mask_pixblock' macro to simplify code
+    
+    This macro hides the implementation details of pixels fetching
+    for the mask image just like 'fetch_src_pixblock' does for the
+    source image. This provides more possibilities for reusing the
+    same code blocks in different compositing functions.
+    
+    This patch does not introduce any functional changes and the
+    resulting code in the compiled object file is exactly the same.
+
+commit 98d08b37f17a3379d0ceff8bb7de8f943873fbd8
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Nov 26 08:55:49 2010 +0200
+
+    ARM: added 'neon_composite_over_n_8_8' fast path
+
+commit 4b5b5a2a832cd67f2a0ec231f75a2825b45571fa
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Nov 15 18:26:43 2010 +0200
+
+    C fast path for a1 fill operation
+    
+    Can be used as one of the solutions to fix bug
+    https://bugs.freedesktop.org/show_bug.cgi?id=31604
+
+commit 654961efe405ad1a7e54a77548ca8af322ecc1f8
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sun Nov 21 11:42:22 2010 -0800
+
+    Sun's copyrights belong to Oracle now
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit e7ee43c39d2370716a4d011afa8f5067eced9899
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Wed Nov 17 16:16:56 2010 +0100
+
+    Fix argument quoting for AC_INIT.
+    
+    One gets rid of this accordingly:
+    | autoreconf -vfi
+    | autoreconf: Entering directory `.'
+    | autoreconf: configure.ac: not using Gettext
+    | autoreconf: running: aclocal --force
+    | configure.ac:61: warning: AC_INIT: not a literal: "pixman@lists.freedesktop.org"
+    | autoreconf: configure.ac: tracing
+    | configure.ac:61: warning: AC_INIT: not a literal: "pixman@lists.freedesktop.org"
+    
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit c59db8af66510e8e0a852e5775cff46f7476c71c
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Nov 16 17:14:47 2010 -0500
+
+    Post-release version bump to 0.21.3
+
 commit 4646c238589986499834b28ed903c366b5ba15ed
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Tue Nov 16 16:43:26 2010 -0500
