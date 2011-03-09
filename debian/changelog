@@ -6,6 +6,12 @@ pixman (0.21.6-1) UNRELEASED; urgency=low
   * Wrap Build-Depends.
   * Remove libpixman1-dev from Conflicts, last seen in etch!
   * Update Uploaders list. Thanks, David!
+  * Switch to dh:
+    - Use debhelper 8.
+    - Use dh-autoreconf.
+    - Kill .la files.
+    - Switch dh_install from --list-missing to --fail-missing for
+      additionaly safety.
 
  -- Cyril Brulebois <kibi@debian.org>  Wed, 09 Mar 2011 03:20:57 +0100
 

@@ -4,10 +4,8 @@ Priority: optional
 Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
 Uploaders: Cyril Brulebois <kibi@debian.org>
 Build-Depends:
- debhelper (>= 5),
- automake,
- autoconf,
- libtool,
+ debhelper (>= 8),
+ dh-autoreconf,
  pkg-config,
  quilt,
 Standards-Version: 3.8.3
