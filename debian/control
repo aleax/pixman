@@ -54,7 +54,6 @@ Architecture: any
 Depends:
  libpixman-1-0 (= ${binary:Version}),
  ${misc:Depends},
-Conflicts: libpixman1-dev
 Description: pixel-manipulation library for X and cairo (development files)
  Development libraries, header files and documentation needed by
  programs that want to compile with the Cairo/X pixman library.
