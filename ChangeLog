@@ -1,3 +1,478 @@
+commit 8b3332166094db657e96c365a524b2cd7513359b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Feb 22 15:43:41 2011 -0500
+
+    Pre-release version bump to 0.21.6
+
+commit 2cb67d2a0b6bed4490a41c34a185cc54a445559a
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Feb 22 15:40:34 2011 -0500
+
+    Minor fix to the RELEASING file
+
+commit 3cdf74257bdb9d054637252f4fa7503abf580db9
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Feb 22 15:28:17 2011 -0500
+
+    Delete pixman-x64-mmx-emulation.h from pixman/Makefile.am
+
+commit 65919ad17fd7b4c6f963690fc78155c7cfe1a51a
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Feb 22 19:28:08 2011 +0200
+
+    Ensure that tests run as the last step of a build for 'make check'
+    
+    Previously 'make check' would compile and run tests first, and only
+    then proceed to compiling demos. Which is not very convenient
+    because of the need to scroll back console output to see the
+    tests verdict. Swapping order of SUBDIRS variable entries in
+    Makefile.am resolves this.
+
+commit 34a7ac047411d6c1f1708cb8dd4469cd1aa40b31
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Feb 18 07:38:49 2011 -0500
+
+    sse2: Minor coding style cleanups.
+    
+    Also make pixman_fill_sse2() static.
+
+commit 10f69e5ec844e2630f8e5b21fd5392719d34d060
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Feb 18 07:40:02 2011 -0500
+
+    sse2: Remove pixman-x64-mmx-emulation.h
+    
+    Also stop including mmintrin.h
+
+commit 984be4def2e62a05e9a91e77ac8c703fed30718b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Feb 18 07:38:03 2011 -0500
+
+    sse2: Delete obsolete or redundant comments
+
+commit 33d98902261ad73c1b6b1366968e49a1cb2bf68b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Feb 18 07:07:45 2011 -0500
+
+    sse2: Remove all the core_combine_* functions
+    
+    Now that _mm_empty() is not used anymore, they are no longer different
+    from the sse2_combine_* functions, so they can be consolidated.
+
+commit 87cd6b8056bbacb835eeb991f03b9135dcd58334
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Feb 18 05:15:50 2011 -0500
+
+    sse2: Don't compile pixman-sse2.c with -mmmx anymore
+    
+    It's not necessary now that the file doesn't use MMX instructions.
+
+commit e7fe5e35e9640c6d6bb08c24b96ce882434a7f9f
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Feb 18 05:07:08 2011 -0500
+
+    sse2: Delete unused MMX functions and constants and all _mm_empty()s
+    
+    These are not needed because the SSE2 implementation doesn't use MMX
+    anymore.
+
+commit f88ae14c15040345a12ff0488c7b23d25639e49b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Feb 18 03:56:20 2011 -0500
+
+    sse2: Convert all uses of MMX registers to use SSE2 registers instead.
+    
+    By avoiding use of MMX registers we won't need to call emms all over
+    the place, which avoids various miscompilation issues.
+
+commit 7fb75bb3e6c3e004374d186ea2d6f02d1caccba4
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Feb 18 03:57:55 2011 -0500
+
+    Coding style:  core_combine_in_u_pixelsse2 -> core_combine_in_u_pixel_sse2
+
+commit 510c0d088a975efe75cc2b796547f3aaed1c18e6
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Feb 15 09:11:44 2011 -0500
+
+    In pixman_image_set_transform() allow NULL for transform
+    
+    Previously, this would crash unless the existing transform were also
+    NULL.
+
+commit 7feb710e60cdab5c448a396537a8de16e72091e2
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Feb 15 04:55:02 2011 -0500
+
+    Avoid marking images dirty when properties are reset
+    
+    When an image property is set to the same value that it already is,
+    there is no reason to mark the image dirty and incur a recomputation
+    of the flags.
+
+commit 3598ec26ecf761488e2ac1536553eaf3bb361e72
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Feb 11 08:57:42 2011 -0500
+
+    Add new public function pixman_add_triangles()
+    
+    This allows some more code to be deleted from the X server. The
+    implementation consists of converting to trapezoids, and is shared
+    with pixman_composite_triangles().
+
+commit 964c7e7cd20a6ed414fdf92b71fdc83db91d7578
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Jan 14 06:19:08 2011 -0500
+
+    Optimize adding opaque trapezoids onto a8 destination.
+    
+    When the source is opaque and the destination is alpha only, we can
+    avoid the temporary mask and just add the trapezoids directly.
+
+commit 0bc03482f10d7bfe64a4199e9cd484ff1129d709
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jan 12 03:02:59 2011 -0500
+
+    Add a test program, tri-test
+    
+    This program tests whether the new triangle support works.
+
+commit 79e69aac8cfe7d45707098735376a6e6c2dcfa06
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Jan 11 10:15:21 2011 -0500
+
+    Add support for triangles to pixman.
+    
+    The Render X extension can draw triangles as well as trapezoids, but
+    the implementation has always converted them to trapezoids. This patch
+    moves the X server's triangle conversion code into pixman, where we
+    can reuse the pixman_composite_trapezoid() code.
+
+commit 4e6dd4928d817338ae406a620f5658bbddb66df1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Feb 10 10:37:08 2011 -0500
+
+    Add a test program for pixman_composite_trapezoids().
+    
+    A CRC32 based test program to check that pixman_composite_trapezoids()
+    actually works.
+
+commit 803272e38c5b9b9abe347390c2ecd2ac4be7b9be
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Jan 11 09:23:43 2011 -0500
+
+    Add pixman_composite_trapezoids().
+    
+    This function is an implementation of the X server request
+    Trapezoids. That request is what the X backend of cairo is using all
+    the time; by moving it into pixman we can hopefully make it faster.
+
+commit 1feaf6bea707a97db44643c5bfa6218afea9b6be
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Jan 18 19:40:53 2011 -0500
+
+    test/Makefile.am: Move all the TEST_LDADD into a new global LDADD.
+    
+    This gets rid of a bunch of replicated *_LDADD clauses
+
+commit 1237fd9bc84a27f232ceddf1c7b72645fcc99aec
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Jan 18 19:20:18 2011 -0500
+
+    Add @TESTPROGS_EXTRA_LDFLAGS@ to AM_LDFLAGS
+    
+    Instead of explicitly adding it to each test program.
+
+commit 7dfe845786920d50c6f93165ef6f539e6f4d1b53
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Jan 18 19:16:39 2011 -0500
+
+    Move all the GTK+ based test programs to a new subdir, "demos"
+    
+    This separates the test suite from the random gtk+ using test
+    programs. "demos" is somewhat misleading because the programs there
+    are not particularly exciting (with the possible exception of
+    composite-test which shows off all the compositing operators).
+
+commit 8e4100260bbdb827abc45a2a5e352a53246fe614
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Feb 4 00:47:36 2011 +0200
+
+    SSE2 optimization for nearest scaled over_8888_n_8888
+    
+    This operation shows up a little bit in some of the html5 based
+    games from http://www.kesiev.com/akihabara/
+    
+    === Cairo trace of the game intro animation for 'Legend of Sadness' ===
+    
+    before:
+    [  0]    image    firefox-legend-of-sadness   46.286   46.298   0.01%    5/6
+    
+    after:
+    [  0]    image    firefox-legend-of-sadness   45.088   45.102   0.04%    6/6
+    
+    === Microbenchmark (scaling ~2000x~2000 -> ~2000x~2000) ===
+    
+    before:
+        translucent: op=3, src=8888, mask=s dst=8888, speed=131.30 MPix/s
+        transparent: op=3, src=8888, mask=s dst=8888, speed=132.38 MPix/s
+        opaque:      op=3, src=8888, mask=s dst=8888, speed=167.90 MPix/s
+    after:
+        translucent: op=3, src=8888, mask=s dst=8888, speed=301.93 MPix/s
+        transparent: op=3, src=8888, mask=s dst=8888, speed=770.70 MPix/s
+        opaque:      op=3, src=8888, mask=s dst=8888, speed=301.80 MPix/s
+
+commit 39b86b032d1b81958d4dfc880ba7f129aecb1de0
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 3 15:22:28 2010 +0200
+
+    ARM: NEON optimization for nearest scaled over_0565_8_0565
+    
+    In some cases may be used for html5 video when hardware acceleration
+    is not available.
+
+commit 9a90c1c90f1d128de68b3ed855a2ea1c3bed20c3
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 3 15:16:28 2010 +0200
+
+    ARM: NEON optimization for nearest scaled over_8888_8_0565
+    
+    In some cases may be used for html5 video when hardware acceleration
+    is not available.
+
+commit cd1062ded44978fa97aa3d3295af016c80c6e2eb
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Nov 3 15:15:15 2010 +0200
+
+    ARM: new macro template for using scaled fast paths with a8 mask
+
+commit b099957887ef69b795d542f8f2980b5a94fb823f
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Wed Feb 2 18:14:56 2011 +0200
+
+    Better support for NONE repeat in nearest scaling main loop template
+    
+    Scaling function now gets an extra boolean argument, which is set
+    to TRUE when we are fetching padding pixels for NONE repeat. This
+    allows to make a decision whether to interpret alpha as 0xFF or 0x00
+    for such pixels when working with formats which don't have alpha
+    channel (for example x8r8g8b8 and r5g6b5).
+
+commit 14f82083a12be07f340fdea491759b3bb77b4e66
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Oct 22 17:54:41 2010 +0300
+
+    Support for a8 and solid mask in nearest scaling main loop template
+    
+    In addition to the most common case of not having any mask at all, two
+    variants of scaling with mask show up in cairo traces:
+    1. non-scaled a8 mask with SAMPLES_COVER_CLIP flag
+    2. solid mask
+    
+    This patch extends the nearest scaling main loop template to also
+    support these cases.
+
+commit e83cee5aac26522f31a7e81ea3f972ae2248f6b0
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Oct 22 16:29:01 2010 +0300
+
+    test: Extend scaling-test to support a8/solid mask and ADD operation
+    
+    Image width also has been increased because SIMD optimizations typically
+    do more unrolling in the inner loops, and this needs to be tested.
+
+commit 97447f440fec9889bba6cc21c6d9366183c47e7e
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Jan 17 02:29:43 2011 +0200
+
+    Use const modifiers for source buffers in nearest scaling fast paths
+
+commit 8d359b00c5bb9960c3c584a7f77a943c0ce61368
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Jul 30 18:37:51 2010 +0300
+
+    C fast paths for a simple 90/270 degrees rotation
+    
+    Depending on CPU architecture, performance is in the range of 1.5 to 4 times
+    slower than simple nonrotated copy (which would be an ideal case, perfectly
+    utilizing memory bandwidth), but still is more than 7 times faster if
+    compared to general path.
+    
+    This implementation sets a performance baseline for rotation. The use
+    of SIMD instructions may further improve memory bandwidth utilization.
+
+commit e0c7948c970b816f323a6402241ca70fa855c12c
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Thu Jul 29 17:58:13 2010 +0300
+
+    New flags for 90/180/270 rotation
+    
+    These flags are set when the transform is a simple nonscaled 90/180/270
+    degrees rotation.
+
+commit 3b68c295fd45297a631569b35608364dbcb6d452
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Tue Oct 26 15:40:01 2010 +0300
+
+    test: affine-test updated to stress 90/180/270 degrees rotation more
+
+commit 56f173f0af5a59a12596cf1ed9d6fb7c8ebe6318
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Feb 10 05:21:42 2011 -0500
+
+    Add pixman-conical-gradient.c to Makefile.win32.
+    
+    Pointed out by Kirill Tishin.
+
+commit 7fd4897730412977f730b850e6e697156fb3734b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Jan 23 16:53:26 2011 -0500
+
+    Add SSE2 fetcher for 0565
+    
+    Before:
+    
+    add_0565_0565 = L1:  61.08  L2:  61.03  M: 60.57 ( 10.95%)  HT: 46.85  VT: 45.25  R: 39.99  RT: 20.41 ( 233Kops/s)
+    
+    After:
+    
+    add_0565_0565 = L1:  77.84  L2:  76.25  M: 75.38 ( 13.71%)  HT: 55.99  VT: 54.56  R: 45.41  RT: 21.95 ( 255Kops/s)
+
+commit 8414aa76c20732a6ed29a2d80175936570c5e592
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 31 00:57:46 2010 -0500
+
+    Improve performance of sse2_combine_over_u()
+    
+    Split this function into two, one that has a mask, and one that
+    doesn't. This is a fairly substantial speed-up in many cases.
+    
+    New output of lowlevel-blt-bench over_x888_8_0565:
+    
+    over_x888_8_0565 =  L1:  63.76  L2:  62.75  M: 59.37 ( 21.55%)  HT: 45.89  VT: 43.55  R: 34.51  RT: 16.80 ( 201Kops/s)
+
+commit 08e855f15cba24aac83145b994069d0bb50be5a1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Jan 23 16:17:17 2011 -0500
+
+    Add SSE2 fetcher for a8
+    
+    New output of lowlevel-blt-bench over_x888_8_0565:
+    
+    over_x888_8_0565 =  L1:  57.85  L2:  56.80  M: 54.14 ( 19.50%)  HT: 42.64  VT: 40.56  R: 32.67  RT: 16.22 ( 195Kops/s)
+    
+    Based in part on code by Steve Snyder from
+    
+        https://bugs.freedesktop.org/show_bug.cgi?id=21173
+
+commit 2b6b0cf3591ce4438f7e0571c7a762972a999cd8
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jan 12 06:38:54 2011 -0500
+
+    Add SSE2 fetcher for x8r8g8b8
+    
+    New output of lowlevel-blt-bench over_x888_8_0565:
+    
+    over_x888_8_0565 =  L1:  55.68  L2:  55.11  M: 52.83 ( 19.04%)  HT: 39.62  VT: 37.70  R: 30.88  RT: 14.62 ( 174Kops/s)
+    
+    The fetcher is looked up in a table, so that other fetchers can easily
+    be added.
+    
+    See also https://bugs.freedesktop.org/show_bug.cgi?id=20709
+
+commit 13aed37758d1af5b5bc2a80d886b764d4c45827e
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Jan 22 17:13:19 2011 -0500
+
+    Add a test for over_x888_8_0565 in lowlevel_blt_bench().
+    
+    The next few commits will speed this up quite a bit.
+    
+    Current output:
+    
+    ---
+    reference memcpy speed = 2217.5MB/s (554.4MP/s for 32bpp fills)
+    ---
+    over_x888_8_0565 =  L1:  54.67  L2:  54.01  M: 52.33 ( 18.88%)  HT: 37.19  VT: 35.54  R: 29.40  RT: 13.63 ( 162Kops/s)
+
+commit 2de397c272fd60d6ce4311b411ad37a8e39daff6
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jan 24 12:24:42 2011 -0500
+
+    Move fallback decisions from implementations into pixman-cpu.c.
+    
+    Instead of having each individual implementation decide which fallback
+    to use, move it into pixman-cpu.c, where a more global decision can be
+    made.
+    
+    This is accomplished by adding a "fallback" argument to all the
+    pixman_implementation_create_*() implementations, and then in
+    _pixman_choose_implementation() pass in the desired fallback.
+
+commit ed781df1cc30748c8193be9b9a497def0b768b6b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Jan 21 14:47:33 2011 -0500
+
+    Print a warning when a development snapshot is being configured.
+    
+    It seems to be relatively common for people to use development
+    snapshots of pixman thinking they are ordinary releases. This patch
+    makes it such that if the current minor version is odd, configure will
+    print a banner explaining the version number scheme plus information
+    about where to report bugs.
+
+commit fead9eb82a7fc78a4927fff960d4cacea799bd9b
+Author: Rolland Dudemaine <rolland@ghs.com>
+Date:   Tue Jan 25 15:08:26 2011 +0200
+
+    Fix "variable was set but never used" warnings
+    
+    Removes useless variable declarations. This can only result in more
+    efficient code, as these variables where sometimes assigned, but
+    their values were never used.
+
+commit 32e556df33b3cd3b31de8184f144b3065206406b
+Author: Rolland Dudemaine <rolland@ghs.com>
+Date:   Tue Jan 25 14:14:57 2011 +0200
+
+    test: Use the right enum types instead of int to fix warnings
+    
+    Green Hills Software MULTI compiler was producing a number
+    of warnings due to incorrect uses of int instead of the correct
+    corresponding pixman_*_t type.
+
+commit b61ec0a6862ba101fff0afa082fb7490a0c44785
+Author: Rolland Dudemaine <rolland@ghs.com>
+Date:   Tue Jan 25 14:52:49 2011 +0200
+
+    Correct the initialization of 'max_vx'
+    
+    http://lists.freedesktop.org/archives/pixman/2011-January/000937.html
+
+commit e8a1b1c4e502ecbb70028bd5a86034bfe1b16997
+Author: Rolland Dudemaine <rolland@ghs.com>
+Date:   Tue Jan 25 13:55:28 2011 +0200
+
+    test: Fix for mismatched 'fence_malloc' prototype/implementation
+    
+    Solves compilation problem when 'mprotect' is not available. For
+    example, when using Green Hills Software MULTI compiler or mingw:
+    http://lists.freedesktop.org/archives/pixman/2011-January/000939.html
+
+commit a8e4677ecc2fcbf16a53902e26fc82d0860e9a21
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Mon Jan 10 21:01:16 2011 +0200
+
+    The code in 'bitmap_addrect' already assumes non-null 'reg->data'
+    
+    So the check of 'reg->data' pointer can be safely removed.
+
+commit a6a04c07c354e10d787193af8d2f6a6d27f374ad
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jan 19 07:47:52 2011 -0500
+
+    Post-release version bump to 0.21.5
+
 commit 4e56cec5649b7e122ccfc815b4ff45611953afce
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Wed Jan 19 07:38:24 2011 -0500
