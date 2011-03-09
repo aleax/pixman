@@ -12,6 +12,7 @@ pixman (0.21.6-1) UNRELEASED; urgency=low
     - Kill .la files.
     - Switch dh_install from --list-missing to --fail-missing for
       additionaly safety.
+  * Add a quilt series placeholder file.
 
  -- Cyril Brulebois <kibi@debian.org>  Wed, 09 Mar 2011 03:20:57 +0100
 
