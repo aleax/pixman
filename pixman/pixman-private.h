@@ -183,6 +183,9 @@ union pixman_image
 };
 
 typedef struct pixman_iter_t pixman_iter_t;
+typedef uint32_t *(* pixman_iter_get_scanline_t) (pixman_iter_t *iter, const uint32_t *mask);
+typedef void      (* pixman_iter_write_back_t)   (pixman_iter_t *iter);
+
 typedef enum
 {
     ITER_NARROW =		(1 << 0),
@@ -209,13 +212,16 @@ typedef enum
 
 struct pixman_iter_t
 {
-    uint32_t *(* get_scanline) (pixman_iter_t *iter, const uint32_t *mask);
-    void      (* write_back)   (pixman_iter_t *iter);
+    pixman_iter_get_scanline_t	get_scanline;
+    pixman_iter_write_back_t	write_back;
 
-    pixman_image_t *    image;
-    uint32_t *          buffer;
-    int                 x, y;
-    int                 width;
+    pixman_image_t *		image;
+    uint32_t *			buffer;
+    int				x, y;
+    int				width;
+
+    uint8_t *			bits;
+    int				stride;
 };
 
 void
@@ -534,31 +540,31 @@ pixman_implementation_t *
 _pixman_implementation_create_general (void);
 
 pixman_implementation_t *
-_pixman_implementation_create_fast_path (void);
+_pixman_implementation_create_fast_path (pixman_implementation_t *fallback);
 
 #ifdef USE_MMX
 pixman_implementation_t *
-_pixman_implementation_create_mmx (void);
+_pixman_implementation_create_mmx (pixman_implementation_t *fallback);
 #endif
 
 #ifdef USE_SSE2
 pixman_implementation_t *
-_pixman_implementation_create_sse2 (void);
+_pixman_implementation_create_sse2 (pixman_implementation_t *fallback);
 #endif
 
 #ifdef USE_ARM_SIMD
 pixman_implementation_t *
-_pixman_implementation_create_arm_simd (void);
+_pixman_implementation_create_arm_simd (pixman_implementation_t *fallback);
 #endif
 
 #ifdef USE_ARM_NEON
 pixman_implementation_t *
-_pixman_implementation_create_arm_neon (void);
+_pixman_implementation_create_arm_neon (pixman_implementation_t *fallback);
 #endif
 
 #ifdef USE_VMX
 pixman_implementation_t *
-_pixman_implementation_create_vmx (void);
+_pixman_implementation_create_vmx (pixman_implementation_t *fallback);
 #endif
 
 pixman_implementation_t *
@@ -605,6 +611,9 @@ _pixman_iter_get_scanline_noop (pixman_iter_t *iter, const uint32_t *mask);
 #define FAST_PATH_AFFINE_TRANSFORM		(1 << 18)
 #define FAST_PATH_Y_UNIT_ZERO			(1 << 19)
 #define FAST_PATH_BILINEAR_FILTER		(1 << 20)
+#define FAST_PATH_ROTATE_90_TRANSFORM		(1 << 21)
+#define FAST_PATH_ROTATE_180_TRANSFORM		(1 << 22)
+#define FAST_PATH_ROTATE_270_TRANSFORM		(1 << 23)
 
 #define FAST_PATH_PAD_REPEAT						\
     (FAST_PATH_NO_NONE_REPEAT		|				\
