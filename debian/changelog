@@ -13,6 +13,7 @@ pixman (0.21.6-1) UNRELEASED; urgency=low
     - Switch dh_install from --list-missing to --fail-missing for
       additionaly safety.
   * Add a quilt series placeholder file.
+  * Bump Standards-Version to 3.9.1 (no changes needed).
 
  -- Cyril Brulebois <kibi@debian.org>  Wed, 09 Mar 2011 03:20:57 +0100
 
