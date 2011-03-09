@@ -1,4 +1,4 @@
-pixman (0.21.6-1) UNRELEASED; urgency=low
+pixman (0.21.6-1) experimental; urgency=low
 
   * New upstream release.
   * Update symbols file with new symbols.
@@ -15,7 +15,7 @@ pixman (0.21.6-1) UNRELEASED; urgency=low
   * Add a quilt series placeholder file.
   * Bump Standards-Version to 3.9.1 (no changes needed).
 
- -- Cyril Brulebois <kibi@debian.org>  Wed, 09 Mar 2011 03:20:57 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Wed, 09 Mar 2011 04:08:02 +0100
 
 pixman (0.21.4-2) unstable; urgency=low
 
