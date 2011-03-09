@@ -3,7 +3,7 @@
 include /usr/share/quilt/quilt.make
 
 PACKAGE = libpixman-1-0
-SHLIBS_VERSION = 0.19.4
+SHLIBS_VERSION = 0.21.6
 
 # Disable Gtk+ autodetection:
 confflags = --disable-gtk
