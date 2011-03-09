@@ -1,7 +1,10 @@
 libpixman-1.so.0 libpixman-1-0 #MINVER#
  pixman_add_trapezoids@Base 0
  pixman_add_traps@Base 0
+ pixman_add_triangles@Base 0.21.6
  pixman_blt@Base 0
+ pixman_composite_trapezoids@Base 0.21.6
+ pixman_composite_triangles@Base 0.21.6
  pixman_compute_composite_region@Base 0
  pixman_disable_out_of_bounds_workaround@Base 0.15.16
  pixman_edge_init@Base 0
