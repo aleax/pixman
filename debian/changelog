@@ -5,6 +5,7 @@ pixman (0.21.6-1) UNRELEASED; urgency=low
   * Bump shlibs accordingly.
   * Wrap Build-Depends.
   * Remove libpixman1-dev from Conflicts, last seen in etch!
+  * Update Uploaders list. Thanks, David!
 
  -- Cyril Brulebois <kibi@debian.org>  Wed, 09 Mar 2011 03:20:57 +0100
 
