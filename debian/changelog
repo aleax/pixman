@@ -1,4 +1,4 @@
-pixman (0.21.8-1) UNRELEASED; urgency=low
+pixman (0.21.8-1) unstable; urgency=low
 
   * New upstream release.
   * As seen in the upstream announcement: “When this version of pixman is
@@ -7,7 +7,7 @@ pixman (0.21.8-1) UNRELEASED; urgency=low
   * This new release should fix the FTBFS on big endian machines, tests
     were failing due to missing swapping (Closes: #622211).
 
- -- Cyril Brulebois <kibi@debian.org>  Fri, 29 Apr 2011 17:52:08 +0200
+ -- Cyril Brulebois <kibi@debian.org>  Fri, 29 Apr 2011 17:53:12 +0200
 
 pixman (0.21.6-2) unstable; urgency=low
 
