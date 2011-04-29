@@ -4,6 +4,8 @@ pixman (0.21.8-1) UNRELEASED; urgency=low
   * As seen in the upstream announcement: “When this version of pixman is
     used with the git version of the X server, trapezoid rendering will be
     corrupted. This is a known bug in the X server.”
+  * This new release should fix the FTBFS on big endian machines, tests
+    were failing due to missing swapping (Closes: #622211).
 
  -- Cyril Brulebois <kibi@debian.org>  Fri, 29 Apr 2011 17:52:08 +0200
 
