@@ -1,3 +1,10 @@
+pixman (0.21.8-2) UNRELEASED; urgency=low
+
+  [ Steve Langasek ]
+  * Build for multiarch.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 12 Jun 2011 16:57:47 +0200
+
 pixman (0.21.8-1) unstable; urgency=low
 
   * New upstream release.
