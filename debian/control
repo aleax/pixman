@@ -8,7 +8,7 @@ Build-Depends:
  dh-autoreconf,
  pkg-config,
  quilt,
-Standards-Version: 3.9.1
+Standards-Version: 3.9.2
 Vcs-Git: git://git.debian.org/git/pkg-xorg/lib/pixman
 Vcs-Browser: http://git.debian.org/?p=pkg-xorg/lib/pixman.git
 
