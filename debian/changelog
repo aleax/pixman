@@ -1,4 +1,6 @@
-pixman (0.22.0-1) UNRELEASED; urgency=low
+pixman (0.22.0-1) unstable; urgency=low
+
+  * Team upload.
 
   [ Steve Langasek ]
   * Build for multiarch.
@@ -7,7 +9,7 @@ pixman (0.22.0-1) UNRELEASED; urgency=low
   * Bump Standards-Version to 3.9.2.
   * New upstream release (no changes from 0.21.8 except for the version bump).
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 12 Jun 2011 17:00:52 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sun, 12 Jun 2011 17:02:01 +0200
 
 pixman (0.21.8-1) unstable; urgency=low
 
