@@ -21,7 +21,8 @@ override_dh_install:
 
 # Debug package:
 override_dh_strip:
-	dh_strip --dbg-package=$(PACKAGE)-dbg
+	dh_strip -p$(PACKAGE) --dbg-package=$(PACKAGE)-dbg
+	dh_strip -N$(PACKAGE)
 
 # Shlibs:
 override_dh_makeshlibs:
