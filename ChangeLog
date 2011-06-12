@@ -1,3 +1,15 @@
+commit 918a544406df8f428056daff8a634ad6eadf67c9
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon May 2 05:06:33 2011 -0400
+
+    Pre-release version bump to 0.22.0
+
+commit 71b2e2745be31e7d18a11f8c2cba8f6031ace17c
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Apr 19 00:22:29 2011 -0400
+
+    Post-release version bump to 0.21.9
+
 commit 89868e93bd8d66f0fac0f0b42cf7718756992e4e
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Tue Apr 19 00:00:37 2011 -0400
