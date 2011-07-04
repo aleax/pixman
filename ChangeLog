@@ -1,3 +1,276 @@
+commit 6c4001a0e1cc0350147638ba941d23e129d00e0d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jul 4 08:13:19 2011 -0400
+
+    Pre-release version bump to 0.23.2
+
+commit eff7c8efabe2da33edbf0bdc06e101352981286b
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Mon Jun 13 19:53:49 2011 +0900
+
+    Bilinear REPEAT_NORMAL source line extension for too short src_width
+    
+    To avoid function call and other calculation overhead, extend source
+    scanline into temporary buffer when source width is too small.
+    Temporary buffer will be repeatedly accessed, so extension cost is
+    very small due to cache effect.
+
+commit 828794d328e7ad1efc860baee8d6e72450b486b9
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Wed Jun 8 17:17:42 2011 +0900
+
+    Enable REPEAT_NORMAL bilinear fast path entries
+
+commit 1161b3f9edb6f5c396438b79f2df3218ea8d194e
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Wed Jun 8 17:14:29 2011 +0900
+
+    ARM: Add REPEAT_NORMAL functions to bilinear BIND macros
+    
+    Now bilinear template support REPEAT_NORMAL, so functions for that
+    is added to PIXMAN_ARM_BIND_SCALED_BILINEAR_ macros. Fast path
+    entries are not enabled yet.
+
+commit ebd2f06d96ee91f9f7f13b906ae328862da7dde8
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Wed Jun 8 17:11:24 2011 +0900
+
+    sse2: Declare bilinear src_8888_8888 REPEAT_NORMAL composite function
+    
+    Now bilinear template support REPEAT_NORMAL, so declare composite
+    functions using it. Function is just declared not used yet.
+
+commit 7e22b2f7824f844076e1bb1fb26a6ec5e5d029cd
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Wed Jun 8 15:58:01 2011 +0900
+
+    REPEAT_NORMAL support for bilinear fast path template
+    
+    The basic idea is to break down normal repeat into a set of
+    non-repeat scanline compositions and stitching them together.
+    
+    Bilinear may interpolate last and first pixels of source scanline.
+    In this case, we can use temporary wrap around buffer.
+
+commit 2f025bad436982a2b1c54d7cb49b426ebf198350
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Wed Jun 8 15:37:31 2011 +0900
+
+    Replace boolean arguments with flags for bilinear fast path template
+    
+    By replacing boolean arguments with flags, the code can be more
+    readable and flags can be extended to do some more things later.
+    
+    Currently following flags are defined.
+    
+    FLAG_NONE
+        - No flags are turned on.
+    
+    FLAG_HAVE_SOLID_MASK
+        - Template will generate solid mask composite functions.
+    
+    FLAG_HAVE_NON_SOLID_MASK
+        - Template will generate bits mask composite functions.
+    
+    FLAG_HAVE_SOLID_MASK and FLAG_NON_SOLID_MASK should be mutually
+    exclusive.
+
+commit 4d4d1760e8118aaea06783079a3b87f83deb4907
+Author: Søren Sandmann <ssp@redhat.com>
+Date:   Sat Jun 25 10:16:25 2011 -0400
+
+    test: Make fuzzer-find-diff.pl executable
+
+commit ece8d13bf77d050662bb9db9716576dabff37554
+Author: Søren Sandmann <sandmann@cs.au.dk>
+Date:   Sun Jun 19 20:29:08 2011 -0400
+
+    ARM: Fix two bugs in neon_composite_over_n_8888_0565_ca().
+    
+    The first bug is that a vmull.u8 instruction would store its result in
+    the q1 register, clobbering the d2 register used later on. The second
+    is that a vraddhn instruction would overwrite d25, corrupting the q12
+    register used later.
+    
+    Fixing the second bug caused a pipeline bubble where the d18 register
+    would be unavailable for a clock cycle. This is fixed by swapping the
+    instruction with its successor.
+
+commit 5715a394c41b2fd259ce7bf07b859d2a4eb2ec09
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Jun 19 19:10:45 2011 -0400
+
+    blitters-test: Make common formats more likely to be tested.
+    
+    Move the eight most common formats to the top of the list of image
+    formats and make create_random_image() much more likely to select one
+    of those eight formats.
+    
+    This should help catch more bugs in SIMD optimized operations.
+
+commit d815a1c54ae6ea6ccd16dedb7f83db0d2526d637
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Fri Jun 10 08:56:10 2011 +0200
+
+    Silence autoconf warnings
+    
+    Autoconf 2.86 reports:
+    
+    warning: AC_LANG_CONFTEST: no AC_LANG_SOURCE call detected in body
+    
+    Every code fragment must be wrapped in [AC_LANG_SOURCE([...])]
+
+commit a89f8cfaf11d0149b73ce40eca6e8a7f262f305a
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Mar 25 15:09:17 2011 -0400
+
+    Replace argumentxs to composite functions with a pointer to a struct
+    
+    This allows more information, such as flags or the composite region,
+    to be passed to the composite functions.
+
+commit 99e7d8fab546257ef729ea6db6e9beede984cec1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Mar 25 14:20:43 2011 -0400
+
+    In pixman-general.c rename image_parameters to {src, mask, dest}_image
+    
+    All the fast paths generally use these names as well.
+
+commit 4d713e3120909d82e37b0405d035e85bbc8a61a9
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Mar 25 14:17:08 2011 -0400
+
+    Replace instances of "dst_*" with "dest_*"
+    
+    The variables in question were dst_x, dst_y, dst_image. The majority
+    of _x and _y uses were already dest_x and dest_y, while the majority
+    of _image uses were dst_image.
+
+commit 6aceb767aa6eea38ec3021263ca1d83aa9e0a3df
+Author: Søren Sandmann <ssp@redhat.com>
+Date:   Sat May 28 12:32:35 2011 -0400
+
+    demos: Comment out some unused variables
+
+commit 4abe76432a59dec2e7978bfa4a01ad032178da0a
+Author: Søren Sandmann <ssp@redhat.com>
+Date:   Sat May 28 11:56:32 2011 -0400
+
+    sse2: Delete some unused variables
+
+commit 5c60e1855b082b1a323319e1d0ba2d6f916fb3d5
+Author: Søren Sandmann <ssp@redhat.com>
+Date:   Sat May 28 11:51:31 2011 -0400
+
+    mmx: Delete some unused variables
+
+commit 827e61333865dc94851eb79c8e640b103e3fd629
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Mon May 23 12:08:54 2011 +0200
+
+    Include noop in win32 builds
+
+commit 65b63728cc8ada802c9798e11e6fa92d21f2fbf8
+Author: Nis Martensen <nis.martensen@web.de>
+Date:   Mon May 2 21:43:58 2011 +0200
+
+    Fix a few typos in pixman-combine.c.template
+    
+    Some equations have too much multiplication with alpha.
+
+commit dd449a2a8ee1381fdc5297257917bc0786bf0ac4
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Apr 23 10:26:49 2011 -0400
+
+    Move NOP src iterator into noop implementation.
+    
+    The iterator for sources where neither RGB nor ALPHA is needed, really
+    belongs in the noop implementation.
+
+commit ba480882aa465d8414dc8a4472d89d94911af60a
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Apr 23 10:24:41 2011 -0400
+
+    Move NULL iterator into pixman-noop.c
+    
+    Iterating a NULL image returns NULL for all scanlines. We may as well
+    do this in the noop iterator.
+
+commit a4e984de19f7f2ca30b1d736cdd2dded91a75907
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Feb 8 23:42:36 2011 -0500
+
+    Add a noop src iterator
+    
+    When the image is a8r8g8b8 and not transformed, and the fetched
+    rectangle is within the image bounds, scanlines can be fetched by
+    simply returning a pointer instead of copying the bits.
+
+commit d4fff4a95921f734f26ef51953f4dddfcf423eab
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jan 24 12:16:03 2011 -0500
+
+    Move noop dest fetching to noop implementation
+    
+    It will at some point become useful to have CPU specific destination
+    iterators. However, a problem with that, is that such iterators should
+    not be used if we can composite directly in the destination image.
+    
+    By moving the noop destination iterator to the noop implementation, we
+    can ensure that it will be chosen before any CPU specific iterator.
+
+commit 13ce88f80095d0fa18330a23e03819368987e277
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jan 24 11:35:27 2011 -0500
+
+    Add a noop composite function for the DST operator
+    
+    The DST operator doesn't actually do anything, so add a noop "fast
+    path" for it, instead of checking in pixman_image_composite32().
+    
+    The performance tradeoff here is that we get rid of a test for DST in
+    the common case where the operator is not DST, in return for an extra
+    walk over the clip rectangles in the uncommon case where the operator
+    actually is DST.
+
+commit 8c76235f41b2ac70ce6e652dcd1cab975e1283a4
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jan 24 11:31:49 2011 -0500
+
+    Add a "noop" implementation.
+    
+    This new implementation is ahead of all other implementations in the
+    fallback chain and is supposed to contain operations that are "noops",
+    ie., they don't require any work. For example, it might contain a
+    "fast path" for the DST operator that doesn't actually do anything or
+    an iterator for a8r8g8b8 that just returns a pointer into the image.
+
+commit 0f6a4d45886d64b244d57403609f0377b58cc7fb
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Thu May 5 10:17:08 2011 +0200
+
+    test: Fix compilation on win32
+    
+    MSVC complains about uint32_t being used as an expression:
+    
+    composite.c(902) : error C2275: 'uint32_t' : illegal use of this type
+    as an expression
+
+commit 838c2b593ec5ebbbf82de5b7790f5b68fd86bbc1
+Author: Dave Yeo <dave.r.yeo@gmail.com>
+Date:   Mon May 9 12:38:44 2011 +0200
+
+    Check for working mmap()
+    
+    OS/2 doesn't have a working mmap().
+
+commit c53625a36e28883684c3a6e640aa3656ecca7615
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon May 2 05:11:49 2011 -0400
+
+    Post-release version bump to 0.23.1
+
 commit 918a544406df8f428056daff8a634ad6eadf67c9
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Mon May 2 05:06:33 2011 -0400
