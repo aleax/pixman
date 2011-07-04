@@ -1,6 +1,7 @@
 pixman (0.23.2-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * Enable parallel building (by passing --parallel to dh $@).
 
  -- Cyril Brulebois <kibi@debian.org>  Mon, 04 Jul 2011 22:46:51 +0200
 

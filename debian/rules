@@ -29,4 +29,4 @@ override_dh_makeshlibs:
 	dh_makeshlibs -p$(PACKAGE) --add-udeb $(PACKAGE)-udeb -V"$(PACKAGE) (>= $(SHLIBS))" -- -c4
 
 %:
-	dh $@ --with quilt,autoreconf --builddirectory=build/
+	dh $@ --with quilt,autoreconf --builddirectory=build/ --parallel
