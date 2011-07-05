@@ -54,7 +54,7 @@ AC_PREREQ([2.57])
 
 m4_define([pixman_major], 0)
 m4_define([pixman_minor], 22)
-m4_define([pixman_micro], 0)
+m4_define([pixman_micro], 2)
 
 m4_define([pixman_version],[pixman_major.pixman_minor.pixman_micro])
 
@@ -649,6 +649,11 @@ fi
 
 AC_CHECK_HEADER([sys/mman.h],
    [AC_DEFINE(HAVE_SYS_MMAN_H, [1], [Define to 1 if we have <sys/mman.h>])])
+
+AC_CHECK_FUNC(mmap, have_mmap=yes, have_mmap=no)
+if test x$have_mmap = xyes; then
+   AC_DEFINE(HAVE_MMAP, 1, [Whether we have mmap()])
+fi
 
 AC_CHECK_FUNC(mprotect, have_mprotect=yes, have_mprotect=no)
 if test x$have_mprotect = xyes; then
