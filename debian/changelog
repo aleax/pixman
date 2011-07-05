@@ -1,3 +1,10 @@
+pixman (0.22.2-1) UNRELEASED; urgency=low
+
+  * New upstream stable release:
+    - Fix glyph corruption on arm.
+
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 05 Jul 2011 13:55:16 +0200
+
 pixman (0.22.0-1) unstable; urgency=low
 
   * Team upload.

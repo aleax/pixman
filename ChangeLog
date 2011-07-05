@@ -1,3 +1,49 @@
+commit 9ab7bc4623c6f6fa9012f12224fa9c33c551e374
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jul 4 16:24:16 2011 -0400
+
+    Pre-release version bump to 0.22.2
+
+commit 7e657586007789d25f566536e6d2bea3afdf5ec6
+Author: Søren Sandmann <sandmann@cs.au.dk>
+Date:   Sun Jun 19 20:29:08 2011 -0400
+
+    ARM: Fix two bugs in neon_composite_over_n_8888_0565_ca().
+    
+    The first bug is that a vmull.u8 instruction would store its result in
+    the q1 register, clobbering the d2 register used later on. The second
+    is that a vraddhn instruction would overwrite d25, corrupting the q12
+    register used later.
+    
+    Fixing the second bug caused a pipeline bubble where the d18 register
+    would be unavailable for a clock cycle. This is fixed by swapping the
+    instruction with its successor.
+
+commit 134bf5c5a7ce0cf69593a14e4dc50911d0da453d
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Thu May 5 10:17:08 2011 +0200
+
+    test: Fix compilation on win32
+    
+    MSVC complains about uint32_t being used as an expression:
+    
+    composite.c(902) : error C2275: 'uint32_t' : illegal use of this type
+    as an expression
+
+commit 22620ea9e97d6bf73eeb74d818903e0afaf74d43
+Author: Dave Yeo <dave.r.yeo@gmail.com>
+Date:   Mon May 9 12:38:44 2011 +0200
+
+    Check for working mmap()
+    
+    OS/2 doesn't have a working mmap().
+
+commit dd598cf73bb6bb3656f03902eabf007b9af42e59
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jul 4 16:23:24 2011 -0400
+
+    Post-release version bump to 0.22.1
+
 commit 918a544406df8f428056daff8a634ad6eadf67c9
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Mon May 2 05:06:33 2011 -0400
