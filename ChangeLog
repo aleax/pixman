@@ -1,3 +1,952 @@
+commit e20ac40bd30484f0f711b52d0c1993ef08760284
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Oct 11 06:00:51 2011 -0400
+
+    Pre-release version bump to 0.23.6
+
+commit a43946a51fbbdc76be1af9bc25fe7c5c2a6314bb
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Thu Sep 22 18:42:38 2011 +0900
+
+    Simple repeat: Extend too short source scanlines into temporary buffer
+    
+    Too short scanlines can cause repeat handling overhead and optimized
+    pixman composite functions usually process a bunch of pixels in a
+    single loop iteration it might be beneficial to pre-extend source
+    scanlines. The temporary buffers will usually reside in cache, so
+    accessing them should be quite efficient.
+
+commit eaff774a3f8af6651a245711b9ab8af3211eeb10
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Mon Aug 29 21:44:36 2011 +0900
+
+    Simple repeat fast path
+    
+    We can implement simple repeat by stitching existing fast path
+    functions. First lookup COVER_CLIP function for given input and
+    then stitch horizontally using the function.
+
+commit a258e33fcb6cf08a2ef76e374cb92a12c9adb171
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Thu Sep 22 16:33:02 2011 +0900
+
+    Move _pixman_lookup_composite_function() to pixman-utils.c
+
+commit fc62785aabbe890b656c9cbaa57f2e65e74bbcc2
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jun 27 21:17:04 2011 +0000
+
+    Add src, mask, and dest flags to the composite args struct.
+    
+    These flags are useful in the various compositing routines, and the
+    flags stored in the image structs are missing some bits of information
+    that can only be computed when pixman_image_composite() is called.
+
+commit fa6523d13ae9b7986bb890df5ad66e8599bc3ed8
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Thu Sep 22 16:26:55 2011 +0900
+
+    Add new fast path flag FAST_PATH_BITS_IMAGE
+    
+    This fast path flag indicate that type of the image is bits image.
+
+commit 7272e2fcd2ff8e546cef19929cd370ae2f946135
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Thu Sep 22 16:20:03 2011 +0900
+
+    init/fini functions for pixman_image_t
+    
+    pixman_image_t itself can be on stack or heap. So segregating
+    init/fini from create/unref can be useful when we want to use
+    pixman_image_t on stack or other memory.
+
+commit 4dcf1b0107334857e1f0bb203c34efed1146535c
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Wed Sep 7 23:00:29 2011 +0900
+
+    sse2: Bilinear scaled over_8888_8_8888
+
+commit 81050f2784407b260a1897efa921631a19eeec6b
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Wed Sep 7 22:57:29 2011 +0900
+
+    sse2: Bilinear scaled over_8888_8888
+
+commit d67c0b883daeeaacf3f21f1ddbdcf9ecf94fac43
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Wed Sep 7 22:51:46 2011 +0900
+
+    sse2: Macros for assembling bilinear interpolation code fractions
+    
+    Primitive bilinear interpolation code is reusable to implement other
+    bilinear functions.
+    
+    BILINEAR_DECLARE_VARIABLES
+    - Declare variables needed to interpolate src pixels.
+    
+    BILINEAR_INTERPOLATE_ONE_PIXEL
+    - Interpolate one pixel and advance to next pixel
+    
+    BILINEAR_SKIP_ONE_PIXEL
+    - Skip interpolation and just advance to next pixel
+      This is useful for skipping zero mask
+
+commit 741eb8462c3ff72cbf2d9acfeb1e97208a414fcd
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu Oct 6 17:56:09 2011 -0400
+
+    Correct the minimum gcc version needed for iwmmxt
+    
+    Spotted by Søren Sandmann.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 0a34277180d29f471a2554afc2e2b682fee33c79
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Oct 5 22:54:36 2011 -0400
+
+    Make sure iwMMXt is only detected on ARM
+    
+    iwMMXt is incorrectly detected on x86 and amd64. This happens because
+    the test uses standard _mm_* intrinsic functions which it compiles with
+    -march=iwmmxt, but when the user has set CFLAGS=-march=k8 for instance,
+    no error is generated from -march=iwmmxt, even though it's not a valid
+    flag on x86/amd64. Passing CFLAGS=-march=native does not override the
+    -march=iwmmxt flag though, which is why it wasn't noticed before.
+    
+    So, just #error out in the test if the __arm__ preprocessor directive
+    isn't defined.
+    
+    Fixes https://bugs.gentoo.org/show_bug.cgi?id=385179
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 879b7c21e45b092272e689e05dc867f6260e258f
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Sep 27 11:32:13 2011 -0400
+
+    Don't include stdint.h in scaling-helpers-test.
+    
+    Fixes bug 41257.
+
+commit 01c2dcbe6936a868651160d2617d783d5b8d3d7d
+Author: Benjamin Otte <otte@redhat.com>
+Date:   Wed Sep 14 17:52:03 2011 +0200
+
+    build: replace @VAR@ with $(VAR) in makefiles
+
+commit 100f16eae94a54fbb9ee1f44fa3c34602ba25c4d
+Author: Benjamin Otte <otte@redhat.com>
+Date:   Wed Sep 14 17:01:51 2011 +0200
+
+    tests: Add PNG_CFLAGS/LIBS to tests
+    
+    PNG flags were accidentally included by gdk-pixbuf. This has been fixed
+    recently, so we need to make sure to include it ourselves.
+
+commit d1313febbec2124ee175cd323a338caa3c1a8fc2
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu Sep 22 15:28:00 2011 -0400
+
+    mmx: optimize unaligned 64-bit ARM/iwmmxt loads
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 7ab94c5f99cc524ddfbbcedca4304ec7943f74e1
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sun Jul 31 22:42:24 2011 -0400
+
+    mmx: compile on ARM for iwmmxt optimizations
+    
+    Check in configure for at least gcc-4.6, since gcc-4.7 (and hopefully
+    4.6) will be the eariest version capable of compiling the _mm_*
+    intrinsics on ARM/iwmmxt. Even for suitable compile versions I use
+    _mm_srli_si64 which is known to cause unpatched compilers to fail.
+    
+    Select iwmmxt at runtime only after NEON, since we expect the NEON
+    optimizations to be more capable and faster than iwmmxt.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit f66887d9eae9646c838d518020168b1403705b1e
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sun Sep 4 14:11:46 2011 -0400
+
+    mmx: prepare pixman-mmx.c to be compiled for ARM/iwmmxt
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 7c6d5d1999989187b60f1e0e82e55ed55238eb27
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu Sep 8 20:33:45 2011 +0200
+
+    mmx: fix unaligned accesses
+    
+    Simply return *p in the unaligned access functions, since alignment
+    constraints are very relaxed on x86 and this allows us to generate
+    identical code as before.
+    
+    Tested with the test suite, lowlevel-blit-test, and cairo-perf-trace on
+    ARM and Alpha with no unaligned accesses found.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 5d98abb14ca9042af6d0ec7c14c8398cf4046b80
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu Sep 22 15:39:53 2011 -0400
+
+    mmx: wrap x86/MMX inline assembly in ifdef USE_X86_MMX
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 02c1f1a022e86ced69fc91376232d75d5d6583c5
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sun Jul 31 20:20:12 2011 +0000
+
+    mmx: rename USE_MMX to USE_X86_MMX
+    
+    This will make upcoming ARM usage of pixman-mmx.c unambiguous.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 57fd8c37aa3148b1d70bad65e1a49721e9a47d7e
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Sep 23 14:10:52 2011 -0400
+
+    mmx: convert while (w) to if (w) when possible
+    
+    gcc isn't able to see that w is no greater than 1, so it generates
+    unnecessary loop instructions with while (w).
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 38a7aae1d9c8e1e41de22f9c3846dfc975af6838
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Sep 9 15:33:14 2011 +0200
+
+    mmx: fix formats in commented code
+    
+    b8r8g8 is apparently no longer supported sometime since this code was
+    commented.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit b6b77488a0259da3662edf68568e78806ca97444
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Sep 9 15:34:04 2011 +0200
+
+    lowlevel-blt: add over_x888_8_8888
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 9126f36b964c71b83c69235df4c3a46ab81ab5d5
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Sun May 22 22:51:00 2011 +0300
+
+    BILINEAR->NEAREST filter optimization for simple rotation and translation
+    
+    Simple rotation and translation are the additional cases when BILINEAR
+    filter can be safely reduced to NEAREST.
+
+commit ad5c6bbb36c1c5e72313f7c7bc7c6e6b7e79daba
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Sep 4 02:53:39 2011 -0400
+
+    Strength-reduce BILINEAR filter to NEAREST filter for identity transforms
+    
+    An image with a bilinear filter and an identity transform is
+    equivalent to one with a nearest filter, so there is no reason the
+    standard fast paths shouldn't be usable.
+    
+    But because a BILINEAR filter samples a 2x2 pixel block in the source
+    image, FAST_PATH_SAMPLES_COVER_CLIP can't be set in the case where the
+    source area is the entire image, because some compositing operations
+    might then read pixels outside the image.
+    
+    This patch fixes the problem by splitting the
+    FAST_PATH_SAMPLES_COVER_CLIP flag into two separate flags
+    FAST_PATH_SAMPLES_COVER_CLIP_NEAREST and
+    FAST_PATH_SAMPLES_COVER_CLIP_BILINEAR that indicate that the clip
+    covers the samples taking into account NEAREST/BILINEAR filters
+    respectively.
+    
+    All the existing compositing operations that require
+    FAST_PATH_SAMPLES_COVER_CLIP then have their flags modified to pick
+    either COVER_CLIP_NEAREST or COVER_CLIP_BILINEAR depending on which
+    filter they depend on.
+    
+    In compute_image_info() both COVER_CILP_NEAREST and
+    COVER_CLIP_BILINEAR can be set depending on how much room there is
+    around the clip rectangle.
+    
+    Finally, images with an identity transform and a bilinear filter get
+    FAST_PATH_NEAREST_FILTER set as well as FAST_PATH_BILINEAR_FILTER.
+    
+    Performance measurementas with render_bench against Xephyr:
+    
+    Before
+    
+    *** ROUND 1 ***
+    ---------------------------------------------------------------
+    Test: Test Xrender doing non-scaled Over blends
+    Time: 5.720 sec.
+    ---------------------------------------------------------------
+    Test: Test Xrender (offscreen) doing non-scaled Over blends
+    Time: 5.149 sec.
+    ---------------------------------------------------------------
+    Test: Test Imlib2 doing non-scaled Over blends
+    Time: 6.237 sec.
+    
+    After:
+    
+    *** ROUND 1 ***
+    ---------------------------------------------------------------
+    Test: Test Xrender doing non-scaled Over blends
+    Time: 4.947 sec.
+    ---------------------------------------------------------------
+    Test: Test Xrender (offscreen) doing non-scaled Over blends
+    Time: 4.487 sec.
+    ---------------------------------------------------------------
+    Test: Test Imlib2 doing non-scaled Over blends
+    Time: 6.235 sec.
+
+commit eb2e7ed81b324af730c1a7639c9ca9ed60152875
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Sep 5 14:43:25 2011 -0400
+
+    test: Occasionally use a BILINEAR filter in blitters-test
+    
+    To test that reductions of BILINEAR->NEAREST for identity
+    transformations happen correctly, occasionally use a bilinear filter
+    in blitters test.
+
+commit 2a9f88430e7088eccfbbbd6c6b4f4e534126b1e1
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Sun May 22 22:16:38 2011 +0300
+
+    test: better coverage for BILINEAR->NEAREST filter optimization
+    
+    The upcoming optimization which is going to be able to replace BILINEAR filter
+    with NEAREST where appropriate needs to analyze the transformation matrix
+    and not to make any mistakes.
+    
+    The changes to affine-test include:
+    1. Higher chance of using the same scale factor for x and y axes. This can help
+       to stress some special cases (for example the case when both x and y scale
+       factors are integer). The same applies to x/y translation.
+    2. Introduced a small chance for "corrupting" transformation matrix by flipping
+       random bits. This supposedly can help to identify the cases when some of the
+       fast paths or other code logic is wrongly activated due to insufficient checks.
+
+commit 054922e2fce1f8d9db4b9b756e54b0fa5655956d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Sep 5 00:19:51 2011 -0400
+
+    Eliminate compute_sample_extents() function
+    
+    In analyze_extents(), instead of calling compute_sample_extents() call
+    compute_transformed_extents() and inline the remaining part of
+    compute_sample_extents(). The upcoming bilinear->nearest optimization
+    will do something different with these two pieces of code.
+
+commit 577b6c46fd39c43c2c328fed48854b50b9e85e5b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Sep 4 17:43:29 2011 -0400
+
+    Split computation of sample area into own function
+    
+    compute_sample_extents() have two parts: one that computes the
+    transformed extents, and one that checks whether the computed extents
+    fit within the 16.16 coordinate space.
+    
+    Split the first part into its own function
+    compute_transformed_extents().
+
+commit 5064f1803136cbc28d1e9f636feb2ff8ccfbdded
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Sep 4 17:17:53 2011 -0400
+
+    Remove x and y coordinates from analyze_extents() and compute_sample_extents()
+    
+    These coordinates were only ever used for subtracting from the extents
+    box to put it into the coordinate space of the image, so we might as
+    well do this coordinate translation only once before entering the
+    functions.
+
+commit dbcb4af60d8c688eaaa027c3c5bce9527a410465
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Aug 16 06:13:59 2011 -0400
+
+    Use MAKE_ACCESSORS() to generate accessors for paletted formats
+    
+    Add support in convert_pixel_from_a8r8g8b8() and
+    convert_pixel_to_a8r8g8b8() for conversion to/from paletted formats,
+    then use MAKE_ACCESSORS() to generate accessors for the indexed
+    formats: c8, g8, g4, c4, g1
+
+commit c82c2c38538f5c3f25cf81ad697040d2332d64de
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun May 30 12:36:58 2010 -0400
+
+    Use MAKE_ACCESSORS() to generate accessors for the a1 format.
+    
+    Add FETCH_1 and STORE_1 macros and use them to add support for 1bpp
+    pixels to fetch_and_convert_pixel() and convert_and_store_pixel(),
+    then use MAKE_ACCESSORS() to generate the accessors for the a1
+    format. (Not the g1 format as it is indexed).
+
+commit 2114dd8aa1f292541e55b6b84152732b37c1c1eb
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Aug 16 14:38:44 2011 -0400
+
+    Use MAKE_ACCESSORS() to generate accessors for 24bpp formats
+    
+    Add FETCH_24 and STORE_24 macros and use them to add support for 24bpp
+    pixels in fetch_and_convert_pixel() and
+    convert_and_store_pixel(). Then use MAKE_ACCESSORS() to generate
+    accessors for the 24 bpp formats:
+    
+        r8g8b8
+        b8g8r8
+
+commit f19f5daa1b111368bcf75435dce12483e08756f2
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Aug 18 05:09:07 2011 -0400
+
+    Use MAKE_ACCESSORS() to generate accessors for 4 bpp RGB formats
+    
+    Use FETCH_4 and STORE_4 macros to add support for 4bpp pixels to
+    fetch_and_convert_pixel() and convert_and_store_pixel(), then use
+    MAKE_ACCESSORS() to generate accessors for 4 bpp formats, except g4 and
+    c4 which are indexed:
+    
+        a4
+        r1g2b1
+        b1g2r1
+        a1r1g1b1
+        a1b1g1r1
+
+commit af78fe24e41c30b5c9b3da4449813c75f760c845
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Aug 18 08:13:58 2011 -0400
+
+    Use MAKE_ACCESSORS() to generate accessors for 8bpp RGB formats
+    
+    Add support for 8 bpp formats to fetch_and_convert_pixel() and
+    convert_and_store_pixel(), then use MAKE_ACCESSORS() to generate the
+    accessors for all the 8 bpp formats, except g8 and c8, which are
+    indexed:
+    
+        a8
+        r3g3b2
+        b2g3r3
+        a2r2g2b2
+        a2b2g2r2
+        x4a4
+
+commit 5e1b9f897532ac0fa220880bf94dd660c837afe9
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Aug 18 08:13:44 2011 -0400
+
+    Use MAKE_ACCESSORS() to generate accessors for all the 16bpp formats
+    
+    Add support for 16bpp pixels to fetch_and_convert_pixel() and
+    convert_and_store_pixel(), then use MAKE_ACCESSORS() to generate
+    accessors for all the 16bpp formats:
+    
+        r5g6b5
+        b5g6r5
+        a1r5g5b5
+        x1r5g5b5
+        a1b5g5r5
+        x1b5g5r5
+        a4r4g4b4
+        x4r4g4b4
+        a4b4g4r4
+        x4b4g4r4
+
+commit a77597bcb8d10afd66980b8db8839049181b3743
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Aug 18 08:13:30 2011 -0400
+
+    Use MAKE_ACCESSORS() to generate all the 32 bit accessors
+    
+    Add support for 32bpp formats in fetch_and_convert_pixel() and
+    convert_and_store_pixel(), then use MAKE_ACCESSORS() to generate
+    accessors for all the 32 bpp formats:
+    
+        a8r8g8b8
+        x8r8g8b8
+        a8b8g8r8
+        x8b8g8r8
+        x14r6g6b6
+        b8g8r8a8
+        b8g8r8x8
+        r8g8b8x8
+        r8g8b8a8
+
+commit 814af33df3e9892e4fc790c7ccd2702ce2b8ea97
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Aug 17 17:27:58 2011 -0400
+
+    Add initial version of the MAKE_ACCESSORS() macro
+    
+    This macro will eventually allow the fetchers and storers to be
+    generated automatically. For now, it's just a skeleton that doesn't
+    actually do anything.
+
+commit 5cae7a3fe6e148d2bb42b86efb7daf27dbf12ee0
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Aug 15 18:42:38 2011 -0400
+
+    Add general pixel converter
+    
+    This function can convert between any <= 32 bpp formats. Nothing uses
+    it yet.
+
+commit 22f54dde6bbf87251a0b4ad93bacbdaa7cb508d8
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Aug 15 10:22:05 2011 -0400
+
+    Add a generic unorm_to_unorm() conversion utility
+    
+    This function can convert between normalized numbers of different
+    depths. When converting to higher bit depths, it will replicate the
+    existing bits, when converting to lower bit depths, it will simply
+    truncate.
+    
+    This function replaces the expand16() function in pixman-utils.c
+
+commit d842669a467be490bb0a40000d0c0fccea0b1b85
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Sep 19 09:08:33 2011 -0400
+
+    A few tweaks to a comment in pixman-combine.c.template
+    
+    Include a link to
+    
+    	http://marc.info/?l=xfree-render&m=99792000027857&w=2
+    
+    where Keith explains how the disjoint/conjoint operators work.
+
+commit 3432e1a3444a55f71e294da7d350957a8e1232c3
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Mon Sep 19 06:17:58 2011 -0400
+
+    Fix build on cygwin after commit efdf65c0c4fff551fb3cd9104deda9adb6261e22
+    
+    libutils depends on pixman and so needs to preceed it in the link order
+    
+    Found by tinderbox, see [1]
+    
+    [1] http://tinderbox.freedesktop.org/builds/2011-09-15-0005/logs/pixman/#build
+    
+    Signed-off-by: Jon TURNEY <jon.turney at dronecode.org.uk>
+
+commit f9faf4df440366ed36b197dc09b1c2b51af3387b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Sep 12 23:17:39 2011 -0400
+
+    test: Use smaller boxes in region_contains_test()
+    
+    The boxes used region_contains_test() sometimes overflow causing
+    
+        *** BUG ***
+        In pixman_region32_union_rect: Invalid rectangle passed
+        Set a breakpoint on '_pixman_log_error' to debug
+    
+    messages to be printed when pixman is compiled with DEBUG. Fix this by
+    dividing the x, y, w, h coordinates by 4 to prevent overflows.
+
+commit 9623b478f7e872af36ca77af5cc9e85f5ea132cf
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Sun Sep 4 21:33:05 2011 +0200
+
+    build-win32: Add 'check' target
+    
+    On win32 the tests are built but they are not run automatically by the
+    build system.
+    
+    A minimal 'check' target (depending on the tests being built) can
+    simply run them and log to the console their success/failure.
+
+commit 479d0944851fffda7ed860523feb388fec028545
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Sun Sep 4 13:52:53 2011 -0700
+
+    test: Do not include config.h unless HAVE_CONFIG_H is defined
+    
+    The win32 build system does not generate config.h and correctly runs
+    the compiler without defining HAVE_CONFIG_H. Nevertheless some files
+    include config.h without checking for its availability, breaking the
+    build from a clean directory:
+    
+    test\utils.h(2) : fatal error C1083: Cannot open include file:
+    'config.h': No such file or directory
+    ...
+
+commit d46a9f3acef21b50639c64f190a0de7eca21747c
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Sun Sep 4 21:56:20 2011 +0200
+
+    build-win32: Add root Makefile.win32
+    
+    Add Makefile.win32 to the pixman root. This makefile can recursively
+    run the other ones to compile the library or the test suite.
+
+commit a76b78c2daa61900572014070d3e856a460fd554
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Sun Sep 4 18:00:38 2011 +0200
+
+    build-win32: Share targets and variables across win32 makefiles
+    
+    The win32 build system repeatedly defines some basic variables
+    (notably program names and flags) and C sources compilation rules.
+    
+    They can be factored out to a common Makefile, to be included in every
+    other Makefile.win32.
+
+commit efdf65c0c4fff551fb3cd9104deda9adb6261e22
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Sun Sep 4 20:07:42 2011 +0200
+
+    build: Reuse test sources
+    
+    Makefile.am and Makefile.win32 should not duplicate content, as this
+    leads to breaking the build when they are not kept in sync.
+    
+    This can be avoided by listing sources, headers and common build
+    variables/rules in a Makefile.sources file.
+    
+    In order to further simplify the test makefiles, the utility functions
+    are now in a static library, which gets linked to all the tests and
+    benchmarks.
+
+commit a4f95d083b1aa644923d79e7b61df6c2eacca7c2
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Sun Sep 4 09:41:41 2011 -0700
+
+    build: Reuse sources and pixman-combine build rules
+    
+    Makefile.am and Makefile.win32 should not duplicate content, as this
+    leads to breaking the build when they are not kept in sync.
+    
+    This can be avoided by listing sources, headers and common build
+    variables/rules in a Makefile.sources file.
+
+commit 25bd96a3d0e935646d54c938bf065696d3a79e07
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Sun Sep 4 20:07:57 2011 +0200
+
+    test: Fix compilation on win32
+    
+    Adding scaling-helpers-test to the testsuite on win32 makes MSVC
+    complain about int64_t being used as an expression:
+    
+    scaling-helpers-test.c(27) : error C2275: 'int64_t' : illegal use of
+    this type as an expression
+
+commit 9882d832f60419094c0b379b88fa344490ea36eb
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Sep 11 19:44:06 2011 -0400
+
+    Use pkg-config to determine the flags to use with libpng
+    
+    Previously we would unconditionally link with -lpng leading to build
+    failures on systems without libpng.
+
+commit 99a53667da3014a463b8a0e2b6c317efe0ebb220
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Feb 22 05:20:36 2011 -0500
+
+    test: New function to save a pixman image to .png
+    
+    When debugging it is often very useful to be able to save an image as
+    a png file. This commit adds a function "write_png()" that does that.
+    
+    If libpng is not available, then the function becomes a noop.
+
+commit 1e1ae0bf6e9dd2189133539b9c34a0f6826b7393
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Sep 9 23:59:20 2011 -0400
+
+    Post-release version bump to 0.23.5
+
+commit f901e3b58b5d710cf136af89fc7395942bea9dfb
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Sep 9 23:51:11 2011 -0400
+
+    Pre-release version bump to 0.23.4
+
+commit f5da52b6774bdefdfa88a28fdc3904797adb7e26
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Mon Aug 22 15:29:25 2011 +0100
+
+    bits: optimise fetching width==1 repeats
+    
+    Profiling ign.com, 20% of the entire render time was absorbed in this
+    single operation:
+    
+    << /content //COLOR_ALPHA /width 480 /height 800 >> surface context
+    << /width 1 /height 677 /format //ARGB32 /source <|!!!@jGb!m5gD']#$jFHGWtZcK&2i)Up=!TuR9`G<8;ZQp[FQk;emL9ibhbEL&NTh-j63LhHo$E=mSG,0p71`cRJHcget4%<S\X+~> >> image pattern
+      //EXTEND_REPEAT set-extend
+      set-source
+    n 0 0 480 677 rectangle
+    fill+
+    pop
+    
+    which is a simple composition of a single pixel wide image. Sadly this
+    is a workaround for lack of independent repeat-x/y handling in cairo and
+    pixman. Worse still is that the worst-case behaviour of the general repeat
+    path is for width 1 images...
+    
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+
+commit 7ef44cae6ba6d1c2aae94cdc10851fa8d14821f7
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Fri Aug 19 21:20:08 2011 +0900
+
+    ARM: NEON better instruction scheduling of over_n_8888
+    
+    New head, tail, tail/head blocks are added and instructions
+    are reordered to eliminate pipeline stalls
+    
+    Performance numbers of before/after
+    
+    - cortex a8 -
+    before : L1: 375.39  L2: 391.93  M:114.39 ( 40.99%)  HT: 99.37  VT: 98.20  R: 90.24  RT: 32.87 ( 240Kops/s)
+    after  : L1: 481.90  L2: 483.46  M:114.29 ( 40.69%)  HT:106.91  VT: 93.38  R: 90.74  RT: 29.51 ( 236Kops/s)
+    
+    - cortex a9 -
+    before : L1: 324.50  L2: 332.79  M:155.55 ( 47.51%)  HT:111.93  VT: 93.58  R: 71.92  RT: 28.21 ( 233Kops/s)
+    after  : L1: 355.87  L2: 364.49  M:156.90 ( 47.59%)  HT:111.52  VT: 91.76  R: 72.16  RT: 28.22 ( 234Kops/s)
+
+commit 6aa82b7a729ae7f0a26ae5a7c08ac74ebd5051cd
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Tue Aug 23 15:00:11 2011 +0900
+
+    ARM: NEON better instruction scheduling of over_n_8_8888
+    
+    tail/head block is expanded and reordered to eliminate stalls
+    
+    Performance numbers of before/after
+    
+    - cortex a8 -
+    before : L1: 201.35  L2: 190.48  M:101.94 ( 54.85%)  HT: 78.41  VT: 63.83  R: 58.25  RT: 21.74 ( 191Kops/s)
+    after  : L1: 257.65  L2: 255.49  M:102.04 ( 55.33%)  HT: 79.19  VT: 65.46  R: 59.23  RT: 21.12 ( 189Kops/s)
+    
+    - cortex a9 -
+    before : L1: 157.35  L2: 159.81  M:133.00 ( 60.94%)  HT: 82.44  VT: 63.64  R: 51.66  RT: 19.15 ( 179Kops/s)
+    after  : L1: 216.83  L2: 219.40  M:135.83 ( 61.80%)  HT: 85.60  VT: 64.80  R: 52.23  RT: 19.16 ( 179Kops/s)
+
+commit 4ffa077487cb71ab17d12c37d298ca8a17e5bf35
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Sat Aug 13 16:18:17 2011 +0200
+
+    Workaround bug in llvm-gcc
+    
+    llvm-gcc (shipped in Apple XCode 4.1.1 as the default compiler or in
+    the 2.9 release of LLVM) performs an invalid optimization which
+    unifies the empty_region and the bad_region structures because they
+    have the same content.
+    
+    A bugreport has been filed against Apple Developers Tool for this
+    issue. This commit works around this bug by making one of the two
+    structures volatile, so that it cannot be merged.
+    
+    Fixes region-contains-test.
+
+commit a1ebff0dcbb52cd9eba2bf953b3ba251df6dd787
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Wed Jun 29 14:14:38 2011 +0200
+
+    win32: Build benchmarks
+    
+    Add the makefile rules needed to compile lowlevel-blt-bench on win32
+    and fix the compilation errors.
+
+commit 2644d5a947ad82a82e914acf72bbb411097a4bae
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Mar 11 17:09:34 2011 -0500
+
+    Move bilinear interpolation to pixman-inlines.h
+
+commit 12ad42dd32240f08708eddb157a6b23904ae39a7
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Mar 11 16:09:21 2011 -0500
+
+    Use repeat() function from pixman-inlines.h in pixman-bits-image.c
+    
+    The repeat() functionality was duplicated between pixman-bits-image.c
+    and pixman-inlines.h
+
+commit 2f443466bb9b8901f658e30c606ddacc4fed8535
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Mar 11 16:07:24 2011 -0500
+
+    Rename pixman-fast-path.h to pixman-inlines.h
+    
+    It is not really specific to pixman-fast-path.c.
+
+commit e58b208958900803f74d5e20c855bcb14752d976
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Aug 11 06:30:43 2011 -0400
+
+    In pixman_image_create_bits() allow images larger than 2GB
+    
+    There is no reason for pixman_image_create_bits() to check that the
+    image size fits in int32_t. The correct check is against size_t since
+    that is what the argument to calloc() is.
+    
+    This patch fixes this by adding a new _pixman_multiply_overflows_size()
+    and using it in create_bits(). Also prepend an underscore to the names
+    of other similar functions since they are internal to pixman.
+    
+    V2: Use int, not ssize_t for the arguments in create_bits() since
+    width/height are still limited to 32 bits, as pointed out by Chris
+    Wilson.
+
+commit bdfb5944ffd460631c082e560c89a6c9830b37de
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Aug 8 10:18:07 2011 -0400
+
+    Don't include stdint.h in lowlevel-blt-bench.c
+    
+    Some systems don't have the file, and the types are already defined in
+    pixman.h.
+    
+    https://bugs.freedesktop.org//show_bug.cgi?id=37422
+
+commit e5d85ce6629c84b9dad5a9c76bd9f895157c5a74
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Aug 2 03:03:48 2011 -0400
+
+    Use find_box_for_y() in pixman_region_contains_point() too
+    
+    The same binary search from the previous commit can be used in this
+    function too.
+    
+    V2: Remove check from loop that is not needed anymore, pointed out by
+    Andrea Canciani.
+
+commit 04bd4bdca622f060d7d39caddeaa495d3e6eb0cb
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Aug 1 22:32:09 2011 -0400
+
+    Speed up pixman_region{,32}_contains_rectangle()
+    
+    When someone selects some text in Firefox under a non-composited X
+    server and initiates a drag, a shaped window is created with a complex
+    shape corresponding to the outline of the text. Then, on every mouse
+    movement pixman_region_contains_rectangle() is called many times on
+    that complicated region. And pixman_region_contains_rectangle() is
+    doing a linear scan through the rectangles in the region, although the
+    scan does exit when it finds the first box that can't possibly
+    intersect the passed-in rectangle.
+    
+    This patch changes the loop so that it uses a binary search to skip
+    boxes that don't overlap the current y position.  The performance
+    improvement for the text dragging case is easily noticable.
+    
+    V2: Use the binary search for the "getting up to speed or skippping
+    remainder of band" as well.
+
+commit 795ec5af2fc86fb0ebeca9ce82913d6002267a12
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Aug 2 01:32:15 2011 -0400
+
+    New test of pixman_region_contains_{rectangle,point}
+    
+    This test generates random regions and checks whether random boxes and
+    points are contained within them. The results are combined and a CRC32
+    value is computed and compared to a known-correct one.
+
+commit 842591d9d12a24a9a06308ae03996153c5a99e64
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Aug 3 18:38:20 2011 -0400
+
+    Fix lcg_rand_u32() to return 32 random bits.
+    
+    The lcg_rand() function only returns 15 random bits, so lcg_rand_u32()
+    would always have 0 in bit 31 and bit 15. Fix that by calling
+    lcg_rand() three times, to generate 15, 15, and 2 random bits
+    respectively.
+    
+    V2: Use the 10/11 most significant bits from the 3 lcg results and mix
+    them with the low ones from the adjacent one, as suggested by Andrea
+    Canciani.
+
+commit 12da53f81c4a507a963641796132bbafe0cd6224
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Thu Aug 4 22:21:04 2011 +0900
+
+    ARM NEON: Standard fast path out_reverse_8_8888
+    
+    This fast path is frequently used by cairo to do polygon rendering.
+    Existing NEON code generation framework is used.
+
+commit b395c3c5a28570ceac7cea55cb66a94096559897
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Mon Jul 18 08:15:23 2011 +0200
+
+    radial: Fix typos and trailing whitespace
+    
+    Correct a typo reported by James Cloos and some reported by automatic
+    spellchecking.
+    
+    Remove trailing whitespace.
+
+commit b8d6babc91459a9f854695b56f0265298a3c6427
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Sat Jul 23 00:27:34 2011 +0300
+
+    ARM: workaround binutils bug #12931 (code sections alignment)
+    
+    More details in binutils bugtracker:
+      http://sourceware.org/bugzilla/show_bug.cgi?id=12931
+    
+    The problem was encountered in the wild by Mozilla:
+      https://bugzilla.mozilla.org/show_bug.cgi?id=672787
+
+commit 5754e5689d4cac8868d6416dffa4a7d0c2d15423
+Author: Siarhei Siamashka <siarhei.siamashka@nokia.com>
+Date:   Fri Jul 15 23:35:21 2011 +0300
+
+    C fast path for scaled src_x888_8888 with nearest filter
+    
+    The necessity is justified by a message in the pixman mailing list:
+      http://lists.freedesktop.org/archives/pixman/2011-July/001330.html
+    
+    NONE repeat is not supported, but could be added by tweaking
+    the interpretation and making use of 'fully_transparent_src'
+    scanline function argument.
+
+commit c06af104546868ed748c8f771817f5e9ae9a6a2d
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Fri Jul 15 22:02:01 2011 +0200
+
+    radial: Improve documentation and naming
+    
+    Add a comment to explain why the tests guarantee that the code always
+    computes the greatest valid root.
+    
+    Rename "det" as "discr" to make it match the mathematical name
+    "discriminant".
+    
+    Based on a patch by Jeff Muizelaar <jmuizelaar@mozilla.com>.
+
+commit e814b50877bf313619fbf777dcab98d39874f8a4
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jul 4 15:55:52 2011 -0400
+
+    Makefile.am: Add pixman@lists.freedesktop.org to RELEASE_ANNOUNCE_LIST
+
+commit ed6d2f1cecb2f6d0cfe92bf493fde1abb4004856
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jul 4 15:35:17 2011 -0400
+
+    Post-release version bump to 0.23.3
+
 commit 6c4001a0e1cc0350147638ba941d23e129d00e0d
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Mon Jul 4 08:13:19 2011 -0400

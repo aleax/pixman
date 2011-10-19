@@ -1,3 +1,9 @@
+pixman (0.23.6-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+
+ -- Rico Tzschichholz <ricotz@ubuntu.com>  Wed, 19 Oct 2011 17:25:30 +0200
+
 pixman (0.23.2-1) experimental; urgency=low
 
   * New upstream release.
