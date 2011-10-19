@@ -49,56 +49,33 @@ _pixman_init_gradient (gradient_t *                  gradient,
     return TRUE;
 }
 
-pixman_image_t *
-_pixman_image_allocate (void)
+void
+_pixman_image_init (pixman_image_t *image)
 {
-    pixman_image_t *image = malloc (sizeof (pixman_image_t));
+    image_common_t *common = &image->common;
 
-    if (image)
-    {
-	image_common_t *common = &image->common;
+    pixman_region32_init (&common->clip_region);
 
-	pixman_region32_init (&common->clip_region);
-
-	common->alpha_count = 0;
-	common->have_clip_region = FALSE;
-	common->clip_sources = FALSE;
-	common->transform = NULL;
-	common->repeat = PIXMAN_REPEAT_NONE;
-	common->filter = PIXMAN_FILTER_NEAREST;
-	common->filter_params = NULL;
-	common->n_filter_params = 0;
-	common->alpha_map = NULL;
-	common->component_alpha = FALSE;
-	common->ref_count = 1;
-	common->property_changed = NULL;
-	common->client_clip = FALSE;
-	common->destroy_func = NULL;
-	common->destroy_data = NULL;
-	common->dirty = TRUE;
-    }
-
-    return image;
+    common->alpha_count = 0;
+    common->have_clip_region = FALSE;
+    common->clip_sources = FALSE;
+    common->transform = NULL;
+    common->repeat = PIXMAN_REPEAT_NONE;
+    common->filter = PIXMAN_FILTER_NEAREST;
+    common->filter_params = NULL;
+    common->n_filter_params = 0;
+    common->alpha_map = NULL;
+    common->component_alpha = FALSE;
+    common->ref_count = 1;
+    common->property_changed = NULL;
+    common->client_clip = FALSE;
+    common->destroy_func = NULL;
+    common->destroy_data = NULL;
+    common->dirty = TRUE;
 }
 
-static void
-image_property_changed (pixman_image_t *image)
-{
-    image->common.dirty = TRUE;
-}
-
-/* Ref Counting */
-PIXMAN_EXPORT pixman_image_t *
-pixman_image_ref (pixman_image_t *image)
-{
-    image->common.ref_count++;
-
-    return image;
-}
-
-/* returns TRUE when the image is freed */
-PIXMAN_EXPORT pixman_bool_t
-pixman_image_unref (pixman_image_t *image)
+pixman_bool_t
+_pixman_image_fini (pixman_image_t *image)
 {
     image_common_t *common = (image_common_t *)image;
 
@@ -131,8 +108,45 @@ pixman_image_unref (pixman_image_t *image)
 	if (image->type == BITS && image->bits.free_me)
 	    free (image->bits.free_me);
 
-	free (image);
+	return TRUE;
+    }
 
+    return FALSE;
+}
+
+pixman_image_t *
+_pixman_image_allocate (void)
+{
+    pixman_image_t *image = malloc (sizeof (pixman_image_t));
+
+    if (image)
+	_pixman_image_init (image);
+
+    return image;
+}
+
+static void
+image_property_changed (pixman_image_t *image)
+{
+    image->common.dirty = TRUE;
+}
+
+/* Ref Counting */
+PIXMAN_EXPORT pixman_image_t *
+pixman_image_ref (pixman_image_t *image)
+{
+    image->common.ref_count++;
+
+    return image;
+}
+
+/* returns TRUE when the image is freed */
+PIXMAN_EXPORT pixman_bool_t
+pixman_image_unref (pixman_image_t *image)
+{
+    if (_pixman_image_fini (image))
+    {
+	free (image);
 	return TRUE;
     }
 
@@ -250,6 +264,47 @@ compute_image_info (pixman_image_t *image)
     case PIXMAN_FILTER_GOOD:
     case PIXMAN_FILTER_BEST:
 	flags |= (FAST_PATH_BILINEAR_FILTER | FAST_PATH_NO_CONVOLUTION_FILTER);
+
+	/* Here we have a chance to optimize BILINEAR filter to NEAREST if
+	 * they are equivalent for the currently used transformation matrix.
+	 */
+	if (flags & FAST_PATH_ID_TRANSFORM)
+	{
+	    flags |= FAST_PATH_NEAREST_FILTER;
+	}
+	else if (
+	    /* affine and integer translation components in matrix ... */
+	    ((flags & FAST_PATH_AFFINE_TRANSFORM) &&
+	     !pixman_fixed_frac (image->common.transform->matrix[0][2] |
+				 image->common.transform->matrix[1][2])) &&
+	    (
+		/* ... combined with a simple rotation */
+		(flags & (FAST_PATH_ROTATE_90_TRANSFORM |
+			  FAST_PATH_ROTATE_180_TRANSFORM |
+			  FAST_PATH_ROTATE_270_TRANSFORM)) ||
+		/* ... or combined with a simple non-rotated translation */
+		(image->common.transform->matrix[0][0] == pixman_fixed_1 &&
+		 image->common.transform->matrix[1][1] == pixman_fixed_1 &&
+		 image->common.transform->matrix[0][1] == 0 &&
+		 image->common.transform->matrix[1][0] == 0)
+		)
+	    )
+	{
+	    /* FIXME: there are some affine-test failures, showing that
+	     * handling of BILINEAR and NEAREST filter is not quite
+	     * equivalent when getting close to 32K for the translation
+	     * components of the matrix. That's likely some bug, but for
+	     * now just skip BILINEAR->NEAREST optimization in this case.
+	     */
+	    pixman_fixed_t magic_limit = pixman_int_to_fixed (30000);
+	    if (image->common.transform->matrix[0][2] <= magic_limit  &&
+	        image->common.transform->matrix[1][2] <= magic_limit  &&
+	        image->common.transform->matrix[0][2] >= -magic_limit &&
+	        image->common.transform->matrix[1][2] >= -magic_limit)
+	    {
+		flags |= FAST_PATH_NEAREST_FILTER;
+	    }
+	}
 	break;
 
     case PIXMAN_FILTER_CONVOLUTION:
@@ -320,6 +375,7 @@ compute_image_info (pixman_image_t *image)
 	else
 	{
 	    code = image->bits.format;
+	    flags |= FAST_PATH_BITS_IMAGE;
 	}
 
 	if (!PIXMAN_FORMAT_A (image->bits.format)				&&

@@ -22,16 +22,13 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#define PIXMAN_USE_INTERNAL_API
+#include <pixman.h>
 
-#include "pixman-private.h"
 #include "utils.h"
 
 #define SOLID_FLAG 1
@@ -635,6 +632,7 @@ tests_tbl[] =
     { "over_8888_0565",        PIXMAN_a8r8g8b8,    0, PIXMAN_OP_OVER,    PIXMAN_null,     0, PIXMAN_r5g6b5 },
     { "over_8888_x888",        PIXMAN_a8r8g8b8,    0, PIXMAN_OP_OVER,    PIXMAN_null,     0, PIXMAN_x8r8g8b8 },
     { "over_x888_8_0565",      PIXMAN_x8r8g8b8,    0, PIXMAN_OP_OVER,    PIXMAN_a8,       0, PIXMAN_r5g6b5 },
+    { "over_x888_8_8888",      PIXMAN_x8r8g8b8,    0, PIXMAN_OP_OVER,    PIXMAN_a8,       0, PIXMAN_a8r8g8b8 },
     { "over_n_8_0565",         PIXMAN_a8r8g8b8,    1, PIXMAN_OP_OVER,    PIXMAN_a8,       0, PIXMAN_r5g6b5 },
     { "over_n_8_1555",         PIXMAN_a8r8g8b8,    1, PIXMAN_OP_OVER,    PIXMAN_a8,       0, PIXMAN_a1r5g5b5 },
     { "over_n_8_4444",         PIXMAN_a8r8g8b8,    1, PIXMAN_OP_OVER,    PIXMAN_a8,       0, PIXMAN_a4r4g4b4 },

@@ -250,6 +250,19 @@ _pixman_radial_gradient_iter_init (pixman_image_t *image, pixman_iter_t *iter);
 void
 _pixman_conical_gradient_iter_init (pixman_image_t *image, pixman_iter_t *iter);
 
+void
+_pixman_image_init (pixman_image_t *image);
+
+pixman_bool_t
+_pixman_bits_image_init (pixman_image_t *     image,
+                         pixman_format_code_t format,
+                         int                  width,
+                         int                  height,
+                         uint32_t *           bits,
+                         int                  rowstride);
+pixman_bool_t
+_pixman_image_fini (pixman_image_t *image);
+
 pixman_image_t *
 _pixman_image_allocate (void);
 
@@ -360,6 +373,10 @@ typedef struct
     int32_t                  dest_y;
     int32_t                  width;
     int32_t                  height;
+
+    uint32_t                 src_flags;
+    uint32_t                 mask_flags;
+    uint32_t                 dest_flags;
 } pixman_composite_info_t;
 
 #define PIXMAN_COMPOSITE_ARGS(info)					\
@@ -545,7 +562,7 @@ _pixman_implementation_create_fast_path (pixman_implementation_t *fallback);
 pixman_implementation_t *
 _pixman_implementation_create_noop (pixman_implementation_t *fallback);
 
-#ifdef USE_MMX
+#if defined USE_X86_MMX || defined USE_ARM_IWMMXT
 pixman_implementation_t *
 _pixman_implementation_create_mmx (pixman_implementation_t *fallback);
 #endif
@@ -609,14 +626,16 @@ _pixman_iter_get_scanline_noop (pixman_iter_t *iter, const uint32_t *mask);
 #define FAST_PATH_IS_OPAQUE			(1 << 13)
 #define FAST_PATH_NO_NORMAL_REPEAT		(1 << 14)
 #define FAST_PATH_NO_NONE_REPEAT		(1 << 15)
-#define FAST_PATH_SAMPLES_COVER_CLIP		(1 << 16)
-#define FAST_PATH_X_UNIT_POSITIVE		(1 << 17)
-#define FAST_PATH_AFFINE_TRANSFORM		(1 << 18)
-#define FAST_PATH_Y_UNIT_ZERO			(1 << 19)
-#define FAST_PATH_BILINEAR_FILTER		(1 << 20)
-#define FAST_PATH_ROTATE_90_TRANSFORM		(1 << 21)
-#define FAST_PATH_ROTATE_180_TRANSFORM		(1 << 22)
-#define FAST_PATH_ROTATE_270_TRANSFORM		(1 << 23)
+#define FAST_PATH_X_UNIT_POSITIVE		(1 << 16)
+#define FAST_PATH_AFFINE_TRANSFORM		(1 << 17)
+#define FAST_PATH_Y_UNIT_ZERO			(1 << 18)
+#define FAST_PATH_BILINEAR_FILTER		(1 << 19)
+#define FAST_PATH_ROTATE_90_TRANSFORM		(1 << 20)
+#define FAST_PATH_ROTATE_180_TRANSFORM		(1 << 21)
+#define FAST_PATH_ROTATE_270_TRANSFORM		(1 << 22)
+#define FAST_PATH_SAMPLES_COVER_CLIP_NEAREST	(1 << 23)
+#define FAST_PATH_SAMPLES_COVER_CLIP_BILINEAR	(1 << 24)
+#define FAST_PATH_BITS_IMAGE			(1 << 25)
 
 #define FAST_PATH_PAD_REPEAT						\
     (FAST_PATH_NO_NONE_REPEAT		|				\
@@ -652,7 +671,7 @@ _pixman_iter_get_scanline_noop (pixman_iter_t *iter, const uint32_t *mask);
 #define SOURCE_FLAGS(format)						\
     (FAST_PATH_STANDARD_FLAGS |						\
      ((PIXMAN_ ## format == PIXMAN_solid) ?				\
-      0 : (FAST_PATH_SAMPLES_COVER_CLIP | FAST_PATH_ID_TRANSFORM)))
+      0 : (FAST_PATH_SAMPLES_COVER_CLIP_NEAREST | FAST_PATH_NEAREST_FILTER | FAST_PATH_ID_TRANSFORM)))
 
 #define MASK_FLAGS(format, extra)					\
     ((PIXMAN_ ## format == PIXMAN_null) ? 0 : (SOURCE_FLAGS (format) | extra))
@@ -691,10 +710,13 @@ void *
 pixman_malloc_abc (unsigned int a, unsigned int b, unsigned int c);
 
 pixman_bool_t
-pixman_multiply_overflows_int (unsigned int a, unsigned int b);
+_pixman_multiply_overflows_size (size_t a, size_t b);
 
 pixman_bool_t
-pixman_addition_overflows_int (unsigned int a, unsigned int b);
+_pixman_multiply_overflows_int (unsigned int a, unsigned int b);
+
+pixman_bool_t
+_pixman_addition_overflows_int (unsigned int a, unsigned int b);
 
 /* Compositing utilities */
 void
@@ -708,6 +730,17 @@ pixman_contract (uint32_t *      dst,
                  const uint64_t *src,
                  int             width);
 
+pixman_bool_t
+_pixman_lookup_composite_function (pixman_implementation_t     *toplevel,
+				   pixman_op_t			op,
+				   pixman_format_code_t		src_format,
+				   uint32_t			src_flags,
+				   pixman_format_code_t		mask_format,
+				   uint32_t			mask_flags,
+				   pixman_format_code_t		dest_format,
+				   uint32_t			dest_flags,
+				   pixman_implementation_t    **out_imp,
+				   pixman_composite_func_t     *out_func);
 
 /* Region Helpers */
 pixman_bool_t
@@ -763,6 +796,7 @@ pixman_region16_copy_from_region32 (pixman_region16_t *dst,
 
 /* Trivial versions that are useful in macros */
 #define CONVERT_8888_TO_8888(s) (s)
+#define CONVERT_x888_TO_8888(s) ((s) | 0xff000000)
 #define CONVERT_0565_TO_0565(s) (s)
 
 #define PIXMAN_FORMAT_IS_WIDE(f)					\
@@ -778,6 +812,49 @@ pixman_region16_copy_from_region32 (pixman_region16_t *dst,
 #   define SCREEN_SHIFT_LEFT(x,n)	((x) >> (n))
 #   define SCREEN_SHIFT_RIGHT(x,n)	((x) << (n))
 #endif
+
+static force_inline uint32_t
+unorm_to_unorm (uint32_t val, int from_bits, int to_bits)
+{
+    uint32_t result;
+
+    if (from_bits == 0)
+	return 0;
+
+    /* Delete any extra bits */
+    val &= ((1 << from_bits) - 1);
+
+    if (from_bits >= to_bits)
+	return val >> (from_bits - to_bits);
+
+    /* Start out with the high bit of val in the high bit of result. */
+    result = val << (to_bits - from_bits);
+
+    /* Copy the bits in result, doubling the number of bits each time, until
+     * we fill all to_bits. Unrolled manually because from_bits and to_bits
+     * are usually known statically, so the compiler can turn all of this
+     * into a few shifts.
+     */
+#define REPLICATE()							\
+    do									\
+    {									\
+	if (from_bits < to_bits)					\
+	{								\
+	    result |= result >> from_bits;				\
+									\
+	    from_bits *= 2;						\
+	}								\
+    }									\
+    while (0)
+
+    REPLICATE();
+    REPLICATE();
+    REPLICATE();
+    REPLICATE();
+    REPLICATE();
+
+    return result;
+}
 
 /*
  * Various debugging code

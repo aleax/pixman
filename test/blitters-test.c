@@ -8,7 +8,6 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <config.h>
 #include "utils.h"
 
 static pixman_indexed_t rgb_palette[9];
@@ -68,6 +67,9 @@ create_random_image (pixman_format_code_t *allowed_formats,
     {
 	pixman_image_set_indexed (img, &(y_palette[PIXMAN_FORMAT_BPP (fmt)]));
     }
+
+    if (lcg_rand_n (16) == 0)
+	pixman_image_set_filter (img, PIXMAN_FILTER_BILINEAR, NULL, 0);
 
     image_endian_swap (img);
 
@@ -423,6 +425,6 @@ main (int argc, const char *argv[])
     }
 
     return fuzzer_test_main("blitters", 2000000,
-			    0xB610300B,
+			    0x29137844,
 			    test_composite, argc, argv);
 }

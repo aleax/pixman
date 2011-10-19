@@ -26,8 +26,8 @@ AC_PREREQ([2.57])
 #
 #   - The version in git has an odd MICRO version number
 #
-#   - Released versions both development and stable have an even MICRO 
-#     version number
+#   - Released versions, both development and stable, have an
+#     even MICRO version number
 #
 #   - Released development versions have an odd MINOR number
 #
@@ -54,7 +54,7 @@ AC_PREREQ([2.57])
 
 m4_define([pixman_major], 0)
 m4_define([pixman_minor], 23)
-m4_define([pixman_micro], 2)
+m4_define([pixman_micro], 6)
 
 m4_define([pixman_version],[pixman_major.pixman_minor.pixman_micro])
 
@@ -303,7 +303,7 @@ CFLAGS=$xserver_save_CFLAGS
 
 AC_ARG_ENABLE(mmx,
    [AC_HELP_STRING([--disable-mmx],
-                   [disable MMX fast paths])],
+                   [disable x86 MMX fast paths])],
    [enable_mmx=$enableval], [enable_mmx=auto])
 
 if test $enable_mmx = no ; then
@@ -311,17 +311,17 @@ if test $enable_mmx = no ; then
 fi
 
 if test $have_mmx_intrinsics = yes ; then
-   AC_DEFINE(USE_MMX, 1, [use MMX compiler intrinsics])
+   AC_DEFINE(USE_X86_MMX, 1, [use x86 MMX compiler intrinsics])
 else
    MMX_CFLAGS=
 fi
 
 AC_MSG_RESULT($have_mmx_intrinsics)
 if test $enable_mmx = yes && test $have_mmx_intrinsics = no ; then
-   AC_MSG_ERROR([MMX intrinsics not detected])
+   AC_MSG_ERROR([x86 MMX intrinsics not detected])
 fi
 
-AM_CONDITIONAL(USE_MMX, test $have_mmx_intrinsics = yes)
+AM_CONDITIONAL(USE_X86_MMX, test $have_mmx_intrinsics = yes)
 
 dnl ===========================================================================
 dnl Check for SSE2
@@ -539,6 +539,57 @@ AC_MSG_RESULT($have_arm_neon)
 if test $enable_arm_neon = yes && test $have_arm_neon = no ; then
    AC_MSG_ERROR([ARM NEON intrinsics not detected])
 fi
+
+dnl ===========================================================================
+dnl Check for IWMMXT
+
+if test "x$IWMMXT_CFLAGS" = "x" ; then
+   IWMMXT_CFLAGS="-march=iwmmxt -flax-vector-conversions -Winline"
+fi
+
+have_iwmmxt_intrinsics=no
+AC_MSG_CHECKING(whether to use ARM IWMMXT intrinsics)
+xserver_save_CFLAGS=$CFLAGS
+CFLAGS="$IWMMXT_CFLAGS $CFLAGS"
+AC_COMPILE_IFELSE([
+#ifndef __arm__
+#error "IWMMXT is only available on ARM"
+#endif
+#if defined(__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 6))
+#error "Need GCC >= 4.6 for IWMMXT intrinsics"
+#endif
+#include <mmintrin.h>
+int main () {
+	union {
+		__m64 v;
+		[char c[8];]
+	} a = { .c = {1, 2, 3, 4, 5, 6, 7, 8} };
+	int b = 4;
+	__m64 c = _mm_srli_si64 (a.v, b);
+}], have_iwmmxt_intrinsics=yes)
+CFLAGS=$xserver_save_CFLAGS
+
+AC_ARG_ENABLE(arm-iwmmxt,
+   [AC_HELP_STRING([--disable-arm-iwmmxt],
+                   [disable ARM IWMMXT fast paths])],
+   [enable_iwmmxt=$enableval], [enable_iwmmxt=auto])
+
+if test $enable_iwmmxt = no ; then
+   have_iwmmxt_intrinsics=disabled
+fi
+
+if test $have_iwmmxt_intrinsics = yes ; then
+   AC_DEFINE(USE_ARM_IWMMXT, 1, [use ARM IWMMXT compiler intrinsics])
+else
+   IWMMXT_CFLAGS=
+fi
+
+AC_MSG_RESULT($have_iwmmxt_intrinsics)
+if test $enable_iwmmxt = yes && test $have_iwmmxt_intrinsics = no ; then
+   AC_MSG_ERROR([IWMMXT intrinsics not detected])
+fi
+
+AM_CONDITIONAL(USE_ARM_IWMMXT, test $have_iwmmxt_intrinsics = yes)
 
 dnl =========================================================================================
 dnl Check for GNU-style inline assembly support
@@ -800,6 +851,17 @@ fi
 
 AC_MSG_RESULT($support_for_attribute_constructor)
 AC_SUBST(TOOLCHAIN_SUPPORTS_ATTRIBUTE_CONSTRUCTOR)
+
+dnl ==================
+dnl libpng
+
+PKG_CHECK_MODULES(PNG, [libpng], have_libpng=yes, have_libpng=no)
+
+if test x$have_libpng = xyes; then
+    AC_DEFINE([HAVE_LIBPNG], [1], [Whether we have libpng])
+fi
+
+AC_SUBST(HAVE_LIBPNG)
 
 AC_OUTPUT([pixman-1.pc
            pixman-1-uninstalled.pc
