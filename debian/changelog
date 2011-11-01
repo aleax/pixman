@@ -1,8 +1,8 @@
-pixman (0.23.8-1) UNRELEASED; urgency=low
+pixman (0.23.8-1) experimental; urgency=low
 
   * New upstream release.
 
- -- Cyril Brulebois <kibi@debian.org>  Tue, 01 Nov 2011 12:28:45 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 01 Nov 2011 12:29:16 +0100
 
 pixman (0.23.6-1) experimental; urgency=low
 
