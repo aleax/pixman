@@ -1,3 +1,201 @@
+commit a0f1b565811388b0567c845b9b7063d5b93d325e
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Oct 29 05:33:44 2011 -0400
+
+    Pre-release version bump to 0.23.8
+
+commit 498138c293a2abce44ce122114852f4e6c5b87fe
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Oct 25 08:45:34 2011 -0400
+
+    Fix use of uninitialized fields reported by valgrind
+    
+    In pixman-noop.c and pixman-sse2.c, we are accessing
+    image->bits.width/height without first making sure the image is a bits
+    image. The warning is harmless because we never act on this
+    information without checking that the image is a8r8g8b8, but valgrind
+    does warn about it.
+    
+    In pixman-noop.c, just reorder the clauses in the if statement; in
+    pixman-sse2.c require images to have the FAST_PATH_BITS_IMAGE flag
+    set.
+
+commit 6131707e8fc39187d1d358481f7c57c57cfab206
+Merge: 3d4d705 ec7c9c2
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Oct 20 09:13:12 2011 -0400
+
+    Merge branch 'gradients'
+
+commit 3d4d705d2ffa4aeab3dc02a23c2aadbea1374a3f
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Tue Oct 18 21:50:18 2011 +0900
+
+    ARM: NEON: Fix assembly typo error in src_n_8_8888
+    
+    Binutils 2.21 does not complain about missing comma between ARM
+    register and alignement specifier in vld/vst instructions which
+    causes build error on binutils 2.20.
+
+commit 19f118f41f8725f22395d31eac5670cb350b55ec
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Mon Sep 26 18:33:27 2011 +0900
+
+    ARM: NEON: Standard fast path src_n_8_8
+    
+    Performance numbers of before/after on cortex-a8 @ 1GHz
+    
+    - before
+    L1:  28.05  L2:  28.26  M: 26.97 (  4.48%)  HT: 19.79  VT: 19.14  R: 17.61  RT:  9.88 ( 101Kops/s)
+    
+    - after
+    L1:1430.28  L2:1252.10  M:421.93 ( 75.48%)  HT:170.16  VT:138.03  R:145.86  RT: 35.51 ( 255Kops/s)
+
+commit 4db9e2bc13d3ed26416f249e57acec4b41f58b7f
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Mon Sep 26 17:03:54 2011 +0900
+
+    ARM: NEON: Standard fast path src_n_8_8888
+    
+    Performance numbers of before/after on cortex-a8 @ 1GHz
+    
+    - before
+    L1:  32.39  L2:  31.79  M: 30.84 ( 13.77%)  HT: 21.58  VT: 19.75  R: 18.83  RT: 10.46 ( 106Kops/s)
+    
+    - after
+    L1: 516.25  L2: 372.00  M:193.49 ( 85.59%)  HT:136.93  VT:109.10  R:104.48  RT: 34.77 ( 253Kops/s)
+
+commit 26659de6cd2775c83a9a6e6660324d5baacf61f9
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Mon Sep 26 19:04:53 2011 +0900
+
+    ARM: NEON: Instruction scheduling of bilinear over_8888_8_8888
+    
+    Instructions are reordered to eliminate pipeline stalls and get
+    better memory access.
+    
+    Performance of before/after on cortex-a8 @ 1GHz
+    
+    << 2000 x 2000 with scale factor close to 1.x >>
+    before : 40.53 Mpix/s
+    after  : 50.76 Mpix/s
+
+commit 4481920f405e47b3a92811a8cb06afbd37dee01b
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Wed Sep 21 15:52:13 2011 +0900
+
+    ARM: NEON: Instruction scheduling of bilinear over_8888_8888
+    
+    Instructions are reordered to eliminate pipeline stalls and get
+    better memory access.
+    
+    Performance of before/after on cortex-a8 @ 1GHz
+    
+    << 2000 x 2000 with scale factor close to 1.x >>
+    before : 50.43 Mpix/s
+    after  : 61.09 Mpix/s
+
+commit 1cd916f3a5ebeb943f66eecf0b8ce99af0b95d11
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Fri Sep 23 00:03:22 2011 +0900
+
+    ARM: NEON: Replace old bilinear scanline generator with new template
+    
+    Bilinear scanline functions in pixman-arm-neon-asm-bilinear.S can
+    be replaced with new template just by wrapping existing macros.
+
+commit 6682b2b3597c9f431900bfe7b1b42dfbe006bae5
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Tue Sep 20 21:32:35 2011 +0900
+
+    ARM: NEON: Bilinear macro template for instruction scheduling
+    
+    This macro template takes 6 code blocks.
+    
+    1. process_last_pixel
+    2. process_two_pixels
+    3. process_four_pixels
+    4. process_pixblock_head
+    5. process_pixblock_tail
+    6. process_pixblock_tail_head
+    
+    process_last_pixel does not need to update horizontal weight. This
+    is done by the template. two and four code block should update
+    horizontal weight inside of them. head/tail/tail_head blocks
+    consist unrolled core loop. You can apply instruction scheduling
+    to the tail_head blocks.
+    
+    You can also specify size of the pixel block. Supported size is 4
+    and 8. If you want to use mask, give BILINEAR_FLAG_USE_MASK flags
+    to the template, then you can use register MASK. When using d8~d15
+    registers, give BILINEAR_FLAG_USE_ALL_NEON_REGS to make sure
+    registers are properly saved on the stack and later restored.
+
+commit b5e4355fa4973e3edd4abeb11bdc47c42371cc76
+Author: Taekyun Kim <tkq.kim@samsung.com>
+Date:   Tue Sep 20 19:46:25 2011 +0900
+
+    ARM: NEON: Some cleanup of bilinear scanline functions
+    
+    Use STRIDE and initial horizontal weight update is done before
+    entering interpolation loop. Cache preload for mask and dst.
+
+commit ec7c9c2b6865b48b8bd14e4509538f8fcbe93463
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Oct 14 09:04:48 2011 -0400
+
+    Simplify gradient_walker_reset()
+    
+    The code that searches for the closest color stop to the given
+    position is duplicated across the various repeat modes. Replace the
+    switch with two if/else constructions, and put the search code between
+    them.
+
+commit 2d0da8ab8d8fef60ed1bbb9d6b75f66577c3f85d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Oct 14 09:02:14 2011 -0400
+
+    Use sentinels instead of special casing first and last stops
+    
+    When storing the gradient stops internally, allocate two more stops,
+    one before the beginning of the stop list and one after the
+    end. Initialize those stops based on the repeat property of the
+    gradient.
+    
+    This allows gradient_walker_reset() to be simplified because it can
+    now simply pick the two closest stops to the position without special
+    casing the first and last stops.
+
+commit 84d6ca7c891601b019d4862a556ed98b7e6fe525
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Oct 14 07:42:00 2011 -0400
+
+    gradient walker: Correct types and fix formatting
+    
+    The type of pos in gradient_walker_reset() and gradient_walker_pixel()
+    is pixman_fixed_48_16_t and not pixman_fixed_32_32. The types of the
+    positions in the walker struct are pixman_fixed_t and not int32_t, and
+    need_reset is a boolean, not an integer. The spread field should be
+    called repeat and have the type pixman_repeat_t.
+    
+    Also fix some formatting issues, make gradient_walker_reset() static,
+    and delete the pointless PIXMAN_GRADIENT_WALKER_NEED_RESET() macro.
+
+commit ace225b53dee88d134753ac901f26ba3db6781da
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Oct 11 16:12:24 2011 -0400
+
+    Add stable release / development snapshot to draft release notes
+    
+    This will hopefully serve as a reminder to me that I should put this
+    information in the release notes.
+
+commit bb7142d361d56d66ac40debb60a7c4d099764ba8
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Oct 11 06:10:39 2011 -0400
+
+    Post-release version bump to 0.23.7
+
 commit e20ac40bd30484f0f711b52d0c1993ef08760284
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Tue Oct 11 06:00:51 2011 -0400
