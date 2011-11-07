@@ -1,3 +1,33 @@
+commit 973dc7d319f373fc1bbb91ea54e8a7116cfaa932
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Nov 6 16:10:33 2011 -0500
+
+    Pre-release version bump to 0.24.0
+
+commit 6bf590f38577b4c3c6f4876291360ef95086fb37
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sun Oct 30 09:12:06 2011 -0700
+
+    Change MMX ldq_u to return _m64 instead of forcing all callers to cast
+    
+    Sun/Oracle Studio compilers allow the pointers to be cast, but not the
+    non-pointer forms, causing pixman compiles to fail with many errors of:
+    "pixman-mmx.c", line 1411: invalid cast expression
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 5d7f5bc8ee178588194cb6acc2e0ceb6ff926d72
+Author: Jeff Muizelaar <jmuizelaar@mozilla.com>
+Date:   Wed Nov 2 18:49:58 2011 -0400
+
+    Add definitions of INT64_MIN and INT64_MAX
+
+commit 697cfe15377a8c420764ff824c0a8c2c8ff2148c
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Oct 29 05:51:44 2011 -0400
+
+    Post-release version bump to 0.23.9
+
 commit a0f1b565811388b0567c845b9b7063d5b93d325e
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Sat Oct 29 05:33:44 2011 -0400

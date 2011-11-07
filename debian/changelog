@@ -1,3 +1,9 @@
+pixman (0.24.0-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+
+ -- Cyril Brulebois <kibi@debian.org>  Mon, 07 Nov 2011 18:13:20 +0100
+
 pixman (0.23.8-1) unstable; urgency=low
 
   * New upstream release.
