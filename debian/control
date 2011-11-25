@@ -18,8 +18,6 @@ Architecture: any
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
 Description: pixel-manipulation library for X and cairo
  A library for manipulating pixel regions -- a set of Y-X banded
  rectangles, image compositing using the Porter/Duff model
@@ -44,7 +42,6 @@ Architecture: any
 Depends:
  libpixman-1-0 (= ${binary:Version}),
  ${misc:Depends},
-Multi-Arch: same
 Description: pixel-manipulation library for X and cairo (debugging symbols)
  Debugging symbols for the Cairo/X pixel manipulation library.  This is
  needed to debug programs linked against libpixman0.
