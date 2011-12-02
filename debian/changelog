@@ -7,7 +7,7 @@ pixman (0.24.0-1~bpo60+1) squeeze-backports; urgency=low
     - Adjust .install files accordingly.
     - Lower debhelper build-dep to 8, which is sufficient.
 
- -- Cyril Brulebois <kibi@debian.org>  Fri, 25 Nov 2011 15:30:07 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Fri, 02 Dec 2011 09:29:06 +0100
 
 pixman (0.24.0-1) unstable; urgency=low
 
