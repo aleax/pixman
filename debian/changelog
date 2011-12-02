@@ -5,6 +5,7 @@ pixman (0.24.0-1~bpo60+1) squeeze-backports; urgency=low
     - Remove Pre-Depends and Multi-Arch fields.
     - Drop setting --libdir to the multiarch directory.
     - Adjust .install files accordingly.
+    - Lower debhelper build-dep to 8, which is sufficient.
 
  -- Cyril Brulebois <kibi@debian.org>  Fri, 25 Nov 2011 15:30:07 +0100
 
