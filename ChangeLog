@@ -1,3 +1,135 @@
+commit 08070759c3eee28fc61a7bb56ed8e3c056410c97
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jan 18 15:49:24 2012 -0500
+
+    Pre-release version bump to 0.24.2
+
+commit a9b4fa378b70412ccf065454be009c1f8da4003a
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Jan 7 16:48:00 2012 -0500
+
+    Fix bugs with alpha maps
+    
+    The alpha channel from the alpha map must be inserted as the new alpha
+    channel when a scanline is fetched from an image. Previously the alpha
+    map would overwrite the buffer instead. This wasn't caught be the
+    alpha map test because it would only verify that the resulting alpha
+    channel was correct, and not pay attention to incorrect color
+    channels.
+
+commit 7dd2b8ee7e1f3c817205cf510507f4b54562444b
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Dec 23 16:32:57 2011 -0800
+
+    Make mmx code compatible with Solaris Studio 12.3 compilers
+    
+    Rearranged some of the existing gcc & Intel compiler checks to allow
+    easier sharing of common cases among the compilers.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit ee500cb2b1abf04ba40a8abfe358f6211d6078d1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Dec 22 11:37:26 2011 -0500
+
+    Reject trapezoids where top (botttom) is above (below) the edges
+    
+    When a trapezoid has a top/bottom that is above/below the left/right
+    edges, degenerate trapezoids become possible. For example the edge
+    could be very short and close to horizontal. If the bottom edge is far
+    below the bottom point of such a short edge, the result is that the
+    lower right corner of the trapezoid will be extremely far to the left.
+    
+    This kind of trapezoid causes overflows in the rasterization code, so
+    change pixman_trapezoid_valid() to reject them.
+
+commit 1398a2fae4ba63f824049507a3d87a09c0af9af2
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Dec 18 08:16:45 2011 -0500
+
+    Fix some signed overflow bugs
+    
+    In the macros for the PDF blend modes, two comp1_t variables are
+    multiplied together and then used as if the result were a
+    comp4_t. When comp1_t is a uint8_t, this is fine because they are
+    promoted to int, and the product of two uint8_ts fits in an
+    int. However, when comp1_t is uint16, the product does not necessarily
+    fit in an int, so casts are necessary.
+    
+    Fix for bug 43906, reported by Siarhei Siamashka.
+
+commit 419820cce6f7ecbf759166eecb6dd7380b301e98
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Jan 5 10:37:51 2012 -0500
+
+    pixman-image.c: Fix typo in pixman_image_set_transform()
+    
+    A parenthesis was misplaced so that the size argument to memcmp() was
+    always 0. The bug is harmless except that the flags might be
+    unnecessarily recomputed in some cases.
+    
+    A bug reporting this in Mozilla's fork was discovered here:
+    
+        https://bugzilla.mozilla.org/show_bug.cgi?id=710992
+
+commit 5bd74a7c96724e0abe9ddb472bd5e5cefc50ca9e
+Author: Colin Walters <walters@verbum.org>
+Date:   Wed Jan 4 08:06:05 2012 -0500
+
+    autogen.sh: Support GNOME Build API
+    
+    http://people.gnome.org/~walters/docs/build-api.txt
+
+commit dbb6148158bd1e915c4ac15c06e05a4eb9d29ade
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Dec 18 07:29:59 2011 -0500
+
+    gradient-walker: For NONE repeats, when x < 0 or x > 1, set both colors to 0
+    
+    ec7c9c2b6865b48b8bd14e4 introduced a bug where NONE gradients would be
+    misrendered, causing the area outside the gradient to be treated as a
+    (very) long fade to transparent.The problem was that a check for
+    positions outside the gradients were dropped in favor of relying on
+    the sentinels.
+    
+    Aside from misrendering, this also caused a signed integer overflow
+    when the code would compute a stepper size based on MIN_INT32.
+    
+    This patches fixes the issue by reinstating a check for these cases
+    and setting both the right and left colors to transparent black.
+
+commit b14fd2ad606baa4074b8cba8c58f6847d5840205
+Author: Bobby Salazar <bobby8934@gmail.com>
+Date:   Tue Dec 13 02:03:16 2011 -0500
+
+    Android Runtime Detection Support For ARM NEON
+    
+    This patch adds runtime detection support for the ARM NEON fast paths
+    for code compiled with the Android NDK. This is the only code change
+    needed to enable the ARM NEON pixman fast paths for the ever growing
+    Android platform (200 million+ smartphones, tablets, etc.). Just make
+    sure to #define USE_ARM_NEON in your makefile.
+
+commit 3c87d862d9bdfd4500927f9502c87815175e48c9
+Author: Naohiro Aota <naota@gentoo.org>
+Date:   Thu Nov 24 13:12:15 2011 +0100
+
+    Don't use non-POSIX test
+    
+    test "$test_CFLAGS" == "" &&         \
+    
+    may cause an error on some POSIX shells and uses a style which is not
+    consistent with the other tests in configure.ac
+    
+    Fixes https://bugs.freedesktop.org/show_bug.cgi?id=42588 and
+    https://bugs.gentoo.org/show_bug.cgi?id=387087
+
+commit c19a09b31473209cbe5a8e8d7d51618f4003cd5e
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jan 18 15:35:09 2012 -0500
+
+    Post-release version bump to 0.24.1
+
 commit 973dc7d319f373fc1bbb91ea54e8a7116cfaa932
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Sun Nov 6 16:10:33 2011 -0500
