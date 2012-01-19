@@ -54,7 +54,7 @@ AC_PREREQ([2.57])
 
 m4_define([pixman_major], 0)
 m4_define([pixman_minor], 24)
-m4_define([pixman_micro], 0)
+m4_define([pixman_micro], 2)
 
 m4_define([pixman_version],[pixman_major.pixman_minor.pixman_micro])
 
@@ -150,7 +150,7 @@ AC_CHECK_DECL([__amd64], [AMD64_ABI="yes"], [AMD64_ABI="no"])
 # if we're using Sun Studio and neither the user nor a config.site
 # has set CFLAGS.
 if test $SUNCC = yes &&			\
-   test "$test_CFLAGS" == "" &&		\
+   test "x$test_CFLAGS" = "x" &&	\
    test "$CFLAGS" = "-g"
 then
   CFLAGS="-O -g"
