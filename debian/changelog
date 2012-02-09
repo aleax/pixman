@@ -1,10 +1,10 @@
-pixman (0.24.4-1) UNRELEASED; urgency=low
+pixman (0.24.4-1) unstable; urgency=low
 
   * New upstream release
     - Revert "Reject trapezoids where top (botttom) is above (below) the
       edges" (closes: #656682)
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 09 Feb 2012 20:49:13 +0100
+ -- Julien Cristau <jcristau@debian.org>  Thu, 09 Feb 2012 21:16:47 +0100
 
 pixman (0.24.2-1) unstable; urgency=low
 
