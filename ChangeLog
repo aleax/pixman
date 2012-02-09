@@ -1,3 +1,35 @@
+commit 8bff730a98dd7e68192743717bf8c9384d5c0c5b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Feb 8 19:03:22 2012 -0500
+
+    Pre-release version bump to 0.24.4
+
+commit c5c866a394c823b2980eff15ce33ce8356010bbe
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jan 25 14:03:05 2012 -0500
+
+    Revert "Reject trapezoids where top (botttom) is above (below) the edges"
+    
+    Cairo 1.10 will sometimes generate trapezoids like this, so we can't
+    consider them invalid. Fixes bug 45009, reported by Michael Biebl.
+    
+    This reverts commit 2437ae80e5066dec9fe52f56b016bf136d7cea06.
+
+commit 1ceb66750c33c896bdb04b47ed44977112817a86
+Author: Bobby Salazar <bobby8934@gmail.com>
+Date:   Thu Jan 26 13:19:18 2012 -0500
+
+    iOS Runtime Detection Support For ARM NEON
+    
+    This patch adds runtime detection support for the ARM NEON fast paths
+    for code compiled with the iOS SDK.
+
+commit 7ccb0c45e5f6a0ac23f585e2eda412034c2abe61
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jan 18 16:06:05 2012 -0500
+
+    Post-release version bump to 0.24.3
+
 commit 08070759c3eee28fc61a7bb56ed8e3c056410c97
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Wed Jan 18 15:49:24 2012 -0500
