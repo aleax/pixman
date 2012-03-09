@@ -1,6 +1,9 @@
 pixman (0.25.2-1) UNRELEASED; urgency=low
 
   * New upstream release candidate.
+  * Add new symbols and bump shlibs accordingly:
+    - pixman_region32_clear
+    - pixman_region_clear
 
  -- Cyril Brulebois <kibi@debian.org>  Fri, 09 Mar 2012 13:03:37 +0100
 

@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 PACKAGE = libpixman-1-0
-SHLIBS  = 0.21.6
+SHLIBS  = 0.25.2
 
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
