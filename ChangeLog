@@ -1,10 +1,427 @@
-commit 8bff730a98dd7e68192743717bf8c9384d5c0c5b
+commit f73f7985318bf0e7446941d9bea9a94b35580342
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Wed Feb 8 19:03:22 2012 -0500
+Date:   Thu Mar 8 09:33:16 2012 -0500
 
-    Pre-release version bump to 0.24.4
+    Pre-release version bump to 0.25.2
 
-commit c5c866a394c823b2980eff15ce33ce8356010bbe
+commit 62df04eb257d16fbb4449855a48f6fdaf567e201
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Mar 8 09:29:46 2012 -0500
+
+    mmx: Squash a warning by making the argument to ldl_u() const
+
+commit 85943733cbd7b62991ee962aa22f28bc5d1be353
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Feb 24 18:02:56 2012 -0800
+
+    Just use xmmintrin.h when building with Solaris Studio compilers
+    
+    Since the Solaris Studio compilers don't have a mode where MMX
+    instructions are available and SSE instructions are not, we can
+    just use the <xmmintrin.h> header directly.
+    
+    Fixes build failure due to Studio not supporting the __gnu_inline__
+    or __artificial__ attributes.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Acked-by: Matt Turner <mattst88@gmail.com>
+
+commit 304f57644ac6a991c6e538675de935356252c0a5
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Wed Feb 29 12:04:33 2012 +0100
+
+    MIPS: DSPr2: Added mips_dspr2_blt and mips_dspr2_fill routines.
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz
+    
+    Referent (before):
+    
+    lowlevel-blt-bench:
+                  src_n_0565 =  L1: 238.14  L2: 233.15  M: 57.88 ( 77.23%)  HT: 53.22  VT: 49.99  R: 47.73  RT: 24.79 (  91Kops/s)
+                  src_n_8888 =  L1: 190.19  L2: 187.57  M: 28.94 ( 77.23%)  HT: 27.91  VT: 27.33  R: 26.64  RT: 14.68 (  77Kops/s)
+    cairo-perf-trace:
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [ # ]    image: pixman 0.25.1
+    [  0]    image         gnome-system-monitor  268.460  269.712   0.22%    6/6
+    
+    Optimized:
+    
+    lowlevel-blt-bench:
+                  src_n_0565 =  L1:1081.39  L2: 258.22  M:189.59 (252.91%)  HT: 60.23  VT: 55.01  R: 53.44  RT: 23.68 (  89Kops/s)
+                  src_n_8888 =  L1: 653.46  L2: 113.55  M:135.26 (360.86%)  HT: 38.99  VT: 37.38  R: 34.95  RT: 18.67 (  84Kops/s)
+    cairo-perf-trace:
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [ # ]    image: pixman 0.25.1
+    [  0]    image         gnome-system-monitor  246.565  246.706   0.04%    6/6
+
+commit 999e72b80bd5e3fab5f45b6ad19511389b58d9ab
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Mar 1 02:24:54 2012 -0500
+
+    pixman-access.c: Remove some unused macros
+    
+    The macros related to palette entries:
+    
+    RGB15_TO_ENTRY,
+    RGB24_TO_ENTRY,
+    RGB24_TO_ENTRY_Y
+    
+    are not used anywhere.
+
+commit c0cb48aae0d09200a187965094138fbf488498cd
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Feb 29 04:44:46 2012 -0500
+
+    pixman-accessors.h: Delete unused macros
+    
+    The MEMCPY_WRAPPED and ACCESS macros are not used anymore.
+
+commit 5adf569317f923cd5eb547209a8d927be0d81049
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Feb 26 17:35:20 2012 -0500
+
+    Move fetching for solid bits images to pixman-noop.c
+    
+    This should be a bit faster because it can reuse the scanline on each iteration.
+
+commit 3c3c70fa0b524569df0ec20c50d481626e518462
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Feb 24 20:11:11 2012 -0500
+
+    lowlevel-blt-bench: add in_8_8 and in_n_8_8
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit fcea053561893d116a79f41a113993f1f61b58cf
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jan 26 13:16:09 2011 -0500
+
+    Disable implementations mentioned in the PIXMAN_DISABLE environment variable.
+    
+    With this, it becomes possible to do
+    
+         PIXMAN_DISABLE="sse2 mmx" some_app
+    
+    which will run some_app without SSE2 and MMX enabled. This is useful
+    for benchmarking, testing and narrowing down bugs.
+    
+    The current list of implementations that can be disabled:
+    
+        fast
+        mmx
+        sse2
+        arm-simd
+        arm-iwmmxt
+        arm-neon
+        mips-dspr2
+        vmx
+    
+    The general and noop implementations can't be disabled because pixman
+    depends on those being available for correct operation.
+    
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+
+commit e7574d336b7c812a888fac22f99f1b0e9a3518b0
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Wed Feb 22 14:23:48 2012 +0100
+
+    MIPS: DSPr2: Added fast-paths for SRC operation.
+    
+    Following fast-path functions are implemented (routines 4, 5 and 6 utilize
+    same fast-memcpy routine):
+        1. src_x888_8888
+        2. src_8888_0565
+        3. src_0565_8888
+        4. src_0565_0565
+        5. src_8888_8888
+        6. src_0888_0888
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz
+    
+    Referent (before):
+    
+    lowlevel-blt-bench:
+            src_x888_8888 =  L1: 199.35  L2:  96.54  M: 18.87 (100.68%)  HT: 17.12  VT: 16.24  R: 15.43  RT:  9.33 (  61Kops/s)
+            src_8888_0565 =  L1:  71.22  L2:  51.95  M: 24.19 ( 96.17%)  HT: 20.71  VT: 19.92  R: 18.15  RT:  9.92 (  63Kops/s)
+            src_0565_8888 =  L1:  38.82  L2:  36.22  M: 18.60 ( 73.95%)  HT: 14.47  VT: 13.19  R: 12.97  RT:  6.61 (  49Kops/s)
+            src_0565_0565 =  L1: 286.05  L2: 155.02  M: 37.68 (100.54%)  HT: 31.08  VT: 28.07  R: 26.26  RT: 11.93 (  68Kops/s)
+            src_8888_8888 =  L1: 454.32  L2: 139.15  M: 19.30 (102.98%)  HT: 17.73  VT: 16.08  R: 16.62  RT: 10.45 (  64Kops/s)
+            src_0888_0888 =  L1: 190.47  L2: 106.14  M: 25.26 (101.08%)  HT: 21.88  VT: 20.32  R: 18.83  RT: 10.10 (  63Kops/s)
+    cairo-perf-trace:
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [ # ]    image: pixman 0.25.1
+    [  0]    image            firefox-asteroids  421.215  421.325   0.01%    4/6
+    [  1]    image         firefox-planet-gnome  647.708  648.486   0.13%    6/6
+    [  2]    image         gnome-system-monitor  276.073  277.506   0.38%    6/6
+    [  3]    image           gnome-terminal-vim  263.866  265.229   0.39%    6/6
+    [  4]    image                      poppler  123.576  124.003   0.15%    6/6
+    
+    Optimized (with these optimizations):
+    
+    lowlevel-blt-bench:
+            src_x888_8888 =  L1: 369.50  L2:  99.37  M: 27.19 (145.07%)  HT: 20.24  VT: 19.48  R: 19.00  RT: 10.22 (  63Kops/s)
+            src_8888_0565 =  L1: 105.65  L2:  67.87  M: 25.41 (101.00%)  HT: 20.78  VT: 19.84  R: 18.52  RT:  9.81 (  63Kops/s)
+            src_0565_8888 =  L1:  77.10  L2:  63.04  M: 23.37 ( 92.90%)  HT: 20.29  VT: 19.37  R: 18.14  RT: 10.02 (  63Kops/s)
+            src_0565_0565 =  L1: 519.02  L2: 241.32  M: 62.35 (166.34%)  HT: 33.74  VT: 27.63  R: 26.12  RT: 11.70 (  67Kops/s)
+            src_8888_8888 =  L1: 390.48  L2: 113.99  M: 30.32 (161.77%)  HT: 19.55  VT: 17.05  R: 17.13  RT: 10.19 (  63Kops/s)
+            src_0888_0888 =  L1: 349.74  L2: 156.68  M: 40.68 (162.78%)  HT: 25.58  VT: 20.57  R: 20.20  RT:  9.96 (  63Kops/s)
+    cairo-perf-trace:
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [ # ]    image: pixman 0.25.1
+    [  0]    image            firefox-asteroids  400.050  400.308   0.04%    6/6
+    [  1]    image         firefox-planet-gnome  628.978  629.364   0.07%    6/6
+    [  2]    image         gnome-system-monitor  270.247  270.313   0.03%    6/6
+    [  3]    image           gnome-terminal-vim  256.413  257.641   0.21%    6/6
+    [  4]    image                      poppler  119.540  120.023   0.21%    6/6
+
+commit 1364c91bd106f8b67c9cd1bda2fdd9d46ac40363
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Wed Feb 22 14:23:47 2012 +0100
+
+    MIPS: DSPr2: Basic infrastructure for MIPS architecture
+    
+    MIPS DSP instruction set extensions
+
+commit e43d65d49da2c3e929cf20e82a2f7ed1fa0d0167
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Feb 24 20:02:55 2012 -0500
+
+    lowlevel-blt: add over_x888_n_8888
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 9f607049956c6858706c7ca45829c5ad19f18191
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Feb 24 19:58:09 2012 -0500
+
+    lowlevel-blt: add over_8888_8888
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 5eb4c12a79b3017ec6cc22ab756f53f225731533
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Feb 23 18:36:04 2012 -0500
+
+    Disable MMX when Clang is being used.
+    
+    There are several issues with the Clang compiler and pixman-mmx.c:
+    
+    - When not optimizing, it doesn't seem to recognize that an argument
+      to an __always_inline__ function is compile-time constant. This
+      results in this error being produced:
+    
+          fatal error: error in backend: Invalid operand for inline asm
+                  constraint 'K'!
+    
+    - This inline assembly:
+    
+          asm ("pmulhuw %1, %0\n\t"
+              : "+y" (__A)
+              : "y" (__B)
+          );
+    
+      results in
+    
+          fatal error: error in backend: Unsupported asm: input constraint
+                  with a matching output constraint of incompatible type!
+    
+    So disable MMX when the compiler is Clang.
+
+commit 350e231b3f01d6f82a2fdc7d9a9945234c404d0a
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Feb 21 23:33:02 2012 -0500
+
+    mmx: make load8888 take a pointer to data instead of the data itself
+    
+    Allows us to tune how we load data into the vector registers.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+    
+    And squashed in:
+    
+    mmx: define and use load8888u function
+    
+    For unaligned loads.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit ab68316eda91bbf6bb41158c622347723e1fa8c4
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Feb 21 19:29:59 2012 -0500
+
+    mmx: make store8888 take uint32_t *dest as argument
+    
+    Allows us to tune how we store data from the vector registers.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 57a245a6e00987191faad9a34bef9f4524a6848c
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Feb 22 16:32:21 2012 -0500
+
+    Update .gitignore with more demos and tests
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 51ae3f2d7f25daebbc767f161f0097b581d1554b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Feb 21 19:30:04 2012 -0500
+
+    mmx: Delete unused function in_over_full_src_alpha()
+    
+    Also a few minor formatting fixes.
+    
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+
+commit bbd1e6941b39adcdb64c77670889314fa8461c0b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Feb 21 19:23:33 2012 -0500
+
+    mmx: Enable over_x888_8_8888() for x86 as well
+    
+    It used to be slower than the generic code (with the gcc that was
+    current in 2007), but that doesn't seem to be the case anymore:
+    
+    over_x888_8_8888 =  L1:  22.97  L2:  22.88  M: 22.27 (  5.29%)  HT: 18.30  VT: 15.81  R: 15.54  RT: 10.35 ( 131Kops/s)
+    over_x888_8_8888 =  L1:  53.56  L2:  53.20  M: 50.50 ( 11.99%)  HT: 38.60  VT: 31.19  R: 29.00  RT: 17.37 ( 208Kops/s)
+    
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+
+commit 4fc586c3df9a53cc1406891e751a6eed3d7da400
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Feb 21 16:28:37 2012 -0500
+
+    mmx: fix typo in pix_add_mul on MSVC
+    
+    Typo introduced in commit a075a870.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 84221f4c1687b8ea14e9cbdc78b2ba7258e62c9e
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sun Feb 19 18:10:03 2012 -0500
+
+    mmx: Use _mm_shuffle_pi16
+    
+    The pshufw x86 instruction is part of Extended 3DNow! and SSE1. The
+    equivalent ARM wshufh instruction was available from the first iwMMXt
+    instrucion set.
+    
+    This instruction is already used in the SSE2 code.
+    
+    Reduces code size by ~9%.
+    
+    amd64
+      text    data     bss     dec     hex filename
+     29925    2240       0   32165    7da5 .libs/libpixman_mmx_la-pixman-mmx.o
+     27237    2240       0   29477    7325 .libs/libpixman_mmx_la-pixman-mmx.o
+    
+    x86
+      text    data     bss     dec     hex filename
+     27677    1792       0   29469    731d .libs/libpixman_mmx_la-pixman-mmx.o
+     24959    1792       0   26751    687f .libs/libpixman_mmx_la-pixman-mmx.o
+    
+    arm
+      text    data     bss     dec     hex filename
+     30176    1792       0   31968    7ce0 .libs/libpixman_iwmmxt_la-pixman-mmx.o
+     27384    1792       0   29176    71f8 .libs/libpixman_iwmmxt_la-pixman-mmx.o
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 14208344964f341a7b4a704b05cf4804c23792e9
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sun Feb 19 01:32:31 2012 -0500
+
+    mmx: Use _mm_mulhi_pu16
+    
+    The pmulhuw x86 instruction is part of Extended 3DNow! and SSE1. The
+    equivalent ARM wmuluh instruction was available from the first iwMMXt
+    instrucion set.
+    
+    This instruction is already used in the SSE2 code.
+    
+    Reduces code size by ~5%.
+    
+    amd64
+      text    data     bss     dec     hex filename
+     31325    2240       0   33565    831d .libs/libpixman_mmx_la-pixman-mmx.o
+     29925    2240       0   32165    7da5 .libs/libpixman_mmx_la-pixman-mmx.o
+    
+    x86
+      text    data     bss     dec     hex filename
+     29165    1792       0   30957    78ed .libs/libpixman_mmx_la-pixman-mmx.o
+     27677    1792       0   29469    731d .libs/libpixman_mmx_la-pixman-mmx.o
+    
+    arm
+      text    data     bss     dec     hex filename
+     31632    1792       0   33424    8290 .libs/libpixman_iwmmxt_la-pixman-mmx.o
+     30176    1792       0   31968    7ce0 .libs/libpixman_iwmmxt_la-pixman-mmx.o
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 69ed71fad11d541f89eee1238c587a03a9cf59cb
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Feb 21 00:05:45 2012 +0000
+
+    mmx: enable over_x888_8_8888 on ARM/iwMMXt
+    
+    before: over_x888_8_8888 =  L1:   7.63  L2:   7.72  M:  6.44 ( 19.17%)  HT: 6.24  VT:  6.11  R:  5.87  RT:  4.61 (  51Kops/s)
+    after : over_x888_8_8888 =  L1:  11.88  L2:  11.11  M:  8.70 ( 26.01%)  HT: 8.15  VT:  8.07  R:  7.76  RT:  5.62 (  61Kops/s)
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit a14f0f66bba987d5cdcb4a3e0f3e9f7c35d3f6f0
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Mon Feb 20 18:36:24 2012 -0500
+
+    autoconf: use #error instead of error
+    
+    We'd rather see the actual #error message rather than a syntax error in
+    config.log.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit fced5c82c2f0d6d00cb8d0a30ce6a04ec196d274
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Feb 17 18:17:49 2012 -0500
+
+    Convert while (w) to if (w) when possible
+    
+    Missed in commit 57fd8c37.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit e27bdcd968e786079353432d14816600bf813d76
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Feb 15 18:16:42 2012 -0500
+
+    Make sure to run AC_SUBST IWMMXT_CFLAGS
+    
+    Allows you to compile without -flax-vector-conversions in your CFLAGS,
+    though -march=iwmmxt2 is still necessary since specifying some other
+    -march= value will override it, and disable iwmmxt.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 82a3980701c68949ed762b1e93dc81698db1613e
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Feb 11 01:04:13 2012 -0800
+
+    configure.ac: Add an --enable-libpng option
+    
+    Now there is a way to not link against libpng even if it's available.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 46fc4eb234f5c4f281c2901ea7514ff69e8670a8
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sat Feb 11 23:21:45 2012 -0500
+
+    Use AC_LANG_SOURCE for iwMMXt configure program
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit e5555d7a749c90288463ed1c294f58963c607e52
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Wed Jan 25 14:03:05 2012 -0500
 
@@ -15,7 +432,7 @@ Date:   Wed Jan 25 14:03:05 2012 -0500
     
     This reverts commit 2437ae80e5066dec9fe52f56b016bf136d7cea06.
 
-commit 1ceb66750c33c896bdb04b47ed44977112817a86
+commit 35577876978e86783d49c500b4bb7ea1fc7fa89c
 Author: Bobby Salazar <bobby8934@gmail.com>
 Date:   Thu Jan 26 13:19:18 2012 -0500
 
@@ -24,19 +441,90 @@ Date:   Thu Jan 26 13:19:18 2012 -0500
     This patch adds runtime detection support for the ARM NEON fast paths
     for code compiled with the iOS SDK.
 
-commit 7ccb0c45e5f6a0ac23f585e2eda412034c2abe61
+commit 86ce1808829e3fa024acb0ebaa93ef9737ba51af
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Wed Jan 18 16:06:05 2012 -0500
+Date:   Mon Dec 19 19:31:25 2011 -0500
 
-    Post-release version bump to 0.24.3
+    test: Port composite test over to use new pixel_checker_t object.
+    
+    Also make some tweaks to the way the errors are printed.
 
-commit 08070759c3eee28fc61a7bb56ed8e3c056410c97
+commit f57034f678b419c3737b888f643e5bdfcaf727f9
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Wed Jan 18 15:49:24 2012 -0500
+Date:   Mon Dec 19 17:31:06 2011 -0500
 
-    Pre-release version bump to 0.24.2
+    test: Add a new "pixel_checker_t" object.
+    
+    Add a new pixel_checker_t object to test/utils.[ch]. This object
+    should be initialized with a format and can then be used to check
+    whether a given "real" pixel in that format is close enough to a
+    "perfect" pixel given as a double precision ARGB struct.
+    
+    The acceptable deviation is calcuated as follows. Each channel of the
+    perfect pixel has 0.004 subtracted from it and is then converted to
+    the format. The resulting value is the minimum value that will be
+    accepted. Similarly, to compute the maximum value, the channel has
+    0.004 added to it and is then converted to the given format. Checking
+    a pixel is then a matter of splitting it into channels and checking
+    that each is within the computed bounds.
+    
+    The value of 0.004 was chosen because it is the minimum one that will
+    make the existing composite test pass (see next commit). A problem
+    with this value is that it causes 0xFE to be acceptable when the
+    correct value is 1.0, and 0x01 to be acceptable when the correct value
+    is 0. It would be better if, when the result is exactly 0 or exactly
+    1, an a8r8g8b8 pixel were required to produce exactly 0x00 or 0xff to
+    preserve full black and full white. A deviation value of 0.003 would
+    produce this, but currently this would cause tests with operators that
+    involve divisions to fail.
 
-commit a9b4fa378b70412ccf065454be009c1f8da4003a
+commit 0053a9f8694c837388b78ae26fe81979d0327d28
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Dec 19 19:53:28 2011 -0500
+
+    Rename color_correct() to round_color()
+    
+    And do the rounding from float to int in the same way cairo does: by
+    multiplying with (1 << width), then subtracting one when the input was 1.0.
+
+commit 55a010bf31d2eaf71126bdf93eca99fc02037535
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Dec 22 18:15:02 2011 -0500
+
+    Move the color_correct() function from composite.c to utils.c
+
+commit 065666f33c414582425e4ac0ec9f694e93c2baf1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Jan 8 10:32:47 2012 -0500
+
+    Get rid of delegates for combiners
+    
+    Add a new function _pixman_implementation_lookup_combiner() that will
+    find a usable combiner given an operator and information about whether
+    the combiner should apply component alpha and whether it should be 64
+    bit.
+    
+    In pixman-general.c use this function to look up a combiner up front
+    instead of walking the delegate chain for every scanline.
+
+commit ab584ab500b4e7011a5b82051a90e2eea6744270
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Jan 7 17:11:45 2012 -0500
+
+    test/alphamap.c: Make dst and orig_dst more independent of each other
+    
+    When making the copy of the destination, do so separately for the
+    image and the alpha map. This ensures that the alpha channel of the
+    alpha map will be different from the alpha channel of the actual
+    image.
+    
+    Previously, orig_dst would be copied onto dst along with its alpha
+    map, which mean that the alpha map of orig_dst would become the new
+    alpha channel of *both* dst and dst's alpha map. This meant that test
+    didn't actually test that the alpha maps alpha channel was actually
+    fetched.
+
+commit 4613f2caac595b3fa1298ac49f9c9fdcd907f14a
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Sat Jan 7 16:48:00 2012 -0500
 
@@ -49,7 +537,17 @@ Date:   Sat Jan 7 16:48:00 2012 -0500
     channel was correct, and not pay attention to incorrect color
     channels.
 
-commit 7dd2b8ee7e1f3c817205cf510507f4b54562444b
+commit 8bd63634cd2b2d92145b1d52b54b91ebcb9fb1b4
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Jan 7 14:32:08 2012 -0500
+
+    test: In the alphamap test, also test that we get the right red value
+    
+    There is a bug where the red channel of the alpha map of the
+    destination image is used instead of the red channel of the
+    destination image itself.
+
+commit 007d8b1813e34a7f881d9b241806f8323e9667cd
 Author: Alan Coopersmith <alan.coopersmith@oracle.com>
 Date:   Fri Dec 23 16:32:57 2011 -0800
 
@@ -60,7 +558,16 @@ Date:   Fri Dec 23 16:32:57 2011 -0800
     
     Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
 
-commit ee500cb2b1abf04ba40a8abfe358f6211d6078d1
+commit 37572455866114cbb8bb1bf3acfb1c61d200f98c
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Dec 20 06:32:26 2011 -0500
+
+    Fix rounding for DIV_UNc()
+    
+    We need to compute floor (a/b * 255 + 0.5), not floor (a / b * 255),
+    so add b/2 to the numerator in the DIV_UNc() macro.
+
+commit 2437ae80e5066dec9fe52f56b016bf136d7cea06
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Thu Dec 22 11:37:26 2011 -0500
 
@@ -75,7 +582,57 @@ Date:   Thu Dec 22 11:37:26 2011 -0500
     This kind of trapezoid causes overflows in the rasterization code, so
     change pixman_trapezoid_valid() to reject them.
 
-commit 1398a2fae4ba63f824049507a3d87a09c0af9af2
+commit 6a8192b6dd88b833bb918de28331d3a85c84a4f7
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Dec 20 06:34:41 2011 -0500
+
+    In MUL_UNc() cast to comp2_t
+    
+    Otherwise, when comp1_t is 16 bits wide, we can end up with a signed
+    integer overflow.
+
+commit 33ac0a9084aabd0e47fb1c9e5638eafc809c52cb
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Dec 21 08:19:05 2011 -0500
+
+    Fix a bunch of signed overflow issues
+    
+    In pixman-fast-path.c: (1 << 31) - 1 causes a signed overflow, so
+    change to (1U << n) - 1.
+    
+    In pixman-image.c: The check for whether m10 == -m01 will overflow
+    when -m01 == INT_MIN. Instead just check whether the variables are 1
+    and -1.
+    
+    In pixman-utils.c: When the depth of the topmost channel is 0, we can
+    end up shifting by 32.
+    
+    In blitters-test.c: Replicating the mask would end up shifting more
+    than 32.
+    
+    In region-contains-test.c: Computing the average of two large integers
+    could overflow. Instead add half the difference between them to the
+    first integer.
+    
+    In stress-test.c: Masking the value in fake_reader() would sometimes
+    shift by 32. Instead just use the most significant bits instead of
+    the least significant.
+    
+    All these issues were found by the IOC tool:
+    
+        http://embed.cs.utah.edu/ioc/
+
+commit d788f762788c2178970ff0ff2cb6e0097171cc3c
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Dec 18 09:54:47 2011 -0500
+
+    Add missing cast in _pixman_edge_multi_init()
+    
+    nx and e->dy are both 32 bit quantities, so a cast is needed to make
+    sure their product is 64 bit before subtracting it from a 64 bit
+    quantity.
+
+commit 4f3fe9c9096b2261217c2d4beb7d5eb8e578ed76
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Sun Dec 18 08:16:45 2011 -0500
 
@@ -90,7 +647,7 @@ Date:   Sun Dec 18 08:16:45 2011 -0500
     
     Fix for bug 43906, reported by Siarhei Siamashka.
 
-commit 419820cce6f7ecbf759166eecb6dd7380b301e98
+commit 3e93bba3b04b42c2ab99d828dae12c18f29bcf7d
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Thu Jan 5 10:37:51 2012 -0500
 
@@ -104,7 +661,7 @@ Date:   Thu Jan 5 10:37:51 2012 -0500
     
         https://bugzilla.mozilla.org/show_bug.cgi?id=710992
 
-commit 5bd74a7c96724e0abe9ddb472bd5e5cefc50ca9e
+commit ae651e7e739253f79f345f9fcbacad8627da0d85
 Author: Colin Walters <walters@verbum.org>
 Date:   Wed Jan 4 08:06:05 2012 -0500
 
@@ -112,7 +669,7 @@ Date:   Wed Jan 4 08:06:05 2012 -0500
     
     http://people.gnome.org/~walters/docs/build-api.txt
 
-commit dbb6148158bd1e915c4ac15c06e05a4eb9d29ade
+commit 89498a1178bc173857f3d1ee1f889afcc58b21b6
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Sun Dec 18 07:29:59 2011 -0500
 
@@ -130,7 +687,30 @@ Date:   Sun Dec 18 07:29:59 2011 -0500
     This patches fixes the issue by reinstating a check for these cases
     and setting both the right and left colors to transparent black.
 
-commit b14fd2ad606baa4074b8cba8c58f6847d5840205
+commit d0091a33fcdb49b65a6f20f775cfde520380b1fa
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Dec 21 05:19:00 2011 -0500
+
+    Modify gradient-test to show a bug in NONE processing
+    
+    This patch modifies demos/gradient-test to display a bug in gradients
+    with a repeat mode of NONE. With the current gradient code, the left
+    side will be a solid red (actually an extremely long fade from solid
+    red to transparent) instead of a sharp transition from red to green.
+
+commit 9db980551518a09069b8ade34743238329a36661
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Dec 9 03:59:04 2011 -0500
+
+    region: Add pixman_region{,32}_clear() functions.
+    
+    These functions simply reset the region to empty. They are equivalent
+    to
+    
+          pixman_region_fini (&region);
+          pixman_region_init (&region);
+
+commit 6b9d6a91ed4a85f27d7e5824ce2a63f37876e937
 Author: Bobby Salazar <bobby8934@gmail.com>
 Date:   Tue Dec 13 02:03:16 2011 -0500
 
@@ -142,7 +722,7 @@ Date:   Tue Dec 13 02:03:16 2011 -0500
     Android platform (200 million+ smartphones, tablets, etc.). Just make
     sure to #define USE_ARM_NEON in your makefile.
 
-commit 3c87d862d9bdfd4500927f9502c87815175e48c9
+commit 84450c411cc93309bb1d1b1f555640b3ad105500
 Author: Naohiro Aota <naota@gentoo.org>
 Date:   Thu Nov 24 13:12:15 2011 +0100
 
@@ -156,11 +736,104 @@ Date:   Thu Nov 24 13:12:15 2011 +0100
     Fixes https://bugs.freedesktop.org/show_bug.cgi?id=42588 and
     https://bugs.gentoo.org/show_bug.cgi?id=387087
 
-commit c19a09b31473209cbe5a8e8d7d51618f4003cd5e
-Author: Søren Sandmann Pedersen <ssp@redhat.com>
-Date:   Wed Jan 18 15:35:09 2012 -0500
+commit 9985febd7847b7a9c09d6395db7f89490c83be30
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Tue Nov 8 22:00:46 2011 +0100
 
-    Post-release version bump to 0.24.1
+    test: Produce autotools-looking report in the win32 build system
+    
+    Tweak the commands used to run the tests on win32 to make the output
+    look mostly like that produced by the autotools test system.
+    
+    In addition to this, make sure that the exit status of the test target
+    is success (0) if and only if no failure occurred.
+
+commit b31da39f6f65d1784fc2f6915c30eb011cc2893b
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Thu Nov 3 11:07:25 2011 +0100
+
+    demos: Consistently use G_N_ELEMENTS()
+    
+    Instead of open-coding G_N_ELEMENTS(), just use it.
+
+commit 1662c94348eda19ec35db2625749febd1dceb35e
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Thu Nov 3 10:53:10 2011 +0100
+
+    test: Reuse the ARRAY_LENGTH() macro
+    
+    It is provided by utils.h, there is no need to redefine it.
+
+commit 97b9fa090c54f6feab54bde272df374a13c0c84d
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Thu Nov 3 10:51:27 2011 +0100
+
+    Use the ARRAY_LENGTH() macro when possible
+    
+    This patch has been generated by the following Coccinelle semantic patch:
+    
+    // Use the ARRAY_LENGTH() macro when possible
+    //
+    // Replace open-coded array length computations with the
+    // ARRAY_LENGTH() macro
+    
+    @@
+    type T;
+    T[] E;
+    @@
+    - (sizeof(E)/sizeof(T))
+    + ARRAY_LENGTH (E)
+
+commit 06760f5cb069bdc041af7a0e73c9d5fc08741f28
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Thu Nov 3 10:40:24 2011 +0100
+
+    test: Cleanup includes
+    
+    All the tests are linked to libutil, hence it makes sence to always
+    include utils.h and reuse what it provides (config.h inclusion, access
+    to private pixman APIs, ARRAY_LENGTH, ...).
+
+commit cbd88a9416d9b33e6589e3f857ee839559a7e4de
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Thu Nov 3 10:21:41 2011 +0100
+
+    Remove useless checks for NULL before freeing
+    
+    This patch has been generated by the following Coccinelle semantic patch:
+    
+    // Remove useless checks for NULL before freeing
+    //
+    // free (NULL) is a no-op, so there is no need to avoid it
+    
+    @@
+    expression E;
+    @@
+    + free (E);
+    + E = NULL;
+    - if (unlikely (E != NULL)) {
+    -   free(E);
+    (
+    -   E = NULL;
+    |
+    -   E = 0;
+    )
+       ...
+    - }
+    
+    @@
+    expression E;
+    @@
+    + free (E);
+    - if (unlikely (E != NULL)) {
+    -   free (E);
+    - }
+
+commit 8d72d35b29b0fe0345e21525db9e5f25876364be
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Nov 6 16:36:01 2011 -0500
+
+    Post-release version bump to 0.25.1
 
 commit 973dc7d319f373fc1bbb91ea54e8a7116cfaa932
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
