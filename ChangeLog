@@ -1,3 +1,675 @@
+commit 1e1a00e964a1d8ef43d6d75c1c3a0b5d518d1979
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue May 15 13:20:09 2012 -0400
+
+    Pre-release version bump to 0.25.6
+    
+    Note that 0.25.4 was a botched release that doesn't have a tag and
+    doesn't correspond to any commit ID. It was however uploaded and
+    announced, so I'll just use the 0.25.6 version number.
+
+commit b2c16aaadfae64d2573abb537bfedd92c13b8d06
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue May 15 13:19:19 2012 -0400
+
+    demos/Makefile.am: Add parrot.c to EXTRA_DIST
+    
+    To get 'make distcheck' to pass.
+
+commit 50d3088d7882e1054a35e917becb7752662da6f0
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri May 11 21:59:13 2012 -0400
+
+    configure.ac: Rename loongson -> loongson-mmi
+    
+    Make it match with the other fast paths, and the PIXMAN_DISABLE value is
+    already loongson-mmi.
+
+commit a0a40cb822bec52494c64e6750be50b734dc29df
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri May 11 21:49:42 2012 -0400
+
+    configure.ac: Fix loongson-mmi out-of-tree builds
+    
+    When building out-of-tree, gcc wasn't able to find loongson-mmintrin.h
+    to compile the test program. Add -I$srcdir to CFLAGS to point gcc to it.
+
+commit 618a08e6aa03b38e8dc71ac610f7fdd55e8a8558
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Thu May 3 00:03:42 2012 +0200
+
+    MIPS: DSPr2: Added over_n_8_8888 and over_n_8_0565 fast paths.
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz
+    
+    Referent (before):
+    
+    lowlevel-blt-bench:
+         over_n_8_8888 =  L1:  10.40  L2:   9.79  M:  8.47 ( 33.62%)  HT:  7.64  VT:  7.59  R:  7.48  RT:  5.30 (  40Kops/s)
+         over_n_8_0565 =  L1:   7.40  L2:   7.23  M:  6.78 ( 17.94%)  HT:  6.23  VT:  6.17  R:  6.14  RT:  4.62 (  37Kops/s)
+    
+    Optimized:
+    
+    lowlevel-blt-bench:
+         over_n_8_8888 =  L1:  27.25  L2:  26.24  M: 18.15 ( 72.12%)  HT: 14.52  VT: 14.31  R: 13.83  RT:  7.57 (  48Kops/s)
+         over_n_8_0565 =  L1:  18.91  L2:  17.59  M: 15.06 ( 39.90%)  HT: 12.18  VT: 11.98  R: 11.83  RT:  6.80 (  46Kops/s)
+
+commit 7d4beedc612a32b73d7673bbf6447de0f3fca298
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed May 9 19:20:55 2012 -0400
+
+    mmx: add and use pack_4x565 function
+    
+    The pack_4x565 makes use of the pack_4xpacked565 function which uses pmadd.
+    
+    Some of the speed up is probably attributable to removing the artificial
+    serialization imposed by the
+    	vdest = pack_565 (..., vdest, 0);
+    	vdest = pack_565 (..., vdest, 1);
+    	...
+    pattern.
+    
+    Loongson:
+            over_n_0565 =  L1:  16.44  L2:  16.42  M: 13.83 (  9.85%)  HT: 12.83  VT: 12.61  R: 12.34  RT:  8.90 (  93Kops/s)
+            over_n_0565 =  L1:  42.48  L2:  42.53  M: 29.83 ( 21.20%)  HT: 23.39  VT: 23.72  R: 21.80  RT: 11.60 ( 113Kops/s)
+    
+         over_8888_0565 =  L1:  15.61  L2:  15.42  M: 12.11 ( 25.79%)  HT: 11.07  VT: 10.70  R: 10.37  RT:  7.25 (  82Kops/s)
+         over_8888_0565 =  L1:  35.01  L2:  35.20  M: 21.42 ( 45.57%)  HT: 18.12  VT: 17.61  R: 16.09  RT:  9.01 (  97Kops/s)
+    
+          over_n_8_0565 =  L1:  15.17  L2:  14.94  M: 12.57 ( 17.86%)  HT: 11.96  VT: 11.52  R: 10.79  RT:  7.31 (  79Kops/s)
+          over_n_8_0565 =  L1:  29.83  L2:  29.79  M: 21.85 ( 30.94%)  HT: 18.82  VT: 18.25  R: 16.15  RT:  8.72 (  91Kops/s)
+    
+    over_n_8888_0565_ca =  L1:  15.25  L2:  15.02  M: 11.64 ( 41.39%)  HT: 11.08  VT: 10.72  R: 10.02  RT:  7.00 (  77Kops/s)
+    over_n_8888_0565_ca =  L1:  30.12  L2:  29.99  M: 19.47 ( 68.99%)  HT: 17.05  VT: 16.55  R: 14.67  RT:  8.38 (  88Kops/s)
+    
+    ARM/iwMMXt:
+            over_n_0565 =  L1:  19.29  L2:  19.88  M: 17.38 ( 10.54%)  HT: 15.53  VT: 16.11  R: 13.69  RT: 11.00 (  96Kops/s)
+            over_n_0565 =  L1:  36.02  L2:  34.85  M: 28.04 ( 16.97%)  HT: 22.12  VT: 24.21  R: 22.36  RT: 12.22 ( 103Kops/s)
+    
+         over_8888_0565 =  L1:  18.38  L2:  16.59  M: 12.34 ( 22.29%)  HT: 11.67  VT: 11.71  R: 11.02  RT:  6.89 (  72Kops/s)
+         over_8888_0565 =  L1:  24.96  L2:  22.17  M: 15.11 ( 26.81%)  HT: 14.14  VT: 13.71  R: 13.18  RT:  8.13 (  78Kops/s)
+    
+          over_n_8_0565 =  L1:  14.65  L2:  12.44  M: 11.56 ( 14.50%)  HT: 10.93  VT: 10.39  R: 10.06  RT:  7.05 (  70Kops/s)
+          over_n_8_0565 =  L1:  18.37  L2:  14.98  M: 13.97 ( 16.51%)  HT: 12.67  VT: 10.35  R: 11.80  RT:  8.14 (  74Kops/s)
+    
+    over_n_8888_0565_ca =  L1:  14.27  L2:  12.93  M: 10.52 ( 33.23%)  HT:  9.70  VT:  9.90  R:  9.31  RT:  6.34 (  65Kops/s)
+    over_n_8888_0565_ca =  L1:  19.69  L2:  17.58  M: 13.40 ( 42.35%)  HT: 11.75  VT: 11.33  R: 11.17  RT:  7.49 (  73Kops/s)
+
+commit 2beabd9fed76de0023eb36b0c938b8803aa8d129
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu May 10 16:15:34 2012 -0400
+
+    configure.ac: make -march=loongson2f come before CFLAGS
+    
+    Otherwise we'd have -march=loongson2f being overridden by automake's
+    CFLAGS ordering which causes build failures when -march=<not loongson2f>
+    is specified by the user.
+
+commit dadb9a318b8ca10c65e31e7278f4335a6968d246
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue May 8 10:05:18 2012 -0400
+
+    Add Makefile.win32 and Makefile.win32.common to EXTRA_DIST
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=46905
+
+commit 3c57ec471e1aacc863747b82bbe0a84c6d776ab7
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed May 9 22:50:50 2012 -0400
+
+    .gitignore: add demos/checkerboard and demos/quad2quad
+
+commit 2d431b53d3cdbf1997e2d3b8e17408c12220c3a1
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Apr 27 14:12:56 2012 -0400
+
+    mmx: Use wpackhus in src_x888_0565 on iwMMXt
+    
+    iwMMXt which has an unsigned saturation pack instruction, while MMX/EXT
+    and Loongson don't.
+    
+    ARM/iwMMXt:
+    src_8888_0565 =  L1: 110.38  L2:  82.33  M: 40.92 ( 73.22%)  HT: 35.63  VT: 32.22  R: 30.07  RT: 18.40 ( 132Kops/s)
+    src_8888_0565 =  L1: 117.91  L2:  83.05  M: 41.52 ( 75.58%)  HT: 37.63  VT: 35.40  R: 29.37  RT: 19.39 ( 134Kops/s)
+
+commit 2ddd1c498b723e8e48a38eef01d5befba30b5259
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu Apr 19 17:33:27 2012 -0400
+
+    mmx: add src_8888_0565
+    
+    Uses the pmadd technique described in
+    http://software.intel.com/sites/landingpage/legacy/mmx/MMX_App_24-16_Bit_Conversion.pdf
+    
+    The technique uses the packssdw instruction which uses signed
+    saturatation. This works in their example because they pack 888 to 555
+    leaving the high bit as zero. For packing to 565, it is unsuitable, so
+    we replace it with an or+shuffle.
+    
+    Loongson:
+    src_8888_0565 =  L1: 106.13  L2:  83.57  M: 33.46 ( 68.90%)  HT: 30.29  VT: 27.67  R: 26.11  RT: 15.06 ( 135Kops/s)
+    src_8888_0565 =  L1: 122.10  L2: 117.53  M: 37.97 ( 78.58%)  HT: 33.14  VT: 30.09  R: 29.01  RT: 15.76 ( 139Kops/s)
+    
+    ARM/iwMMXt:
+    src_8888_0565 =  L1:  67.88  L2:  56.61  M: 31.20 ( 56.74%)  HT: 29.22  VT: 27.01  R: 25.39  RT: 19.29 ( 130Kops/s)
+    src_8888_0565 =  L1: 110.38  L2:  82.33  M: 40.92 ( 73.22%)  HT: 35.63  VT: 32.22  R: 30.07  RT: 18.40 ( 132Kops/s)
+
+commit 3e8fe65a0893fcd82bdea205de49f53be32bb074
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Apr 18 16:24:28 2012 -0400
+
+    mmx: add x8f8g8b8 fetcher
+    
+    Loongson:
+       add_x888_x888 =  L1:  29.36  L2:  27.81  M: 14.05 ( 38.74%)  HT: 12.45  VT: 11.78  R: 11.52  RT:  7.23 (  75Kops/s)
+       add_x888_x888 =  L1:  36.06  L2:  34.55  M: 14.81 ( 41.03%)  HT: 14.01  VT: 13.41  R: 13.06  RT:  9.06 (  90Kops/s)
+    
+     src_x888_8_x888 =  L1:  21.92  L2:  20.15  M: 13.35 ( 41.42%)  HT: 11.70  VT: 10.95  R: 10.53  RT:  6.18 (  65Kops/s)
+     src_x888_8_x888 =  L1:  25.43  L2:  23.51  M: 14.12 ( 44.00%)  HT: 13.14  VT: 12.50  R: 11.86  RT:  7.49 (  76Kops/s)
+    
+    over_x888_8_0565 =  L1:  10.64  L2:  10.17  M:  7.74 ( 21.35%)  HT:  6.83  VT:  6.55  R:  6.34  RT:  4.03 (  46Kops/s)
+    over_x888_8_0565 =  L1:  11.41  L2:  10.97  M:  8.07 ( 22.36%)  HT:  7.42  VT:  7.18  R:  6.92  RT:  4.62 (  52Kops/s)
+    
+    ARM/iwMMXt:
+       add_x888_x888 =  L1:  22.10  L2:  18.93  M: 13.48 ( 32.29%)  HT: 11.32  VT: 10.64  R: 10.36  RT:  6.51 (  61Kops/s)
+       add_x888_x888 =  L1:  24.26  L2:  20.83  M: 14.52 ( 35.64%)  HT: 12.66  VT: 12.98  R: 11.34  RT:  7.69 (  72Kops/s)
+    
+     src_x888_8_x888 =  L1:  19.33  L2:  17.66  M: 14.26 ( 38.43%)  HT: 11.53  VT: 10.83  R: 10.57  RT:  6.12 (  58Kops/s)
+     src_x888_8_x888 =  L1:  21.23  L2:  19.60  M: 15.41 ( 42.55%)  HT: 12.66  VT: 13.30  R: 11.55  RT:  7.32 (  67Kops/s)
+    
+    over_x888_8_0565 =  L1:   8.15  L2:   7.56  M:  6.50 ( 15.58%)  HT:  5.73  VT:  5.49  R:  5.50  RT:  3.53 (  38Kops/s)
+    over_x888_8_0565 =  L1:   8.35  L2:   7.85  M:  6.68 ( 16.40%)  HT:  6.12  VT:  5.97  R:  5.78  RT:  4.03 (  43Kops/s)
+
+commit c2b1630d9603f80c2636e8a8bfebca87707d4235
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Apr 18 16:14:08 2012 -0400
+
+    mmx: add a8 fetcher
+    
+    oprofile of xfce4-terminal-a1
+    210535    9.0407  libpixman-1.so.0.25.3    fetch_scanline_a8
+    144802    6.0054  libpixman-1.so.0.25.3    mmx_fetch_a8
+    
+    Loongson:
+           add_8_8_8 =  L1:  17.98  L2:  17.28  M: 14.28 ( 19.79%)  HT: 11.11  VT: 10.38  R:  9.97  RT:  5.14 (  55Kops/s)
+           add_8_8_8 =  L1:  20.44  L2:  19.65  M: 15.62 ( 21.53%)  HT: 12.86  VT: 11.98  R: 11.32  RT:  6.13 (  64Kops/s)
+    
+     src_8888_8_0565 =  L1:  19.97  L2:  18.59  M: 13.42 ( 32.55%)  HT: 11.46  VT: 10.78  R: 10.33  RT:  5.87 (  61Kops/s)
+     src_8888_8_0565 =  L1:  21.16  L2:  19.68  M: 13.94 ( 33.64%)  HT: 12.31  VT: 11.52  R: 11.02  RT:  6.54 (  68Kops/s)
+    
+     src_x888_8_x888 =  L1:  20.54  L2:  18.88  M: 13.07 ( 40.74%)  HT: 11.05  VT: 10.36  R: 10.02  RT:  5.68 (  60Kops/s)
+     src_x888_8_x888 =  L1:  21.92  L2:  20.15  M: 13.35 ( 41.42%)  HT: 11.70  VT: 10.95  R: 10.53  RT:  6.18 (  65Kops/s)
+    
+    over_x888_8_0565 =  L1:  10.32  L2:   9.85  M:  7.63 ( 21.13%)  HT:  6.56  VT:  6.30  R:  6.12  RT:  3.80 (  43Kops/s)
+    over_x888_8_0565 =  L1:  10.64  L2:  10.17  M:  7.74 ( 21.35%)  HT:  6.83  VT:  6.55  R:  6.34  RT:  4.03 (  46Kops/s)
+    
+    ARM/iwMMXt:
+           add_8_8_8 =  L1:  13.10  L2:  11.67  M: 10.74 ( 13.46%)  HT:  8.62  VT:  8.15  R:  7.94  RT:  4.39 (  44Kops/s)
+           add_8_8_8 =  L1:  13.81  L2:  12.79  M: 11.63 ( 13.93%)  HT:  9.33  VT:  9.20  R:  9.04  RT:  5.43 (  52Kops/s)
+    
+     src_8888_8_0565 =  L1:  16.62  L2:  15.07  M: 12.52 ( 27.46%)  HT: 10.07  VT: 10.17  R:  9.95  RT:  5.64 (  54Kops/s)
+     src_8888_8_0565 =  L1:  16.84  L2:  16.11  M: 13.22 ( 27.71%)  HT: 11.74  VT: 10.90  R: 10.80  RT:  6.66 (  62Kops/s)
+    
+     src_x888_8_x888 =  L1:  17.49  L2:  16.22  M: 13.73 ( 38.73%)  HT: 10.10  VT: 10.33  R:  9.55  RT:  5.21 (  52Kops/s)
+     src_x888_8_x888 =  L1:  19.33  L2:  17.66  M: 14.26 ( 38.43%)  HT: 11.53  VT: 10.83  R: 10.57  RT:  6.12 (  58Kops/s)
+    
+    over_x888_8_0565 =  L1:   7.57  L2:   7.29  M:  6.37 ( 15.97%)  HT:  5.53  VT:  5.33  R:  5.21  RT:  3.22 (  35Kops/s)
+    over_x888_8_0565 =  L1:   8.15  L2:   7.56  M:  6.50 ( 15.58%)  HT:  5.73  VT:  5.49  R:  5.50  RT:  3.53 (  38Kops/s)
+
+commit 20bad64d9a7ff5c2662f12a87f66fcf77c1f3f2c
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Apr 18 16:08:57 2012 -0400
+
+    mmx: add r5g6b5 fetcher
+    
+    Loongson:
+    add_0565_0565 =  L1:  12.73  L2:  12.26  M: 10.05 ( 13.87%)  HT:  8.77  VT:  8.50  R:  8.25  RT:  5.28 (  58Kops/s)
+    add_0565_0565 =  L1:  14.04  L2:  13.63  M: 10.96 ( 15.19%)  HT:  9.73  VT:  9.43  R:  9.11  RT:  5.93 (  64Kops/s)
+    
+    ARM/iwMMXt:
+    add_0565_0565 =  L1:  10.36  L2:  10.03  M:  9.04 ( 10.88%)  HT:  3.11  VT:  7.16  R:  7.72  RT:  5.12 (  51Kops/s)
+    add_0565_0565 =  L1:  10.84  L2:  10.20  M:  9.15 ( 11.46%)  HT:  7.60  VT:  7.82  R:  7.70  RT:  5.41 (  53Kops/s)
+
+commit c136e535adf33069cbf229b8773934d78099af85
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Apr 17 12:16:55 2012 -0400
+
+    mmx: Use Loongson pextrh instruction in expand565
+    
+    Same story as pinsrh in the previous commit.
+    
+     text	data	bss	dec	hex filename
+    25336	1952	  0   27288    6a98 .libs/libpixman_loongson_mmi_la-pixman-mmx.o
+    25072	1952	  0   27024    6990 .libs/libpixman_loongson_mmi_la-pixman-mmx.o
+    
+    -dsll: 95
+    +dsll: 70
+    -dsrl: 135
+    +dsrl: 105
+    -ldc1: 462
+    +ldc1: 445
+    -lw: 721
+    +lw: 700
+    +pextrh: 30
+
+commit facceb4a1fbba476ad98e76d15868bf7eecd3a30
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Apr 17 11:28:33 2012 -0400
+
+    mmx: Use Loongson pinsrh instruction in pack_565
+    
+    The pinsrh instruction is analogous to MMX EXT's pinsrw, except like
+    other Loongson vector instructions it cannot access the general purpose
+    registers. In the cases of other Loongson vector instructions, this is a
+    headache, but it is actually a good thing here. Since the instruction is
+    different from MMX, I've named the intrinsic loongson_insert_pi16.
+    
+     text	data	bss	dec	 hex filename
+    25976	1952	  0   27928	6d18 .libs/libpixman_loongson_mmi_la-pixman-mmx.o
+    25336	1952	  0   27288	6a98 .libs/libpixman_loongson_mmi_la-pixman-mmx.o
+    
+    -and: 181
+    +and: 147
+    -dsll: 143
+    +dsll: 95
+    -dsrl: 87
+    +dsrl: 135
+    -ldc1: 523
+    +ldc1: 462
+    -lw: 767
+    +lw: 721
+    +pinsrh: 35
+
+commit 6d29b7d7557ccb657054e867f4e27f4aa89cb25e
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Feb 24 15:23:09 2012 -0500
+
+    mmx: don't pack and unpack src unnecessarily
+    
+    The combine function was store8888'ing the result, and all consumers
+    were immediately load8888'ing it, causing lots of unnecessary pack and
+    unpack instructions.
+    
+    It's a very straight forward conversion, except for mmx_combine_over_u
+    and mmx_combine_saturate_u. mmx_combine_over_u was testing the integer
+    result to skip pixels, so we use the is_* functions to test the __m64
+    data directly without loading it into an integer register.
+    
+    For mmx_combine_saturate_u there's not a lot we can do, since it uses
+    DIV_UN8.
+
+commit ee750034252fb8f44c871e84a5057bc114699ae7
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Feb 24 17:39:39 2012 -0500
+
+    mmx: introduce is_equal, is_opaque, and is_zero functions
+    
+    To be used by the next commit.
+
+commit 10c77b339f40fc027b682ef16edec234508d327b
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu Feb 23 16:25:11 2012 -0500
+
+    mmx: simplify srcsrcsrcsrc calculation in over_n_8_0565
+
+commit e06947d1010ffec4903493df4979119b0ac080d3
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu Feb 23 16:15:56 2012 -0500
+
+    mmx: remove unnecessary uint64_t<->__m64 conversions
+    
+    Loongson:
+    add_8888_8888 =  L1:  68.73  L2:  55.09  M: 25.39 ( 68.18%)  HT: 25.28 VT: 22.42  R: 20.74  RT: 13.26 ( 131Kops/s)
+    add_8888_8888 =  L1: 159.19  L2: 114.10  M: 30.74 ( 77.91%)  HT: 27.63 VT: 24.99  R: 24.61  RT: 14.49 ( 141Kops/s)
+
+commit c78e986085b3993f1b4355151820228c53d54cad
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Feb 24 12:43:43 2012 -0500
+
+    mmx: compile on MIPS for Loongson MMI optimizations
+    
+                                 image               image16
+               evolution   32.985 ->  29.667    27.314 ->  23.870
+    firefox-planet-gnome  197.982 -> 180.437   220.986 -> 205.057
+    gnome-system-monitor   48.482 ->  49.752    52.820 ->  49.528
+      gnome-terminal-vim   60.799 ->  50.528    51.655 ->  44.131
+          grads-heat-map    3.167 ->   3.181     3.328 ->   3.321
+                    gvim   38.646 ->  32.552    38.126 ->  34.453
+           midori-zoomed   44.371 ->  43.338    28.860 ->  28.865
+               ocitysmap   23.065 ->  18.057    23.046 ->  18.055
+                 poppler   43.676 ->  36.077    43.065 ->  36.090
+      swfdec-giant-steps   20.166 ->  20.365    22.354 ->  16.578
+          swfdec-youtube   31.502 ->  28.118    44.052 ->  41.771
+       xfce4-terminal-a1   69.517 ->  51.288    62.225 ->  53.309
+
+commit 4e0c7902b2c8e517d102a8fccb9cf7da9725f59f
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Feb 15 01:19:07 2012 -0500
+
+    mmx: make ldq_u take __m64* directly
+    
+    Before, if __m64 is allocated in vector or floating-point registers,
+    
+    	__m64 vs = ldq_u((uint64_t *)src);
+    
+    would cause src to be loaded into an integer register and then
+    transferred to an __m64 register. By switching ldq_u's argument type to
+    __m64 we give the compile enough information to recognize that it can
+    load to the vector register directly.
+    
+    This patch is necessary for the Loongson optimizations when __m64 is
+    typedef'd as double.
+
+commit 2e54b76a2d2203b6a70190f488d76d6d409e879a
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Feb 24 12:34:41 2012 -0500
+
+    mmx: add load function and use it in add_8888_8888
+
+commit 084e3f2f4be900041cc35830359606addc1fc3be
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Feb 24 12:32:03 2012 -0500
+
+    mmx: add store function and use it in add_8888_8888
+
+commit e24c1c849d29f43dc6e50e1f15102709059b40f8
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Apr 5 00:52:21 2012 -0400
+
+    bits_image_fetch_pixel_convolution(): Make sure channels are signed
+    
+    In the computation:
+    
+        srtot += RED_8 (pixel) * f
+    
+    RED_8 (pixel) is an unsigned quantity, which means the signed filter
+    coefficient f gets converted to an unsigned integer before the
+    multiplication. We get away with this because when the 32 bit unsigned
+    result is converted to int32_t, the correct sign is produced. But if
+    srtot had been an int64_t, the result would have been a very large
+    positive number.
+    
+    Fix this by explicitly casting the channels to int.
+
+commit 4d2fee14063b960c6b81b55dd3aa94b956d23eeb
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Apr 5 00:42:55 2012 -0400
+
+    test/utils.c: Clip values to the [0, 255] interval
+    
+    Unpremultiplying a superluminescent pixel can result in values greater
+    than 255.
+
+commit e2917645846b64fdc7f2190806c97b0ef4b0fd5b
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Apr 18 18:14:13 2012 -0400
+
+    configure.ac: fix iwMMXt/gcc version error message
+
+commit b87cd1f6059789cb154677d8432045a5ca8e16c1
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sun Apr 15 14:03:08 2012 -0400
+
+    mmx: fix _mm_shuffle_pi16 function when compiling without optimization
+    
+    The last argument must be an immediate value, and when compiling without
+    optimization the compiler might not recognize this. So use a macro if
+    not optimizing.
+
+commit e927d2397141f80aecd2702ce5f38349c41aebe5
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sun Apr 15 14:00:17 2012 -0400
+
+    configure.ac: require >= gcc-4.5 for ARM iwMMXt
+    
+    We're using a patched gcc-4.5, and having to modify configure.ac and
+    autoreconf between changes is annoying. And besides, 4.5, 4.6, and 4.7's
+    iwMMXt intrinsic support is equally broken, and we test a known broken
+    intrinsic in the configure test program, so the version check is rather
+    meaningless.
+
+commit 0531170436a2a10a995c7487b396f1378affdb98
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu Apr 5 17:36:05 2012 -0400
+
+    mmx: Use force_inline instead of __inline__ (bug 46906)
+    
+    Fixes the build on MSVC.
+
+commit b950bb12dc2baaee441b875bd81b67e48947d2f6
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu Mar 15 19:16:20 2012 -0400
+
+    mmx: enable over_n_0565 for b5g6r5
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 87ecec8d72be4106358e843a1e7a907b0e814f7f
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Apr 2 15:16:18 2012 -0400
+
+    gtk-utils.c: In pixbuf_from_argb32() use a8r8g8b8_to_rgba_np()
+    
+    Instead of inlining a copy of that functionality.
+
+commit d1ec1467f607c21a4d8b445eab5465ca60a12a97
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Apr 2 15:09:16 2012 -0400
+
+    test/utils.c: Rename and export the pngify_pixels() function.
+    
+    This function converts from a8r8g8b8 to non-premultiplied RGBA (the
+    PNG or GdkPixbuf format that has the channels in this order: R, G, B,
+    A in memory regardless of the computer's endianness). The function's
+    new name is a8r8g8b8_to_rgba_np().
+
+commit b16ddf17829633ec6eb54656924b7e841c6c69a4
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Apr 2 14:59:02 2012 -0400
+
+    gtk-utils.c: Don't include pixman-private.h
+    
+    Use pixman_image_get_format() instead of image->bits.format.
+
+commit b9ca23a9c711280a706eb1df30a0cfaf3b2d8e27
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Mar 25 12:14:54 2012 -0400
+
+    Rename fast_composite_add_1000_1000 to _add_1_1()
+    
+    The 1000_1000 name is a relic from before the refactoring.
+
+commit 746291a19ed29e2da6de57b382a1dfaa900d067b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Jan 16 06:46:52 2011 -0500
+
+    Add the original parrot image.
+    
+    This is the Parrot image that was downscaled and cropped before being
+    used in the composite-test.c demo.
+
+commit 451b25ae90ea077a78d2606ce107b826043a252b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Oct 6 06:06:59 2010 -0400
+
+    composite-test.c: Add a parrot image
+    
+    Instead of the yellow square, use a parrot as the source image. This
+    demonstrates the various blend modes much better.
+    
+    The parrot is a cropped version of finger painting by Rubens LP:
+    
+        http://www.flickr.com/photos/dorubens/4030604504/in/set-72157622586088192/
+    
+    where the background has been removed. Used here under Creative
+    Commons Attribution. The artist's web site:
+    
+         http://www.rubenslp.com.br/
+
+commit 3aa45d62e45f40faa98f9bb47046578bf19e7574
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Oct 6 03:56:55 2010 -0400
+
+    composite-test.c: Use similar gradient to the one in the PDF spec.
+
+commit e1b8969e78eecf9abaaf2b317c10fddf64b02799
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Oct 12 04:49:27 2011 -0400
+
+    demos: Add checkerboard demo
+    
+    This is a simple demo that displays a checkboard with a projective
+    transformation.
+
+commit 41863fbabb6dd08871aed47beba5d08ae2ae3cf6
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Oct 12 04:48:33 2011 -0400
+
+    demos: Add quad2quad program
+    
+    This program can compute the projective transformation that transforms
+    one quadrilateral into another. The code is basically maxima[1] output
+    translated into C.
+    
+    [1] http://maxima.sourceforge.net/
+
+commit cf0d0d63645bcb6425a1e2d7b5d9f1e26e205247
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Mar 14 17:11:14 2012 -0400
+
+    Use "=a" and "=d" constraints for rdtsc inline assembly
+    
+    In 32 bit mode the "=A" constraint refers to the register pair
+    edx:eax, but according to GCC developers this is not the case in 64
+    bit mode, where it refers to "rax".
+    
+    Hence, using "=A" for rdtsc is incorrect in 64 bit mode.
+    
+    See http://gcc.gnu.org/bugzilla/show_bug.cgi?id=21249
+
+commit 8a8aabf05c8e6c7b68b68c80e4e73877fd35ce78
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Mar 16 11:37:23 2012 -0700
+
+    configure.ac: Fix a copy-paste-o in TLS detection
+    
+    Regression from: a069da6c66da407cc52e1e92321d69c68fd6beb5
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Matt Turner <mattst88@gmail.com>
+
+commit ee6bac11c28b350c183f190b6c648c316ee1109d
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Mar 14 16:48:00 2012 -0400
+
+    Use AC_LANG_SOURCE for DSPr2 configure program
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 21eeecffa93ba5912487d88851b1a5c60fc37768
+Author: Chun-wei Fan <fanchunwei@src.gnome.org>
+Date:   Fri Mar 9 15:54:06 2012 +0800
+
+    Just include xmmintrin.h on MSVC as well
+    
+    The xmmintrin.h as shipped with recent Visual C++ (2003+) provides
+    _mm_shuffle_pi16 and _mm_mulhi_pu16, so including that header
+    will do for using these functions, and MSVC does not like the GCC-specific
+    implementations of _mm_shuffle_pi16 and _mm_mulhi_pu16 that is
+    currently in the code.
+    
+    _MM_SHUFFLE is declared in the same way in MSVC's xmmintrin.h, so don't
+    re-define it here to avoid a compilation warning.
+
+commit 94aea2e868ae02235785f31b275f89b9661bca0e
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Mar 14 10:26:18 2012 -0700
+
+    Fix a false-negative in MMX check
+    
+    Silence warnings that could make -Werror give a false negative
+    Use signed char to avoid cases where int8_t isn't declared
+    
+    Reported-by: Mike Lothian <mike@fireburn.co.uk>
+    Tested-by: Mike Lothian <mike@fireburn.co.uk>
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit d2ee5631ae42d031289ae80352e02bafa3f06ed4
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Sun Mar 11 18:52:25 2012 +0100
+
+    MIPS: DSPr2: Added over_n_8888_8888_ca and over_n_8888_0565_ca fast paths.
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz
+    
+    Referent (before):
+    
+    lowlevel-blt-bench:
+         over_n_8888_8888_ca =  L1:   8.32  L2:   7.65  M:  6.38 ( 51.08%)  HT:  5.78  VT:  5.74  R:  5.84  RT:  4.39 (  37Kops/s)
+         over_n_8888_0565_ca =  L1:   7.40  L2:   6.95  M:  6.16 ( 41.06%)  HT:  5.72  VT:  5.52  R:  5.63  RT:  4.28 (  36Kops/s)
+    cairo-perf-trace:
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [ # ]    image: pixman 0.25.3
+    [  0]    image            xfce4-terminal-a1  138.223  139.070   0.33%    6/6
+    [ # ]  image16: pixman 0.25.3
+    [  0]  image16            xfce4-terminal-a1  132.763  132.939   0.06%    5/6
+    
+    Optimized:
+    
+    lowlevel-blt-bench:
+         over_n_8888_8888_ca =  L1:  19.35  L2:  23.84  M: 13.68 (109.39%)  HT: 11.39  VT: 11.19  R: 11.27  RT:  6.90 (  47Kops/s)
+         over_n_8888_0565_ca =  L1:  18.68  L2:  17.00  M: 12.56 ( 83.70%)  HT: 10.72  VT: 10.45  R: 10.43  RT:  5.79 (  43Kops/s)
+    cairo-perf-trace:
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [ # ]    image: pixman 0.25.3
+    [  0]    image            xfce4-terminal-a1  130.400  131.720   0.46%    6/6
+    [ # ]  image16: pixman 0.25.3
+    [  0]  image16            xfce4-terminal-a1  125.830  126.604   0.34%    6/6
+
+commit a069da6c66da407cc52e1e92321d69c68fd6beb5
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Mar 8 09:41:34 2012 -0800
+
+    Expand TLS support beyond __thread to __declspec(thread)
+    
+    This code was pretty much coppied from a similar commit that I made to
+    xorg-server in April.
+    
+    cf: xorg/xserver: bb4d145bd25e2aee988b100ecf1105ea3b6a40b8
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 61d999b9101c76bd463101923d2143e31857e7f8
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Mar 8 09:41:32 2012 -0800
+
+    Disable MMX when incompatible clang is being used.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit ad4b6922f23e91b291c794b9fde5ee81941adb64
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Mar 8 09:41:33 2012 -0800
+
+    Silence a warning about unused pixman_have_mmx
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit bb5ff2687815eff20757612de965663ef3a2525b
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Mar 8 09:41:31 2012 -0800
+
+    Revert "Disable MMX when Clang is being used."
+    
+    This reverts commit 5eb4c12a79b3017ec6cc22ab756f53f225731533.
+
+commit a6ad5120f7bd4add3b2e9c03c9fd769d5bbfd191
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Mar 8 10:11:20 2012 -0500
+
+    Post-release version bump to 0.25.3
+
 commit f73f7985318bf0e7446941d9bea9a94b35580342
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Thu Mar 8 09:33:16 2012 -0500
