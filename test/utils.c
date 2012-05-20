@@ -340,17 +340,15 @@ make_random_bytes (int n_bytes)
     return bytes;
 }
 
-#ifdef HAVE_LIBPNG
-
-static void
-pngify_pixels (uint32_t *pixels, int n_pixels)
+void
+a8r8g8b8_to_rgba_np (uint32_t *dst, uint32_t *src, int n_pixels)
 {
+    uint8_t *dst8 = (uint8_t *)dst;
     int i;
 
     for (i = 0; i < n_pixels; ++i)
     {
-	uint32_t p = pixels[i];
-	uint8_t *out = (uint8_t *)&(pixels[i]);
+	uint32_t p = src[i];
 	uint8_t a, r, g, b;
 
 	a = (p & 0xff000000) >> 24;
@@ -360,17 +358,26 @@ pngify_pixels (uint32_t *pixels, int n_pixels)
 
 	if (a != 0)
 	{
-	    r = (r * 255) / a;
-	    g = (g * 255) / a;
-	    b = (b * 255) / a;
+#define DIVIDE(c, a)							\
+	    do								\
+	    {								\
+		int t = ((c) * 255) / a;				\
+		(c) = t < 0? 0 : t > 255? 255 : t;			\
+	    } while (0)
+
+	    DIVIDE (r, a);
+	    DIVIDE (g, a);
+	    DIVIDE (b, a);
 	}
 
-	*out++ = r;
-	*out++ = g;
-	*out++ = b;
-	*out++ = a;
+	*dst8++ = r;
+	*dst8++ = g;
+	*dst8++ = b;
+	*dst8++ = a;
     }
 }
+
+#ifdef HAVE_LIBPNG
 
 pixman_bool_t
 write_png (pixman_image_t *image, const char *filename)
@@ -398,7 +405,7 @@ write_png (pixman_image_t *image, const char *filename)
     pixman_image_composite32 (
 	PIXMAN_OP_SRC, image, NULL, copy, 0, 0, 0, 0, 0, 0, width, height);
 
-    pngify_pixels (data, height * width);
+    a8r8g8b8_to_rgba_np (data, data, height * width);
 
     for (i = 0; i < height; ++i)
 	row_pointers[i] = (png_bytep)(data + i * width);

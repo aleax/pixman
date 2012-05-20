@@ -539,7 +539,7 @@ _pixman_implementation_create_fast_path (pixman_implementation_t *fallback);
 pixman_implementation_t *
 _pixman_implementation_create_noop (pixman_implementation_t *fallback);
 
-#if defined USE_X86_MMX || defined USE_ARM_IWMMXT
+#if defined USE_X86_MMX || defined USE_ARM_IWMMXT || defined USE_LOONGSON_MMI
 pixman_implementation_t *
 _pixman_implementation_create_mmx (pixman_implementation_t *fallback);
 #endif
@@ -936,10 +936,11 @@ _pixman_log_error (const char *function, const char *message);
 static inline uint64_t
 oil_profile_stamp_rdtsc (void)
 {
-    uint64_t ts;
+    uint32_t hi, lo;
 
-    __asm__ __volatile__ ("rdtsc\n" : "=A" (ts));
-    return ts;
+    __asm__ __volatile__ ("rdtsc\n" : "=a" (lo), "=d" (hi));
+
+    return lo | (((uint64_t)hi) << 32);
 }
 
 #define OIL_STAMP oil_profile_stamp_rdtsc
