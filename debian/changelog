@@ -1,11 +1,11 @@
-pixman (0.25.6-1) UNRELEASED; urgency=low
+pixman (0.25.6-1) experimental; urgency=low
 
   * New upstream release candidate.
   * Remove demos/parrot.jpg before building the source package to avoid
     “binary file contents changed” until it's shipped in the upstream
     tarball.
 
- -- Cyril Brulebois <kibi@debian.org>  Sun, 20 May 2012 17:41:09 +0200
+ -- Cyril Brulebois <kibi@debian.org>  Sun, 20 May 2012 17:56:35 +0200
 
 pixman (0.25.2-1) experimental; urgency=low
 
