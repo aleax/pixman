@@ -1,3 +1,9 @@
+pixman (0.26.0-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+
+ -- Cyril Brulebois <kibi@debian.org>  Fri, 15 Jun 2012 00:15:32 +0200
+
 pixman (0.25.6-1) experimental; urgency=low
 
   * New upstream release candidate.

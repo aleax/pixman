@@ -1,3 +1,107 @@
+commit b1a401e6c9f204d33a55eee41897d66ab81d6117
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat May 26 16:17:14 2012 -0400
+
+    Pre-release version bump to 0.26.0
+
+commit f71e3dba979fcfc1cf87d01137e1e32451a173b1
+Author: Ingmar Runge <ingmar@irsoft.de>
+Date:   Sat May 19 15:45:18 2012 +0200
+
+    Fix MSVC compilation
+    
+    Only up to three SSE intrinsics supported in function declaration.
+
+commit 1e59e18d73a6e45729a99fe6ccc74d61631ff5f0
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu May 24 15:30:41 2012 -0400
+
+    test: Composite with solid images instead of using pixman_image_fill_*
+    
+    There is a couple of places where the test suite uses the
+    pixman_image_fill_* functions to initialize images. These functions
+    can fail, and will do so if the "fast" implementation is disabled.
+    
+    So to make sure the test suite passes even using
+    PIXMAN_DISABLE="fast", use pixman_image_composite32() with a solid
+    image instead of pixman_image_fill_*.
+
+commit 30816e3068bccf7c78c78f916b54971d24873bdc
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Thu May 3 00:03:43 2012 +0200
+
+    MIPS: DSPr2: Added bilinear over_8888_8_8888 fast path.
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz
+    
+    Referent (before):
+    
+    cairo-perf-trace:
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [ # ]    image: pixman 0.25.3
+    [  0]    image             firefox-fishtank 2289.180 2290.567   0.05%    5/6
+    
+    Optimized:
+    
+    cairo-perf-trace:
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    [ # ]    image: pixman 0.25.3
+    [  0]    image             firefox-fishtank 1700.925 1708.314   0.22%    5/6
+
+commit aea0522f6f1a51b97a673cfe4dc157e501008580
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Wed May 23 18:53:43 2012 +0200
+
+    MIPS: DSPr2: Fix bug in over_n_8888_8888_ca/over_n_8888_0565_ca routines
+    
+    In main loop (unrolled by factor 2), instead of negating multiplied
+    mask values by srca, values of srca was negated, and passed as alpha
+    argument for
+    
+        UN8x4_MUL_UN8x4_ADD_UN8x4 macro.
+    
+    Instead of:
+    
+        ma = ~ma;
+        UN8x4_MUL_UN8x4_ADD_UN8x4 (d, ma, s);
+    
+    Code was doing this:
+    
+        ma = ~srca;
+        UN8x4_MUL_UN8x4_ADD_UN8x4 (d, ma, s);
+    
+    Key is in substituting registers s0/s1 (containing srca value), with
+    t0/t1 containing mask values multiplied by srca.  Register usage is
+    also improved (less registers are saved on stack, for
+    over_n_8888_8888_ca routine).
+    
+    The bug was introduced in commit d2ee5631 and revealed by composite test.
+
+commit 74bf5dc2f99245e7b486203b6ba074fb629eb5f3
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun May 20 13:09:16 2012 -0400
+
+    demos: Add parrot.jpg to EXTRA_DIST
+    
+    Pointed out by Cyril Brulebois.
+
+commit 55698584be93706794b181cbf595846da578e103
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue May 15 16:32:08 2012 -0400
+
+    configure.ac: Fail the ARM/iwMMXt test if not compiling with -march=iwmmxt
+    
+    If not compiling with -march=iwmmxt, the configure test will still pass,
+    thinking that the __builtin_arm_* intrinsic is a function instead of
+    generating a single instruction. Since no linking is done, the configure
+    test doesn't catch this, and we get linking errors in the build.
+
+commit 3682b615154338f9754e7c1e046b42bb8ad584fa
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue May 15 13:38:44 2012 -0400
+
+    Post-release version bump to 0.25.7
+
 commit 1e1a00e964a1d8ef43d6d75c1c3a0b5d518d1979
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Tue May 15 13:20:09 2012 -0400
