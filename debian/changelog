@@ -1,3 +1,10 @@
+pixman (0.26.0-2) UNRELEASED; urgency=low
+
+  * Cherry-pick from upstream master branch to fix FTBFS on *i386:
+    - da6193b1fc “mmx: add missing _mm_empty calls”
+
+ -- Cyril Brulebois <kibi@debian.org>  Fri, 15 Jun 2012 01:19:28 +0200
+
 pixman (0.26.0-1) unstable; urgency=low
 
   * New upstream release.
