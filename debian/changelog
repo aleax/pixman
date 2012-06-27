@@ -1,3 +1,12 @@
+pixman (0.26.0-3) UNRELEASED; urgency=low
+
+  * Pass LS_CFLAGS=" " to configure to prevent -march=loongson2f from
+    being passed to gcc, which would break on loongson2e (see fdo bug
+    #51451). This fixes the test suite failures on mipsel, and should
+    avoid any crashes depending on user systems.
+
+ -- Cyril Brulebois <kibi@debian.org>  Wed, 27 Jun 2012 11:01:18 +0200
+
 pixman (0.26.0-2) unstable; urgency=low
 
   * Cherry-pick from upstream master branch to fix FTBFS on *i386:
