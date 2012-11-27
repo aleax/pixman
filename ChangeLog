@@ -1,3 +1,1931 @@
+commit 8a2ff3e0ef0449921d962f8b9c093c2353ffd945
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Nov 7 13:40:34 2012 -0500
+
+    Pre-release version bump to 0.28.0
+
+commit 4b91f6ca72db3e8cbd7e97e9ef44be2f8994040d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Oct 25 10:42:26 2012 -0400
+
+    Post-release version bump to 0.27.5
+
+commit 0de3f3344908757b61f9f51b59d4a39f7447451b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Oct 25 10:35:27 2012 -0400
+
+    Pre-release version bump to 0.27.4
+
+commit f0750258459580bbc9f136710f8e5c551bd01a0f
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Sun Oct 14 11:58:52 2012 +0200
+
+    MIPS: DSPr2: Added more fast-paths for ADD operation: - add_8888_8888_8888 - add_8_8 - add_8888_8888
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz:
+    
+    lowlevel-blt-bench results
+    
+    Referent (before):
+            add_8888_8888_8888 =  L1:  17.55  L2:  13.35  M:  8.13 ( 93.95%)  HT:  6.60  VT:  6.64  R:  6.45  RT:  3.47 (  26Kops/s)
+            add_8_8            =  L1:  86.07  L2:  84.89  M: 62.36 ( 90.11%)  HT: 36.36  VT: 34.74  R: 29.56  RT: 11.56 (  52Kops/s)
+            add_8888_8888      =  L1:  95.59  L2:  73.05  M: 17.62 (101.84%)  HT: 15.46  VT: 15.01  R: 13.94  RT:  6.71 (  42Kops/s)
+    
+    Optimized:
+            add_8888_8888_8888 =  L1:  41.52  L2:  33.21  M: 11.97 (138.45%)  HT: 10.47  VT: 10.19  R:  9.42  RT:  4.86 (  32Kops/s)
+            add_8_8            =  L1: 135.06  L2: 104.82  M: 57.13 ( 82.58%)  HT: 34.79  VT: 36.60  R: 28.28  RT: 10.54 (  51Kops/s)
+            add_8888_8888      =  L1: 176.36  L2:  67.82  M: 17.48 (101.06%)  HT: 15.16  VT: 14.62  R: 13.88  RT:  8.05 (  45Kops/s)
+
+commit ca83717c63813b6f53f89dd94b5771bd32382a18
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Sun Oct 14 11:58:51 2012 +0200
+
+    MIPS: DSPr2: Added more fast-paths for ADD operation: - add_0565_8_0565 - add_8888_8_8888 - add_8888_n_8888
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz:
+    
+    lowlevel-blt-bench results
+    
+    Referent (before):
+            add_0565_8_0565 =  L1:   8.89  L2:   8.37  M:  7.35 ( 29.22%)  HT:  5.90  VT:  5.85  R:  5.67  RT:  3.31 (  26Kops/s)
+            add_8888_8_8888 =  L1:  17.22  L2:  14.17  M:  9.89 ( 65.56%)  HT:  7.57  VT:  7.50  R:  7.36  RT:  4.10 (  30Kops/s)
+            add_8888_n_8888 =  L1:  17.79  L2:  14.87  M: 10.35 ( 54.89%)  HT:  5.19  VT:  4.93  R:  4.92  RT:  1.90 (  19Kops/s)
+    
+    Optimized:
+            add_0565_8_0565 =  L1:  21.72  L2:  20.01  M: 14.96 ( 59.54%)  HT: 12.03  VT: 11.81  R: 11.26  RT:  6.33 (  37Kops/s)
+            add_8888_8_8888 =  L1:  47.42  L2:  38.64  M: 15.90 (105.48%)  HT: 13.34  VT: 13.03  R: 11.84  RT:  6.63 (  38Kops/s)
+            add_8888_n_8888 =  L1:  54.83  L2:  42.66  M: 17.36 ( 92.11%)  HT: 15.20  VT: 14.82  R: 13.66  RT:  7.83 (  41Kops/s)
+
+commit 52d20e692ebc605077448ab6f52fd257f83481b2
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Sun Oct 14 11:58:50 2012 +0200
+
+    MIPS: DSPr2: Added fast-paths for ADD operation: - add_n_8_8 - add_n_8_8888 - add_8_8_8
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz:
+    
+    lowlevel-blt-bench results
+    
+    Referent (before):
+            add_n_8_8    =  L1:  41.37  L2:  37.83  M: 30.38 ( 60.45%)  HT: 23.70  VT: 22.85  R: 21.51  RT: 10.32 (  45Kops/s)
+            add_n_8_8888 =  L1:  16.01  L2:  14.46  M: 11.64 ( 46.32%)  HT:  5.50  VT:  5.18  R:  5.06  RT:  1.89 (  18Kops/s)
+            add_8_8_8    =  L1:  13.26  L2:  12.47  M: 11.16 ( 29.61%)  HT:  8.09  VT:  8.04  R:  7.68  RT:  3.90 (  29Kops/s)
+    
+    Optimized:
+            add_n_8_8    =  L1:  96.03  L2:  79.37  M: 51.89 (103.31%)  HT: 32.59  VT: 31.29  R: 28.52  RT: 11.08 (  46Kops/s)
+            add_n_8_8888 =  L1:  53.61  L2:  46.92  M: 23.78 ( 94.70%)  HT: 19.06  VT: 18.64  R: 17.30  RT:  9.15 (  43Kops/s)
+            add_8_8_8    =  L1:  89.65  L2:  66.82  M: 37.10 ( 98.48%)  HT: 22.10  VT: 21.74  R: 20.12  RT:  8.12 (  41Kops/s)
+
+commit 9df645dfb04b5a790faabe1e9a84fc37287d91b0
+Author: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+Date:   Fri Oct 19 01:59:16 2012 +0300
+
+    Workaround for FTBFS with gcc 4.6 (http://gcc.gnu.org/PR54965)
+    
+    GCC 4.6 has problems with force_inline, so just use normal inline instead.
+    Fixes: https://bugs.freedesktop.org/show_bug.cgi?id=55630
+
+commit 31e5a0a393defb8e0534ab1bde29ab23fc04795d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Oct 12 18:34:33 2012 -0400
+
+    pixman_composite_trapezoids(): don't clip to extents for some operators
+    
+    pixman_composite_trapezoids() is supposed to composite across the
+    entire destination, but it actually only composites across the extent
+    of the trapezoids. For operators such as ADD or OVER this doesn't
+    matter since a zero source has no effect on the destination. But for
+    operators such as SRC or IN, it does matter.
+    
+    So for such operators where a zero source has an effect, don't clip to
+    the trap extents.
+
+commit 65db2362e2793a527c2e831cceb81d8d6ad51b8f
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Oct 12 18:29:56 2012 -0400
+
+    pixman_composite_trapezoids(): Factor out extents computation
+    
+    The computation of the extents rectangle is moved to its own
+    function.
+
+commit 2d9cb563b415e90cef898de03de7ed9c6f091db1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Oct 12 18:07:29 2012 -0400
+
+    Add new pixman_image_create_bits_no_clear() API
+    
+    When pixman_image_create_bits() function is given NULL for bits, it
+    will allocate a new buffer and initialize it to zero. However, in some
+    cases, only a small region of the image is actually used; in that case
+    it is wasteful to touch all of the memory.
+    
+    The new pixman_image_create_bits_no_clear() works exactly like
+    _create_bits() except that it doesn't initialize any newly allocated
+    memory.
+
+commit af803be17b4ea5f53db9af57b6c6ef06db99ebbd
+Author: Benny Siegert <bsiegert@gmail.com>
+Date:   Sun Oct 14 16:28:48 2012 +0200
+
+    configure.ac: PIXMAN_LINK_WITH_ENV fix
+    
+    (fixes bug #52101)
+    
+    On MirBSD, the compiler produces a (harmless) warning when the compiler
+    is called without the standard CFLAGS:
+    
+    foo.c:0: note: someone does not honour COPTS correctly, passed 0 times
+    
+    However, PIXMAN_LINK_WITH_ENV considers _any_ output on stderr as an
+    error, even if the exit status of the compiler is 0. Furthermore, it
+    resets CFLAGS and LDFLAGS at the start. On MirBSD, this will lead to a
+    warning in each test, making all such tests fail. In particular, the
+    pthread_setspecific test fails, thus pixman is compiled without thread
+    support. This leads to compile errors later on, or at least it did when
+    I tried this on pkgsrc. Re-adding the saved CFLAGS, LDFLAGS and LIBS
+    before the test makes it work.
+    
+    The second hunk inverts the order of the pthread flag checks. On BSD
+    systems (this is true at least on OpenBSD and MirBSD), both -lpthread
+    and -pthread work but the latter is "preferred", whatever this means.
+
+commit 6e56098c0338ce74228187e4c96fed1a66cb0956
+Author: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+Date:   Sat Sep 29 02:29:22 2012 +0300
+
+    Add missing force_inline to in() function used for C fast paths
+
+commit 90bcafa495c1074b0ea1d35f99aa4837917494bd
+Author: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+Date:   Sun Jul 8 23:10:00 2012 +0300
+
+    MIPS: skip runtime detection for DSPr2 if -mdspr2 option is in CFLAGS
+    
+    This provides a way to enable MIPS DSP ASE optimizations if running
+    under qemu-user (where /proc/cpuinfo contains information about the
+    host processor instead of the emulated one). Can be used for running
+    pixman test suite in qemu-user when having no access to real MIPS
+    hardware.
+
+commit d5f2f39319fc358cccda60abe0bc927bd27131c1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Oct 11 04:04:04 2012 -0400
+
+    region: Remove overlap argument from pixman_op()
+    
+    This is used to compute whether the regions in question overlap, but
+    nothing makes use of this information, so it can be removed.
+
+commit cb4f325ec0e844008075fe89ceb9f634ae41e7c9
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Oct 11 04:07:00 2012 -0400
+
+    region: Formatting fix
+    
+    The while part of a do/while loop was formatted as if it were a while
+    loop with an empty body. Probably some indent tool misinterpreted the
+    code at some point.
+
+commit 15b153d633fcfce886c30fee98599fddbf019ee8
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Oct 7 17:58:32 2012 -0400
+
+    Only regard images as pixbufs if they have identity transformations
+    
+    In order for a src/mask pair to be considered a pixbuf, they have to
+    have identical transformations, but we don't check for that. Since the
+    only fast paths we have for pixbufs require identity transformations,
+    it sufficies to check that both source and mask are
+    untransformed.
+    
+    This is also the reason that this bug can't be triggered by any test
+    code - if the source and mask had different transformations, we would
+    consider them a pixbuf, but then wouldn't take the fast path because
+    at least one of the transformations would be different from the
+    identity.
+
+commit 3d81d89c292058522cce91338028d9b4c4a23c24
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Oct 4 12:41:08 2012 -0400
+
+    Remove BUILT_SOURCES
+    
+    pixman-combine32.[ch] were the only built sources, so BUILT_SOURCES
+    can now be removed.
+
+commit ec7aa11a6e4d0d02df9b339dfce9460dce954602
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Sep 23 03:52:34 2012 -0400
+
+    Speed up pixman_expand_to_float()
+    
+    GCC doesn't move the divisions out of the loop, so do it manually by
+    looking up the four (1.0f / mask) values in a table. Table lookups are
+    used under the theory that one L2 hit plus three L1 hits is preferable
+    to four floating point divisions.
+
+commit 8ccda2be30adf9dfcc3087b38a5062258324dcce
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Sep 21 18:36:16 2012 -0400
+
+    Don't auto-generate pixman-combine32.[ch] anymore
+    
+    Since pixman-combine64.[ch] are not used anymore, there is no point
+    generating these files from pixman-combine.[ch].template.
+    
+    Also get rid of dependency on perl in configure.ac.
+
+commit 4afd20cc71ba75190ebcead774b946157d0995a6
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Aug 18 14:39:29 2012 -0400
+
+    Remove 64 bit pipeline
+    
+    The 64 bit pipeline is not used anymore, so it can now be removed.
+    
+    Don't generate pixman-combine64.[ch] anymore. Don't generate the
+    pixman-srgb.c anymore. Delete all the 64 bit fetchers in
+    pixman-access.c, all the 64 bit iterator functions in
+    pixman-bits-image.c and all the functions that expand from 8 to 16
+    bits.
+
+commit 5ff0bbd9721bb216a8332cbde18adc458af3cdec
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Aug 18 14:11:07 2012 -0400
+
+    Switch the wide pipeline over to using floating point
+    
+    In pixman-bits-image.c, remove bits_image_fetch_untransformed_64() and
+    add bits_image_fetch_untransformed_float(); change
+    dest_get_scanline_wide() to produce a floating point buffer,
+    
+    In the gradients, change *_get_scanline_wide() to call
+    pixman_expand_to_float() instead of pixman_expand().
+    
+    In pixman-general.c change the wide Bpp to 16 instead of 8, and
+    initialize the buffers to 0 to prevent NaNs from causing trouble.
+    
+    In pixman-noop.c make the wide solid iterator generate floating point
+    pixels.
+    
+    In pixman-solid-fill.c, cache a floating point pixel, and make the
+    wide iterator generate floating point pixels.
+    
+    Bug fix in bits_image_fetch_untransformed_repeat_normal
+
+commit e75bacc5f9196c3980ce331c7d53de5b7e92d699
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Aug 18 13:22:15 2012 -0400
+
+    pixman-access.c: Add floating point accessor functions
+    
+    Three new function pointer fields are added to bits_image_t:
+    
+          fetch_scanline_float
+          fetch_pixel_float
+          store_scanline_float
+    
+    similar to the existing 32 and 64 bit accessors. The fetcher_info_t
+    struct in pixman_access similarly gets a new get_scanline_float field.
+    
+    For most formats, the new get_scanline_float field is set to a new
+    function fetch_scanline_generic_float() that first calls the 32 bit
+    fetcher uses the 32 bit scanline fetcher and then expands these pixels
+    to floating point.
+    
+    For the 10 bpc formats, new floating point accessors are added that
+    use pixman_unorm_to_float() and pixman_float_to_unorm() to convert
+    back and forth.
+    
+    The PIXMAN_a8r8g8b8_sRGB format is handled with a 256-entry table that
+    maps 8 bit sRGB channels to linear single precision floating point
+    numbers. The sRGB->linear direction can then be done with a simple
+    table lookup.
+    
+    The other direction is currently done with 4096-entry table which
+    works fine for 16 bit integers, but not so great for floating
+    point. So instead this patch uses a binary search in the sRGB->linear
+    table. The existing 32 bit accessors for the sRGB format are also
+    converted to use this method.
+
+commit 23252393a2dcae4dc5a7d03727dd66cdd81286ba
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Aug 18 13:02:31 2012 -0400
+
+    pixman-utils.c, pixman-private.h: Add floating point conversion routines
+    
+    A new struct argb_t containing a floating point pixel is added to
+    pixman-private.h and conversion routines are added to pixman-utils.c
+    to convert normalized integers to and from that struct.
+    
+    New functions:
+    
+      - pixman_expand_to_float()
+        Expands a buffer of integer pixels to a buffer of argb_t pixels
+    
+      - pixman_contract_from_float()
+        Converts a buffer of argb_t pixels to a buffer integer pixels
+    
+      - pixman_float_to_unorm()
+        Converts a floating point number to an unsigned normalized integer
+    
+      - pixman_unorm_to_float()
+        Converts an unsigned normalized integer to a floating point number
+
+commit 4760599ff3008ab0f1e36a7d4d362362817fd930
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Sep 9 17:56:53 2012 -0400
+
+    Add combiner test
+    
+    This test runs the new floating point combiners on random input with
+    divide-by-zero exceptions turned on.
+    
+    With the floating point combiners the only thing we guarantee is that
+    divide-by-zero exceptions are not generated, so change
+    enable_fp_exceptions() to only enable those, and rename accordingly.
+
+commit a5b459114e35c7a946362f1e5857e8a87a403ec3
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri May 14 00:42:04 2010 -0400
+
+    Add pixman-combine-float.c
+    
+    This file contains floating point implementations of combiners for all
+    pixman operators. These combiners operate on buffers containing single
+    precision floating point pixels stored in (a, r, g, b) order.
+    
+    The combiners are added to the pixman_implementation_t struct, but
+    nothing uses them yet.
+    
+    This commit incorporates a number of bug fixes contributed by Andrea
+    Canciani.
+    
+    Some notes:
+    
+    - The combiners are making sure to never divide by zero regardless of
+      input, so an application could enable divide-by-zero exceptions and
+      pixman wouldn't generate any.
+    
+    - The operators are implemented according to the Render spec. Ie.,
+    
+        - If the input pixels are between 0 and 1, then so is the output.
+    
+        - The source and destination coefficients for the conjoint and
+          disjoint operators are clamped to [0, 1].
+    
+    - The PDF operators are not described in the render spec, and the
+      implementation here doesn't do any clamping except in the final
+      conversion from floating point to destination format.
+    
+    All of the above will need to be rethought if we add support for pixel
+    formats that can support negative and greater-than-one pixels. It is
+    in fact already the case in principle that convolution filters can
+    produce pixels with negative values, but since these go through the
+    broken "wide" path that narrows everything to 32 bits, these negative
+    values don't currently survive to the combiners.
+
+commit 7a9c2d586b2349b5e17966a96d7fe8c390abb75a
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Jun 2 00:15:54 2012 -0400
+
+    blitters-test: Prepare for floating point
+    
+    Comment out some formats in blitters-test that are going to rely on
+    floating point in some upcoming patches.
+
+commit 600a06c81d3999bc6551c7e889726ed7b8bec84d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jul 11 03:27:49 2012 -0400
+
+    glyph-test: Prepare for floating point
+    
+    In preparation for an upcoming change of the wide pipe to use floating
+    point, comment out some formats in glyph-test that are going to be
+    using floating point and update the CRC32 value to match.
+
+commit 2e17b6dd4ee7c32684fb7ffc70d3ad3ebf7cb2ef
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Sep 29 10:34:17 2012 -0400
+
+    Make pixman.h more const-correct
+    
+    Add const to pointer arguments when the function doesn't change the
+    pointed-to data.
+    
+    Also in add_glyphs() in pixman-glyph.c make 'white' in add_glyphs()
+    static and const.
+
+commit 183afcf1d95625a1f237ef349a1c8931d94d000d
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sun Sep 30 11:59:23 2012 -0700
+
+    iwmmxt: Don't define dummy _mm_empty for >=gcc-4.8
+    
+    Definition was not present in <4.8.
+    
+    Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=55451
+
+commit d4b72eb6ccc1f004efedbc6552ee22499350be4d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Sep 29 18:15:54 2012 -0400
+
+    rotate-test: Call image_endian_swap() in make_image()
+    
+    Otherwise the test fails on big-endian.
+    
+    Tested-by: Matt Turner <mattst88@gmail.com>
+
+commit aff796d6cee4cb81f0352c2f7d0c994229bd5ca1
+Author: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+Date:   Mon Jun 25 22:36:52 2012 -0400
+
+    Add scaled nearest repeat fast paths
+    
+    Before this patch it was often faster to scale and repeat
+    in two passes because each pass used a fast path vs.
+    the slow path that the single pass approach takes. This
+    makes it so that the single pass approach has competitive
+    performance.
+
+commit 05560828c495ed9226b43b30e1824447e3d8eff3
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Sep 21 16:34:24 2012 -0700
+
+    sse2: mark pack_565_2x128_128 as static force_inline
+
+commit de60e2e0e3eb6084f8f14b63f25b3cbfb012943f
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Sep 15 03:13:09 2012 -0400
+
+    Fix for infinite-loop test
+    
+    The infinite loop detected by "affine-test 212944861" is caused by an
+    overflow in this expression:
+    
+        max_x = pixman_fixed_to_int (vx + (width - 1) * unit_x) + 1;
+    
+    where (width - 1) * unit_x doesn't fit in a signed int. This causes
+    max_x to be too small so that this:
+    
+        src_width = 0
+    
+        while (src_width < REPEAT_NORMAL_MIN_WIDTH && src_width <= max_x)
+            src_width += src_image->bits.width;
+    
+    results in src_width being 0. Later on when src_width is used for
+    repeat calculations, we get the infinite loop.
+    
+    By casting unit_x to int64_t, the expression no longer overflows and
+    affine-test 212944861 and infinite-loop no longer loop forever.
+
+commit aa311a4641b79eac39fe602b75d7bee3de9b1dce
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Sep 13 19:31:29 2012 -0400
+
+    test: Add inifinite-loop test
+    
+    This test demonstrates a bug where a certain transformation matrix can
+    result in an infinite loop. It was extracted as a standalone version
+    of "affine-test 212944861".
+    
+    If given the option -nf, the test program will not call fail_after()
+    and therefore potentially run forever.
+
+commit d5c721768c9811ce22bc0cd50bdf1c7bccc264e0
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Sep 13 19:29:19 2012 -0400
+
+    affine-test: Print out the transformation matrix when verbose
+    
+    Printing out the translation and scale is a bit misleading because the
+    actual transformation matrix can be modified in various other ways.
+    
+    Instead simply print the whole transformation matrix that is actually
+    used.
+
+commit 292fce7a230dd253fff71bd1bb2fbf9b7996a892
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Fri Sep 14 09:31:26 2012 +0200
+
+    MIPS: DSPr2: Added OVER combiner and two new fast paths: - over_8888_8888 - over_8888_8888_8888
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz:
+    
+    lowlevel-blt-bench results
+    
+    Referent (before):
+              over_8888_8888 =  L1:  19.61  L2:  17.10  M: 11.16 ( 59.20%)  HT: 16.47  VT: 15.81  R: 14.82  RT:  8.90 (  50Kops/s)
+         over_8888_8888_8888 =  L1:  13.56  L2:  11.22  M:  7.46 ( 79.18%)  HT:  6.24  VT:  6.20  R:  6.11  RT:  3.95 (  29Kops/s)
+    
+    Optimized:
+              over_8888_8888 =  L1:  46.42  L2:  36.70  M: 16.69 ( 88.57%)  HT: 17.11  VT: 16.55  R: 15.31  RT:  9.48 (  52Kops/s)
+         over_8888_8888_8888 =  L1:  26.06  L2:  22.53  M: 11.49 (121.91%)  HT:  9.93  VT:  9.62  R:  9.19  RT:  5.75 (  36Kops/s)
+
+commit 28c9bd4866088a017a0cdf3f0fb47467b97bbc29
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Fri Sep 14 09:31:25 2012 +0200
+
+    MIPS: DSPr2: Added fast-paths for OVER operation: - over_0565_n_0565 - over_0565_8_0565
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz:
+    
+    lowlevel-blt-bench results
+    
+    Referent (before):
+            over_0565_n_0565 =  L1:   7.56  L2:   7.24  M:  6.16 ( 16.38%)  HT:  4.01  VT:  3.84  R:  3.79  RT:  1.66 (  18Kops/s)
+            over_0565_8_0565 =  L1:   7.43  L2:   7.05  M:  5.98 ( 23.85%)  HT:  5.27  VT:  5.23  R:  5.09  RT:  3.14 (  28Kops/s)
+    
+    Optimized:
+            over_0565_n_0565 =  L1:  15.47  L2:  14.52  M: 12.30 ( 32.65%)  HT: 10.76  VT: 10.57  R: 10.27  RT:  6.63 (  46Kops/s)
+            over_0565_8_0565 =  L1:  15.47  L2:  14.61  M: 11.78 ( 46.92%)  HT: 10.00  VT:  9.84  R:  9.40  RT:  5.81 (  43Kops/s)
+
+commit b660eb30b4e5f690d191b26a500a6ba224986b3a
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Fri Sep 14 09:31:24 2012 +0200
+
+    MIPS: DSPr2: Added fast-paths for OVER operation: - over_8888_n_0565 - over_8888_8_0565
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz:
+    
+    lowlevel-blt-bench results
+    
+    Referent (before):
+            over_8888_n_0565 =  L1:   8.95  L2:   8.33  M:  6.95 ( 27.74%)  HT:  4.27  VT:  4.07  R:  4.01  RT:  1.74 (  19Kops/s)
+            over_8888_8_0565 =  L1:   8.86  L2:   8.11  M:  6.72 ( 35.71%)  HT:  5.68  VT:  5.62  R:  5.47  RT:  3.35 (  30Kops/s)
+    
+    Optimized:
+            over_8888_n_0565 =  L1:  18.76  L2:  17.55  M: 13.11 ( 52.19%)  HT: 11.35  VT: 11.10  R: 10.88  RT:  6.94 (  47Kops/s)
+            over_8888_8_0565 =  L1:  18.14  L2:  16.79  M: 12.10 ( 64.25%)  HT: 10.24  VT:  9.98  R:  9.63  RT:  5.89 (  43Kops/s)
+
+commit 37e3368e20cee42f1e1039bb112ed9a09d21156f
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Fri Sep 14 09:31:23 2012 +0200
+
+    MIPS: DSPr2: Added fast-paths for OVER operation: - over_8888_n_8888 - over_8888_8_8888
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz:
+    
+    lowlevel-blt-bench results
+    
+    Referent (before):
+            over_8888_n_8888 =  L1:   9.92  L2:  11.27  M:  8.50 ( 45.23%)  HT:  4.70  VT:  4.45  R:  4.49  RT:  1.85 (  20Kops/s)
+            over_8888_8_8888 =  L1:  12.54  L2:  10.86  M:  8.18 ( 54.36%)  HT:  6.53  VT:  6.45  R:  6.41  RT:  3.83 (  33Kops/s)
+    
+    Optimized:
+            over_8888_n_8888 =  L1:  28.02  L2:  24.92  M: 14.72 ( 78.15%)  HT: 13.03  VT: 12.65  R: 12.00  RT:  7.49 (  49Kops/s)
+            over_8888_8_8888 =  L1:  26.92  L2:  23.93  M: 13.65 ( 90.58%)  HT: 11.68  VT: 11.29  R: 10.56  RT:  6.37 (  45Kops/s)
+
+commit f580c4c5b2a435ebe2751ce0dace6c42568557f8
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Fri Sep 21 16:52:16 2012 -0400
+
+    pixman-combine.c.template: Formatting clean-ups
+    
+    Various formatting fixes, and removal of some obsolete comments about
+    strength reduction of operators.
+
+commit 58f8704664d1f8c812a85b929a50818f213a8438
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Sep 20 21:43:24 2012 -0400
+
+    Fix bugs in pixman-image.c
+    
+    In the checks for whether the transforms are rotation matrices "-1"
+    and "1" were used instead of the correct -pixman_fixed_1 and
+    pixman_fixed_1.
+    
+    Fixes test suite failure for rotate-test.
+
+commit 550dfc5e7ecd5b099c1009d77c56cb91a62caeb1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Sep 20 18:41:33 2012 -0400
+
+    Add rotate-test.c test program
+    
+    This program exercises a bug in pixman-image.c where "-1" and "1" were
+    used instead of the correct "- pixman_fixed_1" and "pixman_fixed_1".
+    
+    With the fast implementation enabled:
+    
+         % ./rotate-test
+         rotate test failed! (checksum=35A01AAB, expected 03A24D51)
+    
+    Without it:
+    
+         % env PIXMAN_DISABLE=fast ./rotate-test
+         pixman: Disabled fast implementation
+         rotate test passed (checksum=03A24D51)
+    
+    V2: The first version didn't have lcg_srand (testnum) in test_transform().
+
+commit 2ab77c97a5a3a816d6383bdc3b6c8bdceb0383b7
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Sep 19 12:04:11 2012 -0400
+
+    Fix bugs in component alpha combiners for separable PDF operators
+    
+    In general, the component alpha version of an operator is supposed to
+    do this:
+    
+           - multiply source with mask in all channels
+           - multiply mask with source alpha in all channels
+           - compute the regular operator in all channels using the
+             mask value whenever source alpha is called for
+    
+    The first two steps are usually accomplished with the function
+    combine_mask_ca(), but for operators where source alpha is not used,
+    such as SRC, ADD and OUT, the simpler function
+    combine_mask_value_ca(), which doesn't compute the new mask values,
+    can be used.
+    
+    However, the PDF blend modes generally *do* make use of source alpha,
+    so they can't use combine_mask_value_ca() as they do now. They have to
+    use combine_mask_ca().
+    
+    This patch fixes this in combine_multiply_ca() and the CA combiners
+    generated by PDF_SEPARABLE_BLEND_MODE.
+
+commit c4b69e706e63e01fbc70e0026c2079007c89de14
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Sep 19 19:46:13 2012 -0400
+
+    Fix bug in fast_composite_scaled_nearest()
+    
+    The fast_composite_scaled_nearest() function can be called when the
+    format is x8b8g8r8. In that case pixels fetched in fetch_nearest()
+    need to have their alpha channel set to 0xff.
+    
+    Fixes test suite failure in scaling-test.
+    
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+
+commit 35be7acb660228d4e350b5806c81e55606352e0d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Sep 19 19:26:49 2012 -0400
+
+    Add PIXMAN_x8b8g8r8 and PIXMAN_a8b8g8r8 formats to scaling-test
+    
+    Update the CRC values based on what the general implementation
+    reports. This reveals a bug in the fast implementation:
+    
+        % env PIXMAN_DISABLE="mmx sse2" ./test/scaling-test
+        pixman: Disabled mmx implementation
+        pixman: Disabled sse2 implementation
+        scaling test failed! (checksum=AA722B06, expected 03A23E0C)
+    
+    vs.
+    
+        % env PIXMAN_DISABLE="mmx sse2 fast" ./test/scaling-test
+        pixman: Disabled fast implementation
+        pixman: Disabled mmx implementation
+        pixman: Disabled sse2 implementation
+        scaling test passed (checksum=03A23E0C)
+    
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+
+commit 9decb9a97975ae6bf25a42c0fd2eaa21b166c36d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Sep 15 19:10:56 2012 -0400
+
+    implementation: Rename delegate to fallback
+    
+    At this point the chain of implementations has nothing to do with the
+    delegation design pattern anymore, so rename the delegate pointer to
+    'fallback'.
+
+commit b96599ccf353e89f95aa106853fcf310203c5874
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Sep 15 13:58:45 2012 -0400
+
+    _pixman_implementation_create(): Initialize implementation with memset()
+    
+    All the function pointers are NULL by default now, so we can just zero
+    the struct. Also write the function a little more compactly.
+
+commit 9539a18832c278ca0f6f572d8765932be6c9ad65
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Sep 15 13:53:17 2012 -0400
+
+    Rename _pixman_lookup_composite_function() to _pixman_implementation_lookup_composite()
+    
+    And move it into pixman-implementation.c which is where it belongs
+    logically.
+
+commit ee6af72dadaf9eb049bfeb35dc9ff57c3902403a
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Sep 15 13:20:52 2012 -0400
+
+    Move delegation of src/dest iter init into pixman-implementation.c
+    
+    Instead of relying on each implementation to delegate when an iterator
+    can't be initialized, change the type of iterator initializers to
+    boolean and make pixman-implementation.c do the delegation whenever an
+    iterator initializer returns FALSE.
+
+commit c710d0fae2a9dc7d20913e5e39a1bb53f7c942db
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Sep 15 13:08:51 2012 -0400
+
+    Move fill delegation into pixman-implementation.c
+    
+    As in the blt commit, do the delegation in pixman-implementation.c
+    whenever the implementation fill returns FALSE instead of relying on
+    each implementation to do it by itself.
+    
+    With this change there is no longer any reason for the implementations
+    to have one fill function that delegates and one that actually blits,
+    so consolidate those in the NEON, DSPr2, SSE2, and MMX
+    implementations.
+
+commit 534507ba3b00b9aaadc9f181c282b01e4e2fe415
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Sep 15 13:03:10 2012 -0400
+
+    Move blt delegation into pixman-implementation.c
+    
+    Rather than require each individual implementation to do the
+    delegation for blt, just do it in pixman-implementation.c whenever the
+    implementation blt returns FALSE.
+    
+    With this change, there is no longer any reason for the
+    implementations to have one blt function that delegates and one that
+    actually blits, so consolidate those in the NEON, DSPr2, SSE2, and MMX
+    implementations.
+
+commit 7ef4436abbdb898dc656ebb5832ed5d6fd764bba
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Sep 15 12:48:42 2012 -0400
+
+    implementation: Write lookup_combiner() in a less convoluted way.
+    
+    Instead of initializing an array on the stack, just use a simple
+    switch to select which set of combiners to look up in.
+
+commit 3124a51abb89475b8c5045bc96e04c5852694a16
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sun Sep 16 00:25:38 2012 -0400
+
+    build: Remove useless DEP_CFLAGS/DEP_LIBS variables
+
+commit 46e4faf8ef34d49f15e1946d105289fb06365553
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Thu Jun 21 06:07:07 2012 +0200
+
+    build: Improve win32 build system
+    
+    Handle cross-directory dependencies using PHONY targets and clean up
+    some redundancies.
+
+commit c89efdd211cf7cd3dc69a4140045ceab6f445730
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Tue Jul 17 16:14:20 2012 +0200
+
+    mmx: Fix x86 build on MSVC
+    
+    The MSVC compiler is very strict about variable declarations after
+    statements.
+    
+    Move all the declarations of each block before any statement in
+    the same block to fix multiple instances of:
+    
+    pixman-mmx.c(xxxx) : error C2275: '__m64' : illegal use of this type
+    as an expression
+
+commit 1e3e569b04f45592ce2174e48df0fcb333ce0ad3
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Aug 26 18:23:53 2012 -0400
+
+    test/utils.c: Use pow(), not powf() in sRGB conversion routines
+    
+    These functions are operating on double precision values, so use pow()
+    instead of powf().
+
+commit 8577daba04e60c1b4c44ce01c6874a573952913a
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Aug 26 18:13:47 2012 -0400
+
+    pixel_checker: Move sRGB conversion into get_limits()
+    
+    The sRGB conversion has to be done every time the limits are being
+    computed. Without this fix, pixel_checker_get_min/max() will produce
+    the wrong results when called from somewhere other than
+    pixel_checker_check().
+
+commit 62eb6e5e054da498e38da80ba8143f0a069b0c17
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Aug 25 17:14:50 2012 -0400
+
+    Remove obsolete TODO file
+
+commit 384846b38cfb5e1895ae49c40adbf72a85b63d95
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Aug 19 13:45:21 2012 -0400
+
+    Remove pointless declaration of _pixman_image_get_scanline_generic_64()
+    
+    This declaration used to be necessary when
+    _pixman_image_get_scanline_generic_64() referred to a structure that
+    itself referred back to _pixman_image_get_scanline_generic_64().
+
+commit 09cb1ae10b1976970233c934d27c36e0a4203e1c
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Jun 9 09:15:53 2012 -0400
+
+    demos: Add srgb_trap_test.c
+    
+    This demo program composites a bunch of trapezoids side by side with
+    and without gamma aware compositing.
+
+commit 04e878c231ad3624c57e51a5fcdc55a177d4dc0f
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat Jun 9 09:42:56 2012 -0400
+
+    Make show_image() cope with more formats
+    
+    This makes show_image() deal with more formats than just a8r8g8b8, in
+    particular, a8r8g8b8_sRGB can now be handled.
+    
+    Images that are passed to show_image with a format of a8r8g8b8_sRGB
+    are displayed without modification under the assumption that the
+    monitor is approximately sRGB.
+    
+    Images with a format of a8r8g8b8 are also displayed without
+    modification since many other users of show_image() have been
+    generating essentially sRGB data with this format. Other formats are
+    also assumed to be gamma compressed; these are converted to a8r8g8b8
+    before being displayed.
+    
+    With these changes, srgb-test.c doesn't need to do its own conversion
+    anymore.
+
+commit 8db9ec9814a3dcd8211ec60cd4fd3c9ae9d77924
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Jul 31 15:01:16 2012 -0400
+
+    Define TIMER_BEGIN and TIMER_END even when timers are not enabled
+    
+    This allows code that uses these macros to build when timers are
+    disabled.
+
+commit da5268cc19e03b24737dec3e2c51296156b869a8
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Aug 1 15:56:13 2012 -0400
+
+    Post-release version bump to 0.27.3
+
+commit e8ddef78b67a0699a990f3c785396d4b1955f972
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Aug 1 15:22:57 2012 -0400
+
+    Pre-release version bump to 0.27.2
+
+commit c214ca51a00fdd0e773ace32076c3ed8a5d0d482
+Author: Sebastian Bauer <mail@sebastianbauer.info>
+Date:   Tue Jul 31 07:30:32 2012 +0200
+
+    Use angle brackets form of including config.h
+
+commit 98617b3796d12c18d8306cca590160caa3c95454
+Author: Sebastian Bauer <mail@sebastianbauer.info>
+Date:   Tue Jul 31 07:30:31 2012 +0200
+
+    Added HAVE_CONFIG_H check before including config.h
+
+commit 5b0563f39eb29e4ae431717696174da5e282c346
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jul 30 16:21:39 2012 -0400
+
+    glyph-test: Avoid setting solid images as alpha maps.
+    
+    glyph-test would sometimes set a solid image as an alpha map, which is
+    not allowed. When this happened and the debug spew was enabled,
+    messages like this one would be generated:
+    
+        *** BUG ***
+        In pixman_image_set_alpha_map: The expression
+                !alpha_map || alpha_map->type == BITS was false
+        Set a breakpoint on '_pixman_log_error' to debug
+    
+    Fix this by not passing the ALLOW_SOLID flag to create_image() when
+    the resulting is to be used as an alpha map.
+
+commit 38fe7cd7be388aae6dff7d9b9979eb4ffa5fa175
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jul 30 16:10:05 2012 -0400
+
+    stress-test: Avoid overflows in clip rectangles
+    
+    The rectangles in the clip region set in set_general_properties()
+    would sometimes overflow, which would lead to messages like these:
+    
+          *** BUG ***
+          In pixman_region32_union_rect: Invalid rectangle passed
+          Set a breakpoint on '_pixman_log_error' to debug
+    
+    when the micro version number of pixman is even.
+    
+    Fix this by detecting the overflow and clamping such that the x2/y2
+    coordinates are less than INT32_MAX.
+
+commit 24d83cbf3df06505fa4cf827271aa2985414cfdd
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jul 30 15:54:27 2012 -0400
+
+    Add make-srgb.pl to EXTRA_DIST
+    
+    Otherwise make distcheck doesn't pass.
+
+commit 72ba0b955504ecdc69f4cbf96a677b82be18b0cb
+Author: Antti S. Lankila <alankila@bel.fi>
+Date:   Sun Jul 29 22:14:34 2012 +0300
+
+    Add tests to validate new sRGB behavior
+    
+    Composite checks random combinations of operations that now also have
+    sRGB sources, masks and destinations, and stress-test validates the
+    read/write primitives.
+
+commit a161a6ba2394aed68148304de83b8f2c185f4c32
+Author: Antti S. Lankila <alankila@bel.fi>
+Date:   Sun Jul 29 21:56:18 2012 +0300
+
+    Add sRGB blending demo program
+    
+    Simple sRGB color blender test can be used to determine if the sRGB processing
+    works as expected. It blends alpha ramps of purple and green together such that
+    at midpoint of image, 50 % blend of both is realized. At that point, sRGB-aware
+    processing yields a result close to #bbb rather than #888, which is the linear
+    light blending result.
+    
+    The demo also contains the sample computation for sRGB premultiplied alpha.
+
+commit 7460457f80b1482338318f0ddcdf5311659fae7b
+Author: Antti S. Lankila <alankila@bel.fi>
+Date:   Sun Jul 29 21:46:58 2012 +0300
+
+    Add support for sRGB surfaces
+    
+    sRGB format is defined as a new format type, PIXMAN_TYPE_ARGB_SRGB. One form of
+    this type is provided, PIXMAN_a8r8g8b8_sRGB. Use of an sRGB format triggers
+    wide processing, and the pixel fetch/store functions handle the relevant
+    conversion between color spaces. Pixman itself is thought to compose in the
+    linearized sRGB color space.
+    
+    sRGB conversion is tabularized. For sRGB to linear, we are using only 256
+    values because the current source format uses 8 bits per component precision.
+    For linear to sRGB, it turns out that only 4096 brightness levels are required
+    to generate all of the 256 sRGB color values, and therefore only 12 bits per
+    component are considered during store. As a special case, a no-op
+    sRGB->linear->sRGB conversion is constructed to be lossless by adjusting the
+    sRGB->linear conversion table where necessary.
+
+commit 1dcca0f7ae64e9a96f2feba85dd728c636744009
+Author: Antti S. Lankila <alankila@bel.fi>
+Date:   Sat Jul 28 14:02:42 2012 +0300
+
+    Remove unnecessary dst initialization
+    
+    The initialization work is already performed correctly in image_init().
+
+commit 56321eff65832791252c7c324930d14c44d4d5f7
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jul 9 06:58:59 2012 -0400
+
+    Make pixman-mmx.c compile on x86-32 without optimization
+    
+    When not optimizing, write _mm_shuffle_pi16() as a statement
+    expression with inline assembly. That way we avoid
+    __builtin_ia32_pshufw(), which is only available when compiling with
+    -msse, while still allowing the non-optimizing gcc to understand that
+    the second argument is a compile time constant.
+    
+    Tested-by: Knut Petersen <knut_petersen@t-online.de>
+
+commit 0c81957e9b4f83944075167ae27a955bb253e267
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu Jun 28 15:53:14 2012 -0400
+
+    Cleanups and simplifications in x86 CPU feature detection
+    
+    A new function pixman_cpuid() is added that runs the cpuid instruction
+    and returns the results. On GCC this function uses inline assembly; on
+    MSVC, the function calls the __cpuid intrinsic.
+    
+    There is also a new function called have_cpuid() which detects whether
+    cpuid is available. On x86-64 and MSVC, it simply returns TRUE; on
+    x86-32 bit, it checks whether the 22nd bit of eflags can be
+    modified. On MSVC this does have the consequence that pixman will no
+    longer work CPUS without cpuid (ie., older than 486 and some 486
+    models).
+    
+    These two functions together makes it possible to write a generic
+    detect_cpu_features() in plain C. This function is then used in a new
+    have_feature() function that checks whether a specific set of feature
+    bits is available.
+    
+    Aside from the cleanups and simplifications, the main benefit from
+    this patch is that pixman now can do feature detection on x86-64, so
+    that newer instruction sets such as SSSE3 and SSE4.1 can be used. (And
+    apparently the assumption that x86-64 CPUs always have MMX and SSE2 is
+    no longer correct: Knight's Corner is x86-64, but doesn't have them).
+    
+    V2: Rename the constants in the getisax() code, as pointed out by Alan
+    Coopersmith. Also reinstate the result variable and initialize
+    features to 0.
+    
+    V3: Fixes for the fact that the upper 32 bits of a 64 bit register are
+    zeroed whenever the corresponding 32 bit register is written to.
+    
+    V4: Fixes for the fact that in 32 bit mode, when gcc is not optimizing
+    there were not enough registers available. The new code uses the "a",
+    "b", "c", and "d" constraints instead, and has two separate versions
+    for 32 and 64 bit modes.
+
+commit 4d641c3803d508ba1eb40e61257949422ae2b90d
+Author: Sebastian Bauer <mail@sebastianbauer.info>
+Date:   Sun Jul 8 18:48:45 2012 -0400
+
+    Changed the style of two function headers
+    
+    Declare functions *_inverse() and *_contains_rectangle() in the same
+    way as the other functions are declared. This doesn't imply any semantic
+    changes. It's just a unification of coding styles.
+
+commit 86ad09b548b45a5a5074d9d83970d5e7e7f89d31
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Mon Jul 2 20:54:20 2012 +0200
+
+    MIPS: DSPr2: Added more bilinear fast paths (without mask)
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz:
+    
+    lowlevel-blt-bench -b
+    
+    Referent (before):
+      src_8888_8888 =  L1:   8.18  L2:   7.79  M:  6.32 ( 33.51%)  HT:  5.78  VT:  5.70  R:  5.61  RT:  3.79 (  29Kops/s)
+      src_8888_0565 =  L1:   6.90  L2:   7.14  M:  6.47 ( 25.75%)  HT:  5.54  VT:  5.51  R:  5.46  RT:  3.53 (  28Kops/s)
+      src_0565_x888 =  L1:   3.76  L2:   3.71  M:  3.37 ( 13.41%)  HT:  3.26  VT:  3.22  R:  3.20  RT:  2.58 (  23Kops/s)
+      src_0565_0565 =  L1:   3.59  L2:   3.56  M:  3.47 (  9.19%)  HT:  3.19  VT:  3.18  R:  3.16  RT:  2.46 (  22Kops/s)
+     over_8888_8888 =  L1:   5.99  L2:   5.66  M:  4.95 ( 26.28%)  HT:  4.40  VT:  4.38  R:  4.31  RT:  3.02 (  26Kops/s)
+      add_8888_8888 =  L1:   6.84  L2:   6.39  M:  5.48 ( 29.09%)  HT:  4.80  VT:  4.79  R:  4.70  RT:  3.20 (  27Kops/s)
+    
+    Optimized:
+      src_8888_8888 =  L1:  18.27  L2:  16.69  M: 12.87 ( 68.25%)  HT: 11.80  VT: 11.61  R: 10.60  RT:  7.05 (  41Kops/s)
+      src_8888_0565 =  L1:  15.18  L2:  14.10  M: 11.75 ( 46.71%)  HT: 10.64  VT: 10.50  R: 10.03  RT:  7.15 (  41Kops/s)
+      src_0565_x888 =  L1:  10.45  L2:   9.96  M:  9.23 ( 36.72%)  HT:  8.39  VT:  8.29  R:  8.02  RT:  5.75 (  37Kops/s)
+      src_0565_0565 =  L1:   9.37  L2:   8.98  M:  8.50 ( 22.53%)  HT:  7.71  VT:  7.66  R:  7.52  RT:  5.59 (  37Kops/s)
+     over_8888_8888 =  L1:  12.21  L2:  11.01  M:  8.56 ( 45.36%)  HT:  7.71  VT:  7.64  R:  7.43  RT:  5.51 (  36Kops/s)
+      add_8888_8888 =  L1:  17.72  L2:  15.16  M: 10.78 ( 57.13%)  HT:  9.46  VT:  9.30  R:  9.00  RT:  6.03 (  38Kops/s)
+
+commit 707a8be11280c4d395e662e869d4a98d75bb5571
+Author: Nemanja Lukic <nemanja.lukic@rt-rk.com>
+Date:   Mon Jul 2 20:54:19 2012 +0200
+
+    MIPS: DSPr2: Added several bilinear fast paths with a8 mask
+    
+    Performance numbers before/after on MIPS-74kc @ 1GHz:
+    
+    lowlevel-blt-bench -b
+    
+    Referent (before):
+    
+      src_8888_8_8888 =  L1:   6.37  L2:   6.08  M:  5.46 ( 32.57%)  HT:  4.64  VT:  4.61  R:  4.52  RT:  2.85 (  23Kops/s)
+      src_8888_8_0565 =  L1:   5.89  L2:   5.66  M:  5.11 ( 23.71%)  HT:  4.36  VT:  4.34  R:  4.26  RT:  2.71 (  22Kops/s)
+      src_0565_8_x888 =  L1:   3.32  L2:   3.27  M:  3.17 ( 14.71%)  HT:  2.86  VT:  2.84  R:  2.81  RT:  2.07 (  19Kops/s)
+      src_0565_8_0565 =  L1:   3.19  L2:   3.15  M:  3.05 ( 10.11%)  HT:  2.75  VT:  2.74  R:  2.71  RT:  2.00 (  18Kops/s)
+     over_8888_8_8888 =  L1:   4.99  L2:   4.71  M:  4.11 ( 27.22%)  HT:  3.59  VT:  3.58  R:  3.50  RT:  2.36 (  21Kops/s)
+      add_8888_8_8888 =  L1:   5.60  L2:   5.26  M:  4.52 ( 29.95%)  HT:  3.92  VT:  3.89  R:  3.80  RT:  2.49 (  21Kops/s)
+    
+    Optimized:
+    
+      src_8888_8_8888 =  L1:  13.19  L2:  12.13  M:  9.75 ( 58.22%)  HT:  8.60  VT:  8.44  R:  7.90  RT:  5.06 (  33Kops/s)
+      src_8888_8_0565 =  L1:  11.64  L2:  10.81  M:  9.18 ( 42.63%)  HT:  8.04  VT:  7.90  R:  7.57  RT:  5.02 (  32Kops/s)
+      src_0565_8_x888 =  L1:   8.34  L2:   7.95  M:  7.29 ( 33.85%)  HT:  6.55  VT:  6.48  R:  6.25  RT:  4.35 (  30Kops/s)
+      src_0565_8_0565 =  L1:   7.71  L2:   7.35  M:  6.90 ( 22.90%)  HT:  6.14  VT:  6.10  R:  5.94  RT:  4.07 (  29Kops/s)
+     over_8888_8_8888 =  L1:   9.73  L2:   8.99  M:  7.15 ( 47.41%)  HT:  6.40  VT:  6.30  R:  6.11  RT:  4.28 (  30Kops/s)
+      add_8888_8_8888 =  L1:  13.01  L2:  11.72  M:  8.70 ( 57.68%)  HT:  7.59  VT:  7.46  R:  7.20  RT:  4.74 (  32Kops/s)
+
+commit 6aac8e85701be418e1ce13debc1bc8a30687f66b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jun 27 22:11:29 2012 -0400
+
+    Simplify CPU detection on PPC.
+    
+    Get rid of the initialized and have_vmx static variables in
+    pixman-ppc.c There is no point to them since CPU detection only
+    happens once per process.
+    
+    On Linux, just read /proc/self/auxv instead of generating the filename
+    with getpid() and don't bother with the stack buffer. Instead just
+    read the aux entries one by one.
+
+commit 4b78d785373c1d02abe695267379674776b3da3d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jun 27 22:05:18 2012 -0400
+
+    Simplifications to ARM CPU detection
+    
+    Organize pixman-arm.c such that each operating system/compiler exports
+    a detect_cpu_features() function that returns a bitmask with the
+    various features that we are interested in. A new function
+    have_feature() then calls this function, caches the result, and return
+    whether the given feature is available.
+    
+    The result is that all the pixman_have_arm_<feature> functions become
+    redundant and can be deleted.
+
+commit 8b795a9c17aa25328b9c76b949d319bb578d5f1e
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jun 27 14:14:54 2012 -0400
+
+    Simplify MIPS CPU detection
+    
+    There is no reason to have pixman_have_<feature> functions when all
+    they do is call pixman_have_mips_feature().
+    
+    Instead rename pixman_have_mips_feature() to have_feature() and call
+    it directly from _pixman_mips_get_implementations(). Also on
+    non-Linux, just make have_feature() return FALSE.
+
+commit 16502dd3ae3bf1d49faf1de533bd58013e168e64
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Jun 27 23:04:24 2012 -0400
+
+    Move the remaining bits of pixman-cpu into pixman-implementation.c
+
+commit 5813bb96aec1c48636db621558534561fef67b68
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Jun 26 17:26:34 2012 -0400
+
+    Move MIPS specific CPU detection to its own file, pixman-mips.c
+
+commit 4ac0a1d60fccf4f9a782747ce61fd15825eddb5a
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Jun 26 17:30:22 2012 -0400
+
+    Move PowerPC specific CPU detection to its own file pixman-ppc.c
+
+commit 8590415f0e54520a176ff0fb53deb82be16873dd
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Jun 26 17:02:24 2012 -0400
+
+    Move ARM specific CPU detection to a new file pixman-arm.c
+    
+    Similar to the x86 commit, this moves the ARM specific CPU detection
+    to its own file which exports a pixman_arm_get_implementations()
+    function that is supposed to be a noop on non-ARM.
+
+commit 39ac18570a70674897aa7085406d9a4f6069feb4
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Jun 26 12:44:32 2012 -0400
+
+    Move x86 specific CPU detection to a new file pixman-x86.c
+    
+    Extract the x86 specific parts of pixman-cpu.c and put them in their
+    own file called pixman-x86.c which exports one function
+    pixman_x86_get_implementations() that creates the MMX and SSE2
+    implementations. This file is supposed to be compiled on all
+    architectures, but pixman_x86_get_implementations() should be a noop
+    on non-x86.
+
+commit 1a3b7614a9808f8af15204d0751a6820bf67059c
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Jun 26 18:07:39 2012 -0400
+
+    pixman-cpu.c: Rename disabled to _pixman_disabled() and export it
+
+commit d4aa82fb9148862904bb7ca33655ce8d571643b0
+Author: Sebastian Bauer <mail@sebastianbauer.info>
+Date:   Tue Jul 3 05:55:14 2012 -0400
+
+    Qualify the static variables in pixman_f_transform_invert() with the const keyword.
+    
+    Their contents is not overwritten.
+
+commit f9c91ee2f27eaea68d8c3a130bf7d4bc0c860834
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Jul 1 16:59:53 2012 -0400
+
+    Use a compile-time constant for the "K" constraint in the MMX detection.
+    
+    When compiling with -O0, gcc doesn't understand that in
+    
+         signed char x = 0;
+    
+         ...
+    
+         asm ("...",
+         	  : "K" (x));
+    
+    x is constant. Fix this by using an immediate constant instead of a
+    variable.
+
+commit cd7ecf548a9e8115226bf0fec174f3abc54becb5
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Jul 1 06:54:06 2012 -0400
+
+    In fast_composite_tiled_repeat() don't clone images with a palette
+    
+    In fast_composite_tiled_repeat() if the source image is less than a
+    certain constant width, a clone is created which is then
+    pre-repeated. However, the source image's palette, if it has one, is
+    not cloned, so for indexed images, the pre-repeating would crash.
+    
+    Fix this by not doing any pre-repeating for images with a palette set.
+
+commit 7b20ad39f778d765566d3f2c5f7c50964100efc1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Jul 1 06:53:18 2012 -0400
+
+    test: Make stress-test more likely to actually composite something
+    
+    stress-test current almost never composites anything because the clip
+    rectangles and transformations are such that either
+    _pixman_compute_composite_region32() or analyze_extent() will return
+    FALSE.
+    
+    Fix this by:
+    
+    - making log_rand() return smaller numbers so that the clip rectangles
+      are more likely to be within the destination image
+    
+    - adding rand_x() and rand_y() functions that pick positions within an
+      image and using them for positioning alpha maps and source/mask
+      positions.
+    
+    - making it less likely that clip regions are used in general
+    
+    These changes make the test take longer, so speed it up a little by
+    making most images smaller and by reducing the maximum convolution
+    filter from 17x19 to 3x4.
+    
+    With these changes, stress-test reveals a crash in iteration 0xd39
+    where fast_composite_tiled_repeat() creates an indexed image without a
+    palette.
+
+commit 4cdf8e9f3aca1925aeca25debb9268877ba3cd3d
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sun Jul 1 16:35:46 2012 -0400
+
+    sse2: add missing ABGR entires for bilinear src_8888_8888
+
+commit ef99f9e97260cc55678385a6d691c195f57bd6b1
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Mon May 21 05:56:58 2012 -0400
+
+    loongson: optimize _mm_set_pi* functions with shuffle instructions
+
+commit 9aa8e3a26071739d160496ef9f6126f296c500eb
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Jun 27 13:00:36 2012 -0400
+
+    mmx: optimize bilinear function when using 7-bit precision
+    
+    Loongson:
+    image             firefox-fishtank 1037.738 1040.218   0.19%    3/3
+    image             firefox-fishtank 1056.611 1057.581   0.20%    3/3
+    
+    ARM/iwMMXt:
+    image             firefox-fishtank 1487.282 1492.640   0.17%    3/3
+    image             firefox-fishtank 1363.913 1364.366   0.11%    3/3
+
+commit 1ad6ae6ee8a350f6fe4f30ba928aacf44d04f86e
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sun May 20 20:51:08 2012 -0400
+
+    mmx: add scaled bilinear over_8888_8_8888
+    
+    Loongson:
+    image             firefox-fishtank 1665.163 1670.370   0.17%    3/3
+    image             firefox-fishtank 1037.738 1040.218   0.19%    3/3
+    
+    ARM/iwMMXt:
+    image             firefox-fishtank 2042.723 2045.308   0.10%    3/3
+    image             firefox-fishtank 1487.282 1492.640   0.17%    3/3
+
+commit c43de364cbcd195f7d1d6881a6109cbb3d6b73b8
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Jun 27 12:57:45 2012 -0400
+
+    mmx: add scaled bilinear over_8888_8888
+    
+    Loongson:
+    image         firefox-planet-gnome  157.012  158.087   0.30%    6/6
+    image         firefox-planet-gnome  156.617  157.109   0.15%    5/6
+    
+    ARM/iwMMXt:
+    image         firefox-planet-gnome  148.086  149.339   0.76%    6/6
+    image         firefox-planet-gnome  144.939  146.123   0.61%    6/6
+
+commit 9209cd746b7a81d0536df6dadd6a0b0b983291cb
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Jun 19 00:30:51 2012 -0400
+
+    mmx: add scaled bilinear src_8888_8888
+    
+    Loongson:
+    image         firefox-planet-gnome  170.025  170.229   0.09%    3/4
+    image         firefox-planet-gnome  157.012  158.087   0.30%    6/6
+    
+    ARM/iwMMXt:
+    image         firefox-planet-gnome  164.192  164.875   0.34%    3/4
+    image         firefox-planet-gnome  148.086  149.339   0.76%    6/6
+
+commit 51f27d7364d66e47d882ee531b6655368159231a
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu Jun 28 12:17:16 2012 -0400
+
+    mmx: Use expand_alpha instead of mask/shift
+
+commit b0855f095aba8e0c98d1fd1863b278fc72a4dd2c
+Author: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+Date:   Sun Jul 1 23:00:34 2012 +0300
+
+    Change default bilinear interpolation precision to 7 bits
+    
+    This improves performance for the current SSE2 code. Further
+    reduction to 4 bits may be considered later if it proves
+    to allow additional speedup.
+
+commit c430b1dba7bfea0031227dd4b976da3dd7c4ac02
+Author: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+Date:   Tue Jun 26 01:47:18 2012 +0300
+
+    sse2: _mm_madd_epi16 for faster bilinear scaling with 7-bit precision
+    
+    Reducing interpolation precision allows the use of PMADDWD instruction.
+    This makes bilinear scaling much faster (on Intel Core i7):
+    
+    8-bit: image             firefox-fishtank   57.584   58.349   0.74%    3/3
+    7-bit: image             firefox-fishtank   51.139   51.229   0.30%    3/3
+    
+    8-bit: src_8888_8888 =  L1: 228.71  L2: 226.52  M:224.82 ( 14.95%)  HT:183.22  VT:154.02  R:171.72  RT:109.36
+    7-bit: src_8888_8888 =  L1: 320.45  L2: 317.43  M:314.38 ( 20.77%)  HT:215.13  VT:177.35  R:204.46  RT:121.93
+
+commit ccd31896bc2f1f323b3be9e8b1447cab892ee62d
+Author: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+Date:   Tue Jun 26 01:06:10 2012 +0300
+
+    Bilinear interpolation precision is now configurable at compile time
+    
+    Macro BILINEAR_INTERPOLATION_BITS in pixman-private.h selects
+    the number of fractional bits used for bilinear interpolation.
+    
+    scaling-test and affine-test have checksums for 4-bit, 7-bit
+    and 8-bit configurations.
+
+commit ad9f1d020188fe90ae742041195baebdfbe6fe27
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri Jun 29 14:24:30 2012 -0400
+
+    Fix distcheck due to custom iwMMXt rules
+
+commit ff5d041b88c667141b891909acd3085c3ed54994
+Author: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+Date:   Mon Jun 25 07:24:27 2012 +0300
+
+    sse2: faster bilinear scaling (use _mm_loadl_epi64)
+    
+    Using _mm_loadl_epi64() to load two pixels at once (pairs of top
+    and bottom pixels) is faster than loading each pixel separately
+    and combining them with _mm_set_epi32().
+    
+    === cairo-perf-trace ===
+    
+    before: image             firefox-fishtank   66.912   66.931   0.13%    3/3
+    after:  image             firefox-fishtank   57.584   58.349   0.74%    3/3
+    
+    === lowlevel-blt-bench ===
+    
+    before: src_8888_8888 =  L1: 181.10  L2: 179.14  M:178.08 ( 11.02%)  HT:153.22  VT:133.45  R:142.24  RT: 95.32
+    after:  src_8888_8888 =  L1: 228.68  L2: 225.75  M:223.98 ( 14.23%)  HT:185.32  VT:155.06  R:162.73  RT:102.52
+    
+    This improvement was suggested by Matt Turner on irc.
+
+commit fc162bad561a516f648daf07e9d22d427fe60e74
+Author: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+Date:   Mon Jun 25 07:11:59 2012 +0300
+
+    test: support nearest/bilinear scaling in lowlevel-blt-bench
+    
+    Scale factor is selected to be nearly 1x, so that the MPix/s results
+    can be directly compared with the results of non-scaled compositing
+    operations.
+
+commit 387e9bcddb90bd2c7d1dfb81c073196f9f81042d
+Author: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+Date:   Sat Jun 23 04:08:28 2012 +0300
+
+    test: Fix for strict aliasing issue in 'get_random_seed'
+    
+    Gets rid of gcc warning when compiled with -fstrict-aliasing option in CFLAGS
+
+commit 4cbeb0aedccde5d2eb87daec08040a8bf161f6d7
+Author: Andrea Canciani <ranma42@gmail.com>
+Date:   Wed Jun 20 17:13:33 2012 +0200
+
+    build: Fix compilation on win32
+    
+    When compiling using the win32 build system, config.h is not
+    available nor needed.
+    
+    Fixes:
+    
+    pixman-glyph.c(26) : fatal error C1083: Cannot open include file:
+    'config.h': No such file or directory
+
+commit 21077e1b83912b5e895b160bbbcd9b4664191506
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed May 2 23:13:43 2012 -0400
+
+    sse2: add src_x888_0565
+    
+    Port of 2ddd1c498b to SSE2.
+    
+    Uses the pmadd technique described in
+    http://software.intel.com/sites/landingpage/legacy/mmx/MMX_App_24-16_Bit_Conversion.pdf
+    
+    Works around lack of packusdw instruction by first sign extending the
+    values.
+    
+    fast:	src_8888_0565 =  L1: 681.40  L2: 689.20  M: 644.76 ( 25.51%)  HT:404.42  VT:288.04  R:306.07  RT:150.80 (1619Kops/s)
+    mmx:	src_8888_0565 =  L1:2056.03  L2:1985.44  M:1574.91 ( 61.87%)  HT:533.10  VT:376.35  R:416.10  RT:178.79 (1833Kops/s)
+    sse2:	src_8888_0565 =  L1:3793.42  L2:3653.44  M:1878.83 ( 73.94%)  HT:535.03  VT:407.96  R:421.46  RT:163.31 (1727Kops/s)
+    
+    and for reference, using packusdw
+    sse4:	src_8888_0565 =  L1:4396.18  L2:4229.25  M:1904.04 ( 75.18%)  HT:559.79  VT:427.96  R:440.06  RT:165.71 (1744Kops/s)
+    
+    Notice that MMX is faster in the RT case because it can operate on
+    8-bytes instead of the current 16-bytes for SSE2.
+
+commit 7db07cb731e3689328d9ecbdafffe99d7d38388e
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Jun 13 13:18:49 2012 -0400
+
+    sse2: enable over_n_0565 for b5g6r5
+    
+    Same as b950bb12 for MMX.
+
+commit 45946c5fa1760ad185ae20e8797635b0a256ea08
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Jun 13 16:37:48 2012 -0400
+
+    .gitignore: add test/glyph-test
+
+commit eadb442b5c825679016de7e7acb837e58f92bfc4
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue Jun 12 22:04:29 2012 -0400
+
+    test: Add missing break in stress-test.c
+    
+    Found by coverity:
+    
+    https://bugzilla.redhat.com/show_bug.cgi?id=756069
+
+commit 492dac7593075e622cfeddc73298df29d50b76bc
+Author: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+Date:   Wed Jun 6 23:54:20 2012 +0300
+
+    test: fix bisecting issue in fuzzer-find-diff.pl
+    
+    Before bisecting to find the exact test which has failed, we
+    first need to make sure that the first test is fine (the first
+    test is "good" and the whole range is "bad"). Otherwise
+    test 2 gets incorrectly flagged as problematic in the case
+    if we already got a failure on test 1 right from the start.
+
+commit 40a0d10eeaedb879bbffe41f0537e8468c563df7
+Author: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+Date:   Wed Jun 6 22:21:32 2012 +0300
+
+    test: OpenMP 2.5 requires signed loop iteration variables
+    
+    Unsigned loop variables are only supported since version 3.0
+    of OpenMP specification. Changing loop variables to use int32_t
+    type fixes pixman build problems with path64 compiler.
+
+commit 619a60d201bfdfe2f15fca75f6e686fc7c275b5b
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Jun 11 19:13:45 2012 -0400
+
+    test: Make glyph test pass on big endian
+    
+    The destination buffer was initialized with random uint32_t values, so
+    it started out different on big endian vs. little endian. Fix that by
+    initializing the buffer with random uint8_t values instead.
+
+commit f80e7ad3cbf46218bb3b4247e7b9e5d448670ad8
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun Jan 8 13:21:11 2012 -0500
+
+    bits-image: Turn all the fetchers into iterator getters
+    
+    Instead of caching these fetchers in the image structure, and then
+    have the iterator getter call them from there, simply change them to
+    be iterator getters themselves.
+    
+    This avoids an extra indirect function call and lets us get rid of the
+    get_scanline_32/64 fields in pixman_image_t.
+
+commit fd175f9d02f36b1e91973e4264519228547f5dc7
+Author: Antti S. Lankila <alankila@bel.fi>
+Date:   Sun Jun 10 19:22:56 2012 +0300
+
+    Faster unorm_to_unorm for wide processing.
+    
+    Optimizing the unorm_to_unorm functions allows a speedup from:
+    
+    src_8888_2x10 =  L1:  62.08  L2:  60.73  M: 59.61 (  4.30%)  HT: 46.81
+    	VT: 42.17  R: 43.18  RT: 26.01 (325Kops/s)
+    
+    to:
+    
+    src_8888_2x10 =  L1:  76.94  L2:  78.43  M: 75.87 (  5.59%)  HT: 56.73
+    	VT: 52.39  R: 53.00  RT: 29.29 (363Kops/s)
+    
+    on a i7 Q720 -based laptop.
+    
+    The key of the patch is the observation that unorm_to_unorm's work can
+    more easily be done with a simple multiplication and shift, when the
+    function is applied repeatedly and the parameters are not compile-time
+    constants. For instance, converting from 0xfe to 0xfefe (expanding
+    from 8 bits to 16 bits) can be done by calculating
+    
+    c = c * 0x101
+    
+    However, sometimes the result is not a neat replication of all the
+    bits. For instance, going from 10 bits to 16 bits can be done by
+    calculating
+    
+    c = c * 0x401UL >> 4
+    
+    where the intermediate result is 20 bit wide repetition of the 10-bit
+    pattern followed by shifting off the unnecessary lowest bits.
+    
+    The patch has the algorithm to calculate the factor and the shift, and
+    converts the code to use it.
+
+commit 367b78fd5c57ee05298eb11370b68d01613961e5
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed May 30 16:44:04 2012 -0400
+
+    configure.ac: add iwmmxt2 configure flag
+    
+    The flag allows the user to select whether pixman-mmx.c is compiled with
+    -march=iwmmxt or -march=iwmmxt2.
+    
+    gcc has scheduling support for the Marvell CPU in the XO 1.75 when
+    building with -march=iwmmxt2.
+
+commit 31a6563ec5167d6b15fdb8c158a71ab4f97015ab
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed May 30 16:26:32 2012 -0400
+
+    autotools: use custom build rule to build iwMMXt code
+    
+    gcc has no sane way of enabling iwmmxt code generation, like -msse for
+    SSE, so you have to use -march=iwmmxt{,2}. User CFLAGS are placed after
+    -march=iwmmxt and override the march value, so we have to use a custom
+    build rule to order the CFLAGS such that pixman-mmx.c will be built with
+    the necessary CFLAGS.
+
+commit 706bf8264cb48aac36e36ff5e23f0ad8a47ff73c
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue May 3 07:25:50 2011 -0400
+
+    Speed up _pixman_image_get_solid() in common cases
+    
+    Make _pixman_image_get_solid() faster by special-casing the common
+    cases where the image is SOLID or a repeating a8r8g8b8 image.
+    
+    This optimization together with the previous one results in a small
+    but reproducable performance improvement on the xfce4-terminal-a1
+    cairo trace:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    Before:
+    [  0]    image            xfce4-terminal-a1    1.221    1.239   1.21%  100/100
+    After:
+    [  0]    image            xfce4-terminal-a1    1.170    1.199   1.26%  100/100
+    
+    Either optimization by itself is difficult to separate from noise.
+
+commit 934c9d8546b71ddea91ac16b0928101903e2608e
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon May 28 02:36:22 2012 -0400
+
+    Speed up _pixman_composite_glyphs_no_mask()
+    
+    Bypass much of the overhead of pixman_image_composite32() by only
+    computing the composite region once instead of once per glyph, and by
+    only looking up the composite function whenever the glyph format or
+    flags change.
+    
+    As part of this, the pixman_compute_composite_region32() was renamed
+    to _pixman_compute_composite_region32() and exported in
+    pixman-private.h.
+    
+    I couldn't find a trace that would reliably demonstrate that this is
+    actually an improvement by itself (since _pixman_composite_glyphs_no_mask()
+    is called so rarely), but together with the following optimization for
+    solid sources, there is a small but reliable improvement to the
+    xfce4-a1-terminal cairo trace.
+
+commit a162189dc0fa9978a3b5b6dd24f9bc12995805ed
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon May 28 01:22:26 2012 -0400
+
+    Speed up pixman_composite_glyphs()
+    
+    When adding glyphs to the mask, bypass most of the overhead of
+    pixman_image_composite32() by:
+    
+    - Only looking up the composite function when the glyph changes either
+      format or flags.
+    
+    - Only using a white source when the glyph format is different from
+      the mask format.
+    
+    - Simply intersecting the glyph rectangle with the destination
+      rectangle instead of doing the full _pixman_composite_region32().
+    
+    Performance results:
+    
+    [ # ]  backend                         test   min(s) median(s) stddev. count
+    Before:
+    [  0]    image            firefox-talos-gfx    6.570    6.577   0.13%    8/10
+    After:
+    [  0]    image            firefox-talos-gfx    4.272    4.289   0.28%   10/10
+    
+    V2: Changes to deal with white sources
+
+commit d9710442b4b2294e1ccd1594c54ca8a4feda2ac5
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun May 27 18:23:20 2012 -0400
+
+    test: Add glyph-test
+    
+    This test tests the new glyph cache and compositing API. Much of this
+    test is intending to making sure that clipping and alpha map handling
+    survive any optimizations that may be added to the glyph compositing.
+    
+    V2: Evaluating lcg_rand_n() multiple times in an argument list lead
+        to undefined behavior.
+
+commit dc9237472789b0b45393f6f7eeafa057a86280c4
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon May 28 16:14:12 2012 -0400
+
+    Add support for alpha maps to compute_crc32_for_image().
+    
+    When a destination image I has an alpha map A, the following rules apply:
+    
+       - If I has an alpha channel itself, the content of that channel is
+         undefined
+    
+       - If A has RGB channels, the content of those channels is
+         undefined.
+    
+    Hence in order to compute the CRC32 for such an image, we have to mask
+    off the alpha channel of the image, and the RGB channels of the alpha
+    map.
+    
+    V2: Shifting by 32 is undefined in C
+
+commit 43e029d525c191a771e5b964fccff09b6d341bb2
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sun May 27 13:38:14 2012 -0400
+
+    Move CRC32 computation from blitters-test.c into utils.c
+    
+    This way it can be used in other tests.
+
+commit fce31a5ef8c915ee6b7aee4c6b57bee245185c1f
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Tue May 29 04:14:38 2012 -0400
+
+    Add pixman_glyph_cache_t API
+    
+    This new API allows entire glyph strings to be composited in one go
+    which reduces overhead compared to multiple calls to
+    pixman_image_composite32().
+    
+    The pixman_glyph_cache_t is a hash table that maps two keys (a "font"
+    and a "glyph" key, but they are just keys; there is no distinction
+    between them as far as pixman is concerned) to a glyph. Glyphs in the
+    cache can be composited through two new entry points
+    pixman_glyph_cache_composite_glyphs() and
+    pixman_glyph_cache_composite_glyphs_no_mask().
+    
+    A glyph cache may only be inserted into when it is "frozen", which is
+    achieved by calling pixman_glyph_cache_freeze(). When
+    pixman_glyph_cache_thaw() is later called, if the cache has become too
+    crowded, some glyphs (currently the least-recently-used) will
+    automatically be evicted. This means that a user must ensure that all
+    the required glyphs are present in the cache before compositing a
+    string. The intended way to use the cache is like this:
+    
+            pixman_glyph_t glyphs[MAX_GLYPHS];
+    
+            pixman_glyph_cache_freeze (cache);
+    
+            for (i = 0; i < n_glyphs; ++i)
+            {
+                const void *g;
+    
+                if (!(g = pixman_glyph_cache_lookup (cache, font_key, glyph_key)))
+                {
+                    img = <rasterize glyph as a pixman_image_t>;
+    
+                    g = pixman_glyph_cache_insert (cache, font_key, glyph_key,
+                                                   glyph_origin_x, glyph_origin_y,
+                                                   img);
+    
+                    if (!g)
+                    {
+                        /* Clean up out-of-memory condition */
+                        goto oom;
+                    }
+    
+                    glyphs[i].pos_x = glyph_x_pos;
+                    glyphs[i].pos_y = glyph_y_pos;
+                    glyphs[i].glyph = g;
+                }
+            }
+    
+            pixman_composite_glyphs (op, src, dest, ..., cache, n_glyphs, glyphs);
+    
+            pixman_glyph_cache_thaw (cache);
+    
+    V2:
+    - Move glyphs to front of the MRU list when they are used. Pointed
+      out by Behdad Esfahbod.
+    - Composite glyphs with (white IN glyph) ADD mask in order to support
+      mixed a8 and a8r8g8b8 glyphs. Also pointed out by Behdad.
+    - Add pixman_glyph_get_mask_format
+
+commit a3ae88b71b9d2dfc53303963157ecce4b29f0486
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed Apr 27 12:07:16 2011 -0400
+
+    Add doubly linked lists
+    
+    This commit adds some new inline functions to maintain a doubly linked
+    list.
+    
+    The way to use them is to embed a pixman_link_t into the structures
+    that should be linked, and use a pixman_list_t as the head of the
+    list.
+    
+    The new functions are
+    
+        pixman_list_init (pixman_list_t *list);
+        pixman_list_prepend (pixman_list_t *list, pixman_link_t *link);
+        pixman_list_move_to_front (pixman_list_t *list, pixman_link_t *link);
+    
+    There are also a new macro:
+    
+        CONTAINER_OF(type, member, data);
+    
+    that can be used to get from a pointer to a member to the containing
+    structure.
+    
+    V2: Use the C89 macro offsetof() instead of rolling our own -
+    suggested by Alan Coopersmith.
+
+commit c2230fe2aff709de21cc2ee3fa27c3f7578e7f9d
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu May 24 03:10:34 2012 -0400
+
+    Make use of image flags in mmx and sse2 iterators
+    
+    Now that we have the full image flags available, the SSE2 and MMX
+    iterators can simply check against SAMPLES_COVER_CLIP_NEAREST (which
+    is computed in pixman_image_composite32()) instead of comparing all
+    the x/y/width/height parameters.
+
+commit c1065a9cb4ab1f5847b2373847c65d8ea68975f1
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Thu May 24 03:00:38 2012 -0400
+
+    Pass the full image flags to iterators
+    
+    When pixman_image_composite32() is called some flags are computed that
+    indicate various things about the composite operation that can't be
+    deduced from the image flags themselves. These additional flags are
+    not currently available to iterators. All they can do is read the
+    image flags in image->common.flags.
+    
+    Fix that by passing the info->{src, mask, dest}_flags on to the
+    iterator initialization and store the flags in the iter struct as
+    "image_flags". At the same time rename the *iterator* flags variable
+    to "iter_flags" to avoid confusion.
+
+commit da6193b1fcc1dfab27f4c36917864f2f2c41cf3e
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sun May 27 13:01:57 2012 -0400
+
+    mmx: add missing _mm_empty calls
+    
+    Fixes spurious test failures on x86-32.
+
+commit 62c4bdc94f82d1e4c5dc0e58b5903382d74f3883
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Fri May 18 01:37:07 2012 -0400
+
+    mmx: add over_reverse_n_8888
+    
+    Loongson:
+    over_reverse_n_8888 =  L1:  16.04  L2:  15.35  M: 10.20 ( 27.96%)  HT: 10.95  VT: 10.45  R:  9.18  RT:  6.99 (  76Kops/s)
+    over_reverse_n_8888 =  L1:  27.40  L2:  26.67  M: 16.97 ( 45.78%)  HT: 16.66  VT: 15.38  R: 14.15  RT:  9.44 (  97Kops/s)
+    
+    image                      poppler   34.106   35.500   1.48%    6/6
+    image                      poppler   29.598   30.835   1.70%    6/6
+    
+    ARM/iwMMXt:
+    over_reverse_n_8888 =  L1:  15.63  L2:  14.33  M: 10.83 ( 27.55%)  HT:  9.78  VT:  9.91  R:  9.49  RT:  6.96 (  69Kops/s)
+    over_reverse_n_8888 =  L1:  22.79  L2:  19.40  M: 13.76 ( 34.19%)  HT: 11.66  VT: 11.86  R: 11.17  RT:  7.85 (  75Kops/s)
+    
+    image                      poppler   38.040   38.606   1.10%    6/6
+    image                      poppler   31.686   32.278   0.80%    5/6
+
+commit 17acc7a4c707db4804b6bf47db30883745049fdb
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu May 17 23:27:59 2012 -0400
+
+    mmx: add add_0565_0565
+    
+    Loongson:
+    add_0565_0565 =  L1:  15.37  L2:  14.91  M: 11.83 ( 16.06%)  HT: 10.53  VT: 10.15  R:  9.74  RT:  6.19 (  68Kops/s)
+    add_0565_0565 =  L1:  45.06  L2:  46.71  M: 27.45 ( 38.00%)  HT: 23.76  VT: 22.84  R: 18.96  RT:  9.79 ( 104Kops/s)
+    
+    ARM/iwMMXt:
+    add_0565_0565 =  L1:  12.87  L2:  11.58  M: 10.11 ( 12.50%)  HT:  9.06  VT:  8.66  R:  7.70  RT:  5.62 (  58Kops/s)
+    add_0565_0565 =  L1:  31.14  L2:  28.87  M: 22.46 ( 28.60%)  HT: 18.61  VT: 17.04  R: 15.21  RT:  9.35 (  90Kops/s)
+
+commit d551dc049498d17ab879fd67d47508cafaaede06
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu May 17 23:29:51 2012 -0400
+
+    fast: add add_0565_0565 function
+    
+    I'll need this code for header and tail alignment loops in MMX, so I
+    might as well implement a fast path here.
+
+commit f8dc0e98343c7936a37a3624721c5782e7ac309c
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu May 17 13:22:18 2012 -0400
+
+    mmx: implement expand_4x565 in terms of expand_4xpacked565
+    
+    Loongson:
+            over_n_0565 =  L1:  38.57  L2:  38.88  M: 30.01 ( 20.97%)  HT: 23.60  VT: 23.88  R: 21.95  RT: 11.65 ( 113Kops/s)
+            over_n_0565 =  L1:  56.28  L2:  55.90  M: 34.20 ( 23.82%)  HT: 25.66  VT: 26.60  R: 23.78  RT: 11.80 ( 115Kops/s)
+    
+         over_8888_0565 =  L1:  35.89  L2:  36.11  M: 21.56 ( 45.47%)  HT: 18.33  VT: 17.90  R: 16.27  RT:  9.07 (  98Kops/s)
+         over_8888_0565 =  L1:  40.91  L2:  41.06  M: 23.13 ( 48.46%)  HT: 19.24  VT: 18.71  R: 16.82  RT:  9.18 (  99Kops/s)
+    
+          over_n_8_0565 =  L1:  28.92  L2:  29.12  M: 21.42 ( 30.00%)  HT: 18.37  VT: 17.75  R: 16.15  RT:  8.79 (  91Kops/s)
+          over_n_8_0565 =  L1:  32.32  L2:  32.13  M: 22.44 ( 31.27%)  HT: 19.15  VT: 18.66  R: 16.62  RT:  8.86 (  92Kops/s)
+    
+    over_n_8888_0565_ca =  L1:  29.33  L2:  29.22  M: 18.99 ( 66.69%)  HT: 16.69  VT: 16.22  R: 14.63  RT:  8.42 (  88Kops/s)
+    over_n_8888_0565_ca =  L1:  34.97  L2:  34.14  M: 20.32 ( 71.73%)  HT: 17.67  VT: 17.19  R: 15.23  RT:  8.50 (  89Kops/s)
+    
+    ARM/iwMMXt:
+            over_n_0565 =  L1:  29.70  L2:  30.53  M: 24.47 ( 14.84%)  HT: 22.28  VT: 21.72  R: 21.13  RT: 12.58 ( 105Kops/s)
+            over_n_0565 =  L1:  41.42  L2:  40.00  M: 30.95 ( 19.13%)  HT: 27.06  VT: 27.28  R: 23.43  RT: 14.44 ( 114Kops/s)
+    
+         over_8888_0565 =  L1:  12.73  L2:  11.53  M:  9.07 ( 16.47%)  HT:  9.00  VT:  9.25  R:  8.44  RT:  7.27 (  76Kops/s)
+         over_8888_0565 =  L1:  23.72  L2:  21.76  M: 15.89 ( 29.51%)  HT: 14.36  VT: 14.05  R: 12.44  RT:  8.94 (  86Kops/s)
+    
+          over_n_8_0565 =  L1:   6.80  L2:   7.15  M:  6.37 (  7.90%)  HT:  6.58  VT:  6.24  R:  6.49  RT:  5.94 (  59Kops/s)
+          over_n_8_0565 =  L1:  12.06  L2:  11.02  M: 10.16 ( 13.43%)  HT:  9.57  VT:  8.49  R:  9.10  RT:  6.86 (  69Kops/s)
+    
+    over_n_8888_0565_ca =  L1:   7.62  L2:   7.01  M:  6.27 ( 20.52%)  HT:  6.00  VT:  6.07  R:  5.68  RT:  5.53 (  57Kops/s)
+    over_n_8888_0565_ca =  L1:  13.54  L2:  11.96  M:  9.76 ( 30.66%)  HT:  9.72  VT:  8.45  R:  9.37  RT:  6.85 (  67Kops/s)
+
+commit 51681a052f9e1d0970a79187974da77d9bf69450
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sun May 13 20:39:05 2012 -0400
+
+    mmx: add and use expand_4xpacked565 function
+    
+    Loongson:
+    add_0565_0565 =  L1:  14.39  L2:  13.98  M: 11.28 ( 15.22%)  HT: 10.11  VT:  9.74  R:  9.39  RT:  6.05 (  67Kops/s)
+    add_0565_0565 =  L1:  15.37  L2:  14.91  M: 11.83 ( 16.06%)  HT: 10.53  VT: 10.15  R:  9.74  RT:  6.19 (  68Kops/s)
+    
+    ARM/iwMMXt:
+    add_0565_0565 =  L1:  11.12  L2:  10.40  M:  8.82 ( 10.65%)  HT:  7.98  VT:  7.41  R:  7.57  RT:  5.21 (  54Kops/s)
+    add_0565_0565 =  L1:  12.87  L2:  11.58  M: 10.11 ( 12.50%)  HT:  9.06  VT:  8.66  R:  7.70  RT:  5.62 (  58Kops/s)
+
+commit 6491c70e3a2a2e10e99c84024895f346f2300f63
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Sat May 26 16:34:13 2012 -0400
+
+    Post-release version bump to 0.27.1
+
 commit b1a401e6c9f204d33a55eee41897d66ab81d6117
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Sat May 26 16:17:14 2012 -0400

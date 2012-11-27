@@ -1,3 +1,9 @@
+pixman (0.28.0-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 27 Nov 2012 14:00:13 +0100
+
 pixman (0.26.0-3) unstable; urgency=low
 
   * Pass LS_CFLAGS=" " to configure to prevent -march=loongson2f from
