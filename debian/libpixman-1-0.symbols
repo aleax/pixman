@@ -1,6 +1,4 @@
 libpixman-1.so.0 libpixman-1-0 #MINVER#
-| libpixman-1-0-private
- _pixman_internal_only_get_implementation@Base 0 1
  pixman_add_trapezoids@Base 0
  pixman_add_traps@Base 0
  pixman_add_triangles@Base 0.21.6

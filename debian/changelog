@@ -5,6 +5,9 @@ pixman (0.28.2-1) UNRELEASED; urgency=low
 
   [ Maarten Lankhorst ]
   * New upstream release.
+  * Add 00-unexport-symbol.diff
+    - remove test-only use of _pixman_internal_only_get_implementation
+    - zap the only test requiring the use of this symbol
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 27 Nov 2012 14:00:13 +0100
 
