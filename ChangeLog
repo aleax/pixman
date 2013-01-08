@@ -1,3 +1,53 @@
+commit a5e5179b5624c99c812e9bf6e7b907e355a811e8
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Dec 10 06:46:20 2012 -0500
+
+    Pre-release version bump to 0.28.2
+
+commit 6e270a7968ef45941a255919e83518fa1962d662
+Author: Benjamin Gilbert <bgilbert@backtick.net>
+Date:   Sat Dec 1 23:55:31 2012 -0500
+
+    Fix thread safety on mingw-w64 and clang
+    
+    After finding a working TLS storage class specifier, configure was
+    continuing to test other candidates.  This caused it to prefer
+    __declspec(thread) over __thread.  However, __declspec(thread) is
+    ignored with a warning by mingw-w64 [1] and silently ignored by clang [2].
+    The resulting binary behaved as if PIXMAN_NO_TLS was defined.
+    
+    Bug introduced by a069da6c.
+    
+    [1] https://bugs.freedesktop.org/show_bug.cgi?id=57591
+    [2] http://lists.freedesktop.org/archives/pixman/2012-October/002320.html
+
+commit d91f550b2a6a5029996a97282025930e67f468ae
+Author: Stefan Weil <sw@weilnetz.de>
+Date:   Tue Nov 13 19:44:15 2012 +0100
+
+    Always use xmmintrin.h for 64 bit Windows
+    
+    MinGW-w64 uses the GNU compiler and does not define _MSC_VER.
+    Nevertheless, it provides xmmintrin.h and must be handled
+    here like the MS compiler. Otherwise compilation fails due to
+    conflicting declarations.
+    
+    Signed-off-by: Stefan Weil <sw@weilnetz.de>
+
+commit 2092aa0d92f3aa6e3c30d46771bfbbc92c062cc4
+Author: Joshua Root <jmr@macports.org>
+Date:   Fri Nov 9 14:39:14 2012 +1100
+
+    Fix undeclared variable use and sysctlbyname error handling on ppc
+    
+    Fixes bug 56889.
+
+commit 9029026edd46dbfcc651f596d763533496554936
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Mon Dec 10 06:46:09 2012 -0500
+
+    Post-release version bump to 0.28.1
+
 commit 8a2ff3e0ef0449921d962f8b9c093c2353ffd945
 Author: Søren Sandmann Pedersen <ssp@redhat.com>
 Date:   Wed Nov 7 13:40:34 2012 -0500

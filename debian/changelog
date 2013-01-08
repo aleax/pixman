@@ -1,5 +1,9 @@
-pixman (0.28.0-1) UNRELEASED; urgency=low
+pixman (0.28.2-1) UNRELEASED; urgency=low
 
+  [ Cyril Brulebois ]
+  * New upstream release.
+
+  [ Maarten Lankhorst ]
   * New upstream release.
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 27 Nov 2012 14:00:13 +0100
