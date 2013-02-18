@@ -1,3 +1,10 @@
+pixman (0.26.0-4) sid; urgency=high
+
+  * Fix for CVE-2013-1591 (stack-based buffer overflow), cherry-picked from
+    0.27.4 (closes: #700308).
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 18 Feb 2013 19:58:33 +0100
+
 pixman (0.26.0-3) unstable; urgency=low
 
   * Pass LS_CFLAGS=" " to configure to prevent -march=loongson2f from
